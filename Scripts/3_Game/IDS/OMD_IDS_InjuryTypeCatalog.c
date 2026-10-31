@@ -7,6 +7,10 @@ class OMD_IDS_InjuryTypeCatalog
 	static const string LABEL_BIG = "wound_big";
 	static const string LABEL_BULLET = "wound_bullet";
 	static const string LABEL_ARTERIAL = "arterial";
+	static const string LABEL_BONE_BRUISE = "bone_bruise";
+	static const string LABEL_BONE_STRESS = "bone_stress";
+	static const string LABEL_BONE_CLOSED = "bone_closed";
+	static const string LABEL_BONE_OPEN = "bone_open";
 
 	private static ref array<string> s_Names;
 
@@ -94,6 +98,26 @@ class OMD_IDS_InjuryTypeCatalog
 			return LABEL_ARTERIAL;
 		}
 
+		if (typeId == OMD_IDS_InjuryTypeId.BONE_BRUISE)
+		{
+			return LABEL_BONE_BRUISE;
+		}
+
+		if (typeId == OMD_IDS_InjuryTypeId.STRESS_FRACTURE)
+		{
+			return LABEL_BONE_STRESS;
+		}
+
+		if (typeId == OMD_IDS_InjuryTypeId.CLOSED_FRACTURE)
+		{
+			return LABEL_BONE_CLOSED;
+		}
+
+		if (typeId == OMD_IDS_InjuryTypeId.OPEN_FRACTURE)
+		{
+			return LABEL_BONE_OPEN;
+		}
+
 		return "";
 	}
 
@@ -124,6 +148,26 @@ class OMD_IDS_InjuryTypeCatalog
 			return true;
 		}
 
+		if (label == LABEL_BONE_BRUISE)
+		{
+			return true;
+		}
+
+		if (label == LABEL_BONE_STRESS)
+		{
+			return true;
+		}
+
+		if (label == LABEL_BONE_CLOSED)
+		{
+			return true;
+		}
+
+		if (label == LABEL_BONE_OPEN)
+		{
+			return true;
+		}
+
 		return false;
 	}
 
@@ -148,7 +192,11 @@ class OMD_IDS_InjuryTypeCatalog
 		Add(OMD_IDS_InjuryTypeId.BULLET, "Bullet");
 		Add(OMD_IDS_InjuryTypeId.ORGAN_WOUND, "OrganWound");
 		Add(OMD_IDS_InjuryTypeId.ARTERIAL, "Arterial");
-		if (s_Names.Count() != OMD_IDS_InjuryTypeId.ARTERIAL + 1)
+		Add(OMD_IDS_InjuryTypeId.BONE_BRUISE, "BoneBruise");
+		Add(OMD_IDS_InjuryTypeId.STRESS_FRACTURE, "StressFracture");
+		Add(OMD_IDS_InjuryTypeId.CLOSED_FRACTURE, "ClosedFracture");
+		Add(OMD_IDS_InjuryTypeId.OPEN_FRACTURE, "OpenFracture");
+		if (s_Names.Count() != OMD_IDS_InjuryTypeId.OPEN_FRACTURE + 1)
 		{
 			Print("[OMD_IDS] injury type catalog does not match OMD_IDS_InjuryTypeId");
 		}
