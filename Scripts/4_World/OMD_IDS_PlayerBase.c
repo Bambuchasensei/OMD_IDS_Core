@@ -1,5 +1,141 @@
 modded class PlayerBase
 {
+	protected int m_OMD_IDS_BoneBreakSeq;
+	protected int m_OMD_IDS_BleedLight;
+	protected int m_OMD_IDS_BleedHeavy;
+	protected ref OMD_IDS_BoneBreakSoundClient m_OMD_IDS_BoneBreakSound;
+	protected ref OMD_IDS_BleedFx m_OMD_IDS_BleedFx;
+
+	override void Init()
+	{
+		super.Init();
+		RegisterNetSyncVariableInt("m_OMD_IDS_BoneBreakSeq", 0, 255);
+		RegisterNetSyncVariableInt("m_OMD_IDS_BleedLight", 0, 2147483647);
+		RegisterNetSyncVariableInt("m_OMD_IDS_BleedHeavy", 0, 2147483647);
+	}
+
+	override void OnVariablesSynchronized()
+	{
+		super.OnVariablesSynchronized();
+		OMD_IDS_RefreshFx();
+	}
+
+	override void EEKilled(Object killer)
+	{
+		super.EEKilled(killer);
+		OMD_IDS_RefreshFx();
+	}
+
+	override void EEDelete(EntityAI parent)
+	{
+		OMD_IDS_DropBleed();
+		super.EEDelete(parent);
+	}
+
+	override void OnSimulationDisabled()
+	{
+		OMD_IDS_DropBleed();
+		super.OnSimulationDisabled();
+	}
+
+	override void OnSimulationEnabled()
+	{
+		super.OnSimulationEnabled();
+		OMD_IDS_RefreshFx();
+	}
+
+	void OMD_IDS_AdvanceBoneBreakSeq()
+	{
+		if (!GetGame())
+		{
+			return;
+		}
+
+		if (!GetGame().IsServer())
+		{
+			return;
+		}
+
+		m_OMD_IDS_BoneBreakSeq = m_OMD_IDS_BoneBreakSeq + 1;
+		if (m_OMD_IDS_BoneBreakSeq > 255)
+		{
+			m_OMD_IDS_BoneBreakSeq = 0;
+		}
+
+		SetSynchDirty();
+	}
+
+	void OMD_IDS_SetBleedMasks(int lightMask, int heavyMask)
+	{
+		bool changed;
+
+		if (!GetGame())
+		{
+			return;
+		}
+
+		if (!GetGame().IsServer())
+		{
+			return;
+		}
+
+		changed = false;
+		if (m_OMD_IDS_BleedLight != lightMask)
+		{
+			m_OMD_IDS_BleedLight = lightMask;
+			changed = true;
+		}
+
+		if (m_OMD_IDS_BleedHeavy != heavyMask)
+		{
+			m_OMD_IDS_BleedHeavy = heavyMask;
+			changed = true;
+		}
+
+		if (!changed)
+		{
+			return;
+		}
+
+		SetSynchDirty();
+	}
+
+	protected void OMD_IDS_RefreshFx()
+	{
+		if (!GetGame())
+		{
+			return;
+		}
+
+		if (GetGame().IsDedicatedServer())
+		{
+			return;
+		}
+
+		if (!m_OMD_IDS_BoneBreakSound)
+		{
+			m_OMD_IDS_BoneBreakSound = new OMD_IDS_BoneBreakSoundClient();
+		}
+
+		m_OMD_IDS_BoneBreakSound.OnSynced(this, m_OMD_IDS_BoneBreakSeq);
+		if (!m_OMD_IDS_BleedFx)
+		{
+			m_OMD_IDS_BleedFx = new OMD_IDS_BleedFx();
+		}
+
+		m_OMD_IDS_BleedFx.Apply(this, m_OMD_IDS_BleedLight, m_OMD_IDS_BleedHeavy);
+	}
+
+	protected void OMD_IDS_DropBleed()
+	{
+		if (!m_OMD_IDS_BleedFx)
+		{
+			return;
+		}
+
+		m_OMD_IDS_BleedFx.Drop();
+	}
+
 	override void OnRPC(PlayerIdentity sender, int rpc_type, ParamsReadContext ctx)
 	{
 		super.OnRPC(sender, rpc_type, ctx);
