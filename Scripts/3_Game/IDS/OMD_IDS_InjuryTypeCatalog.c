@@ -6,6 +6,7 @@ class OMD_IDS_InjuryTypeCatalog
 	static const string LABEL_DEEP = "wound_deep";
 	static const string LABEL_BIG = "wound_big";
 	static const string LABEL_BULLET = "wound_bullet";
+	static const string LABEL_ARTERIAL = "arterial";
 
 	private static ref array<string> s_Names;
 
@@ -88,6 +89,11 @@ class OMD_IDS_InjuryTypeCatalog
 			return LABEL_BULLET;
 		}
 
+		if (typeId == OMD_IDS_InjuryTypeId.ARTERIAL)
+		{
+			return LABEL_ARTERIAL;
+		}
+
 		return "";
 	}
 
@@ -141,7 +147,8 @@ class OMD_IDS_InjuryTypeCatalog
 		Add(OMD_IDS_InjuryTypeId.BIG_WOUND, "BigWound");
 		Add(OMD_IDS_InjuryTypeId.BULLET, "Bullet");
 		Add(OMD_IDS_InjuryTypeId.ORGAN_WOUND, "OrganWound");
-		if (s_Names.Count() != OMD_IDS_InjuryTypeId.ORGAN_WOUND + 1)
+		Add(OMD_IDS_InjuryTypeId.ARTERIAL, "Arterial");
+		if (s_Names.Count() != OMD_IDS_InjuryTypeId.ARTERIAL + 1)
 		{
 			Print("[OMD_IDS] injury type catalog does not match OMD_IDS_InjuryTypeId");
 		}
