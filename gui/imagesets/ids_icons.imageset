@@ -1,0 +1,138 @@
+ImageSetClass {
+ Name "ids_icons"
+ RefSize 512 512
+ Textures {
+  ImageSetTextureClass {
+   mpix 0
+   path "OMD_IDS_Core/gui/imagesets/ids_icons.paa"
+  }
+ }
+ Images {
+  ImageSetDefClass arm {
+   Name "arm"
+   Pos 2 2
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass foot {
+   Name "foot"
+   Pos 70 2
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass hand {
+   Name "hand"
+   Pos 138 2
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass head {
+   Name "head"
+   Pos 206 2
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass leg {
+   Name "leg"
+   Pos 274 2
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass torso {
+   Name "torso"
+   Pos 342 2
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass bone {
+   Name "bone"
+   Pos 410 2
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass lungs {
+   Name "lungs"
+   Pos 2 70
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass bone_bruise {
+   Name "bone_bruise"
+   Pos 70 70
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass bone_closed {
+   Name "bone_closed"
+   Pos 138 70
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass bone_open {
+   Name "bone_open"
+   Pos 206 70
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass bone_stress {
+   Name "bone_stress"
+   Pos 274 70
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass wound_bandage_clean {
+   Name "wound_bandage_clean"
+   Pos 342 70
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass wound_bandage_dirty {
+   Name "wound_bandage_dirty"
+   Pos 410 70
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass wound_big {
+   Name "wound_big"
+   Pos 2 138
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass wound_bullet {
+   Name "wound_bullet"
+   Pos 70 138
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass wound_deep {
+   Name "wound_deep"
+   Pos 138 138
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass wound_light {
+   Name "wound_light"
+   Pos 206 138
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass wound_organ {
+   Name "wound_organ"
+   Pos 274 138
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass wound_scratch {
+   Name "wound_scratch"
+   Pos 342 138
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass wound_suture {
+   Name "wound_suture"
+   Pos 410 138
+   Size 64 64
+   Flags 0
+  }
+ }
+}

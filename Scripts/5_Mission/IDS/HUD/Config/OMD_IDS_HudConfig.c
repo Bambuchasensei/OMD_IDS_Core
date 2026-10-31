@@ -69,7 +69,42 @@ class OMD_IDS_HudConfig
 			return fallback;
 		}
 
+		if (loaded.MigrateLegacyIcons())
+		{
+			loaded.Save();
+			Print("[OMD_IDS] hud.json: icon paths switched to atlas ids_icons");
+		}
+
 		return loaded;
+	}
+
+	bool MigrateLegacyIcons()
+	{
+		if (!groups)
+		{
+			return false;
+		}
+
+		bool changed = false;
+		int index;
+		for (index = 0; index < groups.Count(); index = index + 1)
+		{
+			OMD_IDS_HudGroupIcon groupIcon = groups.Get(index);
+			if (!groupIcon)
+			{
+				continue;
+			}
+
+			if (!OMD_IDS_HudGroupMap.IsLegacyIcon(groupIcon.icon))
+			{
+				continue;
+			}
+
+			groupIcon.icon = OMD_IDS_HudGroupMap.GetDefaultIcon(groupIcon.id);
+			changed = true;
+		}
+
+		return changed;
 	}
 
 	void ApplyDefaults()

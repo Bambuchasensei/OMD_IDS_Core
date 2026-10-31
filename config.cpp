@@ -37,6 +37,10 @@ class CfgMods
 				value = "";
 				files[] = {"OMD_IDS_Core/Scripts/5_Mission"};
 			};
+			class imageSets
+			{
+				files[] = {"OMD_IDS_Core/gui/imagesets/ids_icons.imageset"};
+			};
 		};
 	};
 };

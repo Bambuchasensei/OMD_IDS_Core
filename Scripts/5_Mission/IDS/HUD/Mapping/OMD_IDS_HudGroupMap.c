@@ -17,14 +17,17 @@ class OMD_IDS_HudGroupMap
 	static const string GROUP_GUTS = "Guts";
 	static const int ZONE_COUNT = 38;
 
-	static const string ICON_HEAD = "OMD_IDS_Core/gui/icons/body/ids_head_64.png";
-	static const string ICON_TORSO = "OMD_IDS_Core/gui/icons/body/ids_torso_64.png";
-	static const string ICON_ARM = "OMD_IDS_Core/gui/icons/body/ids_arm_64.png";
-	static const string ICON_HAND = "OMD_IDS_Core/gui/icons/body/ids_hand_64.png";
-	static const string ICON_LEG = "OMD_IDS_Core/gui/icons/body/ids_leg_64.png";
-	static const string ICON_FOOT = "OMD_IDS_Core/gui/icons/body/ids_foot_64.png";
-	static const string ICON_BONE = "OMD_IDS_Core/gui/icons/organs/ids_bone_64.png";
-	static const string ICON_LUNGS = "OMD_IDS_Core/gui/icons/organs/ids_lungs_64.png";
+	// Atlas ids_icons: gui/imagesets/ids_icons.imageset (registered in config.cpp -> CfgMods -> defs -> imageSets)
+	static const string ICON_HEAD = "set:ids_icons image:head";
+	static const string ICON_TORSO = "set:ids_icons image:torso";
+	static const string ICON_ARM = "set:ids_icons image:arm";
+	static const string ICON_HAND = "set:ids_icons image:hand";
+	static const string ICON_LEG = "set:ids_icons image:leg";
+	static const string ICON_FOOT = "set:ids_icons image:foot";
+	static const string ICON_BONE = "set:ids_icons image:bone";
+	static const string ICON_LUNGS = "set:ids_icons image:lungs";
+	// Old hud.json files keep direct file paths with this prefix; they are replaced by atlas defaults on load
+	static const string LEGACY_ICON_PREFIX = "OMD_IDS_Core/gui/icons/";
 
 	private OMD_IDS_HudConfig m_Config;
 
@@ -99,6 +102,39 @@ class OMD_IDS_HudGroupMap
 		AddGroup(groups, GROUP_LIVER, "");
 		AddGroup(groups, GROUP_KIDNEYS, "");
 		AddGroup(groups, GROUP_GUTS, "");
+	}
+
+	static string GetDefaultIcon(string groupId)
+	{
+		array<ref OMD_IDS_HudGroupIcon> defaults = new array<ref OMD_IDS_HudGroupIcon>();
+		FillDefaultGroups(defaults);
+
+		int index;
+		for (index = 0; index < defaults.Count(); index = index + 1)
+		{
+			OMD_IDS_HudGroupIcon groupIcon = defaults.Get(index);
+			if (!groupIcon)
+			{
+				continue;
+			}
+
+			if (groupIcon.id == groupId)
+			{
+				return groupIcon.icon;
+			}
+		}
+
+		return "";
+	}
+
+	static bool IsLegacyIcon(string iconPath)
+	{
+		if (iconPath == "")
+		{
+			return false;
+		}
+
+		return iconPath.IndexOf(LEGACY_ICON_PREFIX) == 0;
 	}
 
 	string GetHudGroup(string zoneName)
