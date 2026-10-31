@@ -18,6 +18,14 @@ modded class ChatInputMenu
 			return true;
 		}
 
+		if (OMD_IDS_InjuryChat.TryHandle(text))
+		{
+			ClearBox();
+			Close();
+			GetUApi().GetInputByID(UAPersonView).Supress();
+			return true;
+		}
+
 		return super.OnChange(w, x, y, finished);
 	}
 

@@ -26,6 +26,7 @@ class OMD_IDS_HudGroupMap
 	static const string ICON_FOOT = "set:ids_icons image:foot";
 	static const string ICON_BONE = "set:ids_icons image:bone";
 	static const string ICON_LUNGS = "set:ids_icons image:lungs";
+	static const string ICON_ORGAN_WOUND = "set:ids_icons image:wound_organ";
 	// Old hud.json files keep direct file paths with this prefix; they are replaced by atlas defaults on load
 	static const string LEGACY_ICON_PREFIX = "OMD_IDS_Core/gui/icons/";
 
@@ -102,6 +103,7 @@ class OMD_IDS_HudGroupMap
 		AddGroup(groups, GROUP_LIVER, "");
 		AddGroup(groups, GROUP_KIDNEYS, "");
 		AddGroup(groups, GROUP_GUTS, "");
+		AddGroup(groups, OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.ORGAN_WOUND), ICON_ORGAN_WOUND);
 	}
 
 	static string GetDefaultIcon(string groupId)

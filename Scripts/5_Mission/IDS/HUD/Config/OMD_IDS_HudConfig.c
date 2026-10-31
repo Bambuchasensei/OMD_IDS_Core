@@ -34,6 +34,9 @@ class OMD_IDS_HudConfig
 	int outlineR;
 	int outlineG;
 	int outlineB;
+	float badgeSize;
+	float badgeOffsetX;
+	float badgeOffsetY;
 	ref array<ref OMD_IDS_HudZoneLink> zones;
 	ref array<ref OMD_IDS_HudGroupIcon> groups;
 
@@ -69,10 +72,28 @@ class OMD_IDS_HudConfig
 			return fallback;
 		}
 
-		if (loaded.MigrateLegacyIcons())
+		bool iconsChanged = loaded.MigrateLegacyIcons();
+		bool groupAdded = loaded.EnsureOrganWoundGroup();
+		loaded.ApplyMissingBadgeDefaults();
+		if (iconsChanged)
+		{
+			Print("[OMD_IDS] hud.json: icon paths switched to atlas ids_icons");
+		}
+
+		if (groupAdded)
+		{
+			Print("[OMD_IDS] hud.json: added OrganWound icon");
+		}
+
+		bool rewrite = iconsChanged;
+		if (groupAdded)
+		{
+			rewrite = true;
+		}
+
+		if (rewrite)
 		{
 			loaded.Save();
-			Print("[OMD_IDS] hud.json: icon paths switched to atlas ids_icons");
 		}
 
 		return loaded;
@@ -107,6 +128,31 @@ class OMD_IDS_HudConfig
 		return changed;
 	}
 
+	bool EnsureOrganWoundGroup()
+	{
+		string groupId = OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.ORGAN_WOUND);
+		if (groupId == "")
+		{
+			return false;
+		}
+
+		if (!groups)
+		{
+			return false;
+		}
+
+		if (HasGroup(groupId))
+		{
+			return false;
+		}
+
+		OMD_IDS_HudGroupIcon groupIcon = new OMD_IDS_HudGroupIcon();
+		groupIcon.id = groupId;
+		groupIcon.icon = OMD_IDS_HudGroupMap.ICON_ORGAN_WOUND;
+		groups.Insert(groupIcon);
+		return true;
+	}
+
 	void ApplyDefaults()
 	{
 		activeEnabled = true;
@@ -135,10 +181,28 @@ class OMD_IDS_HudConfig
 		outlineR = 0;
 		outlineG = 0;
 		outlineB = 0;
+		ApplyBadgeDefaults();
 		zones = new array<ref OMD_IDS_HudZoneLink>();
 		groups = new array<ref OMD_IDS_HudGroupIcon>();
 		OMD_IDS_HudGroupMap.FillDefaultZones(zones);
 		OMD_IDS_HudGroupMap.FillDefaultGroups(groups);
+	}
+
+	private void ApplyBadgeDefaults()
+	{
+		badgeSize = 32;
+		badgeOffsetX = 16;
+		badgeOffsetY = 16;
+	}
+
+	void ApplyMissingBadgeDefaults()
+	{
+		if (badgeSize > 0)
+		{
+			return;
+		}
+
+		ApplyBadgeDefaults();
 	}
 
 	void Save()

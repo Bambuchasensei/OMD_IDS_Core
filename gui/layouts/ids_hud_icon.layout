@@ -40,6 +40,22 @@ FrameWidgetClass IdsHudIcon {
   image0 ""
  }
 
+ ImageWidgetClass IdsHudIconBadge {
+  ignorepointer 1
+  position 16 16
+  size 32 32
+  hexactpos 1
+  vexactpos 1
+  hexactsize 1
+  vexactsize 1
+  visible 0
+  inheritalpha 1
+  color 1 1 1 1
+  mode blend
+  "src alpha" 1
+  image0 ""
+ }
+
  TextWidgetClass IdsHudIconLabel {
   ignorepointer 1
   position 0 64

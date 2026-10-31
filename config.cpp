@@ -32,6 +32,16 @@ class CfgMods
 		dependencies[] = {"Game", "World", "Mission"};
 		class defs
 		{
+			class gameScriptModule
+			{
+				value = "";
+				files[] = {"OMD_IDS_Core/Scripts/3_Game"};
+			};
+			class worldScriptModule
+			{
+				value = "";
+				files[] = {"OMD_IDS_Core/Scripts/4_World"};
+			};
 			class missionScriptModule
 			{
 				value = "";

@@ -1,0 +1,21 @@
+// HUD group ids shared by the server snapshot and the client bridge.
+// Append only. Names live in OMD_IDS_GroupCatalog and must match the HUD json ids.
+// 0 NONE, 1 HEAD, 2 TORSO, 3 ARM, 4 HAND, 5 LEG, 6 FOOT, 7 BONE,
+// 8 LUNGS, 9 HEART, 10 LIVER, 11 KIDNEYS, 12 GUTS, 13 ORGAN_WOUND
+enum OMD_IDS_GroupId
+{
+	NONE = 0,
+	HEAD = 1,
+	TORSO = 2,
+	ARM = 3,
+	HAND = 4,
+	LEG = 5,
+	FOOT = 6,
+	BONE = 7,
+	LUNGS = 8,
+	HEART = 9,
+	LIVER = 10,
+	KIDNEYS = 11,
+	GUTS = 12,
+	ORGAN_WOUND = 13
+}

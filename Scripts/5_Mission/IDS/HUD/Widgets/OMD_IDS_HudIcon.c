@@ -7,6 +7,7 @@ class OMD_IDS_HudIcon
 	private Widget m_Root;
 	private Widget m_Plate;
 	private ImageWidget m_Image;
+	private ImageWidget m_Badge;
 	private TextWidget m_Label;
 	private TextWidget m_Counter;
 
@@ -36,11 +37,17 @@ class OMD_IDS_HudIcon
 
 		m_Plate = m_Root.FindWidget("IdsHudIconPlate");
 		ImageWidget image;
+		ImageWidget badge;
 		TextWidget label;
 		TextWidget counter;
 		if (Class.CastTo(image, m_Root.FindWidget("IdsHudIconImage")))
 		{
 			m_Image = image;
+		}
+
+		if (Class.CastTo(badge, m_Root.FindWidget("IdsHudIconBadge")))
+		{
+			m_Badge = badge;
 		}
 
 		if (Class.CastTo(label, m_Root.FindWidget("IdsHudIconLabel")))
@@ -56,6 +63,11 @@ class OMD_IDS_HudIcon
 		if (!m_Image)
 		{
 			WarnOnce("IdsHudIconImage", "[OMD_IDS] icon layout is missing IdsHudIconImage");
+		}
+
+		if (!m_Badge)
+		{
+			WarnOnce("IdsHudIconBadge", "[OMD_IDS] icon layout is missing IdsHudIconBadge");
 		}
 	}
 
@@ -96,6 +108,7 @@ class OMD_IDS_HudIcon
 		m_Root = null;
 		m_Plate = null;
 		m_Image = null;
+		m_Badge = null;
 		m_Label = null;
 		m_Counter = null;
 	}
@@ -166,7 +179,46 @@ class OMD_IDS_HudIcon
 		m_Label.SetColor(color);
 		m_Label.SetOutline(config.outlineSize, outlineColor);
 		m_Label.SetTextExactSize(config.labelTextSize);
-		m_Label.SetText(entry.label);
+		if (!m_Badge)
+		{
+			m_Label.SetText(entry.label);
+			return;
+		}
+
+		m_Badge.Show(false);
+		if (entry.label == "")
+		{
+			m_Label.SetText("");
+			return;
+		}
+
+		if (!OMD_IDS_InjuryTypeCatalog.IsAtlasBadge(entry.label))
+		{
+			m_Label.SetText(entry.label);
+			return;
+		}
+
+		m_Label.SetText("");
+		float size = config.badgeSize;
+		if (size <= 0)
+		{
+			size = 32;
+		}
+
+		m_Badge.SetPos(config.badgeOffsetX, config.badgeOffsetY);
+		m_Badge.SetSize(size, size);
+		m_Badge.SetColor(color);
+		string badgePath = OMD_IDS_InjuryTypeCatalog.BadgePath(entry.label);
+		bool loaded = m_Badge.LoadImageFile(0, badgePath, false);
+		if (!loaded)
+		{
+			m_Badge.Show(false);
+			m_Label.SetText(entry.label);
+			WarnOnce(badgePath, string.Format("[OMD_IDS] wound badge did not load: %1", badgePath));
+			return;
+		}
+
+		m_Badge.Show(true);
 	}
 
 	private void ApplyCounter(OMD_IDS_HudDamageEntry entry, OMD_IDS_HudConfig config, int color, int outlineColor)
