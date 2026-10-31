@@ -115,11 +115,11 @@ class OMD_IDS_ZoneCatalog
 		Add(OMD_IDS_ZoneId.RIGHT_FOOT, "RightFoot", OMD_IDS_GroupId.FOOT);
 		Add(OMD_IDS_ZoneId.BRAIN, "Brain", OMD_IDS_GroupId.NONE);
 		Add(OMD_IDS_ZoneId.SPINE, "Spine", OMD_IDS_GroupId.NONE);
-		Add(OMD_IDS_ZoneId.HEART, "Heart", OMD_IDS_GroupId.HEART);
+		Add(OMD_IDS_ZoneId.HEART, "Heart", OMD_IDS_GroupId.LUNGS);
 		Add(OMD_IDS_ZoneId.LUNGS, "Lungs", OMD_IDS_GroupId.LUNGS);
-		Add(OMD_IDS_ZoneId.LIVER, "Liver", OMD_IDS_GroupId.LIVER);
-		Add(OMD_IDS_ZoneId.KIDNEYS, "Kidneys", OMD_IDS_GroupId.KIDNEYS);
-		Add(OMD_IDS_ZoneId.GUTS, "Guts", OMD_IDS_GroupId.GUTS);
+		Add(OMD_IDS_ZoneId.LIVER, "Liver", OMD_IDS_GroupId.LUNGS);
+		Add(OMD_IDS_ZoneId.KIDNEYS, "Kidneys", OMD_IDS_GroupId.LUNGS);
+		Add(OMD_IDS_ZoneId.GUTS, "Guts", OMD_IDS_GroupId.LUNGS);
 		if (s_Names.Count() != OMD_IDS_ZoneId.GUTS + 1)
 		{
 			Print("[OMD_IDS] zone catalog does not match OMD_IDS_ZoneId");

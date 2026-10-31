@@ -18,11 +18,6 @@ modded class PlayerBase
 			return;
 		}
 
-		if (!IsControlledPlayer())
-		{
-			return;
-		}
-
 		int count;
 		if (!ctx.Read(count))
 		{

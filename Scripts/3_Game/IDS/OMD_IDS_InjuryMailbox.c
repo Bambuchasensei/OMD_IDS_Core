@@ -40,4 +40,10 @@ class OMD_IDS_InjuryMailbox
 
 		return entries;
 	}
+
+	void Clear()
+	{
+		m_Pending = null;
+		m_HasPending = false;
+	}
 };

@@ -10,11 +10,7 @@ class OMD_IDS_HudGroupMap
 	static const string GROUP_LEG = "Leg";
 	static const string GROUP_FOOT = "Foot";
 	static const string GROUP_BONE = "Bone";
-	static const string GROUP_LUNGS = "Lungs";
-	static const string GROUP_HEART = "Heart";
-	static const string GROUP_LIVER = "Liver";
-	static const string GROUP_KIDNEYS = "Kidneys";
-	static const string GROUP_GUTS = "Guts";
+	static const string GROUP_ORGAN = "Organ";
 	static const int ZONE_COUNT = 38;
 
 	// Atlas ids_icons: gui/imagesets/ids_icons.imageset (registered in config.cpp -> CfgMods -> defs -> imageSets)
@@ -75,11 +71,11 @@ class OMD_IDS_HudGroupMap
 		AddZone(zones, "RightUpperLegBone", GROUP_BONE);
 		AddZone(zones, "LeftLowerLegBone", GROUP_BONE);
 		AddZone(zones, "RightLowerLegBone", GROUP_BONE);
-		AddZone(zones, "Lungs", GROUP_LUNGS);
-		AddZone(zones, "Heart", GROUP_HEART);
-		AddZone(zones, "Liver", GROUP_LIVER);
-		AddZone(zones, "Kidneys", GROUP_KIDNEYS);
-		AddZone(zones, "Guts", GROUP_GUTS);
+		AddZone(zones, "Lungs", GROUP_ORGAN);
+		AddZone(zones, "Heart", GROUP_ORGAN);
+		AddZone(zones, "Liver", GROUP_ORGAN);
+		AddZone(zones, "Kidneys", GROUP_ORGAN);
+		AddZone(zones, "Guts", GROUP_ORGAN);
 		AddZone(zones, "Brain", GROUP_NONE);
 		AddZone(zones, "Spine", GROUP_NONE);
 	}
@@ -98,16 +94,72 @@ class OMD_IDS_HudGroupMap
 		AddGroup(groups, GROUP_LEG, ICON_LEG);
 		AddGroup(groups, GROUP_FOOT, ICON_FOOT);
 		AddGroup(groups, GROUP_BONE, ICON_BONE);
-		AddGroup(groups, GROUP_LUNGS, ICON_LUNGS);
-		AddGroup(groups, GROUP_HEART, "");
-		AddGroup(groups, GROUP_LIVER, "");
-		AddGroup(groups, GROUP_KIDNEYS, "");
-		AddGroup(groups, GROUP_GUTS, "");
+		AddGroup(groups, GROUP_ORGAN, ICON_LUNGS);
 		AddGroup(groups, OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.ORGAN_WOUND), ICON_ORGAN_WOUND);
+	}
+
+	static bool IsSharedOrganZone(string zoneName)
+	{
+		if (zoneName == "Heart")
+		{
+			return true;
+		}
+
+		if (zoneName == "Lungs")
+		{
+			return true;
+		}
+
+		if (zoneName == "Liver")
+		{
+			return true;
+		}
+
+		if (zoneName == "Kidneys")
+		{
+			return true;
+		}
+
+		if (zoneName == "Guts")
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	static string GetDefaultIcon(string groupId)
 	{
+		if (groupId == "Lungs")
+		{
+			return ICON_LUNGS;
+		}
+
+		if (groupId == "Heart")
+		{
+			return ICON_LUNGS;
+		}
+
+		if (groupId == "Liver")
+		{
+			return ICON_LUNGS;
+		}
+
+		if (groupId == "Kidneys")
+		{
+			return ICON_LUNGS;
+		}
+
+		if (groupId == "Guts")
+		{
+			return ICON_LUNGS;
+		}
+
+		if (groupId == GROUP_ORGAN)
+		{
+			return ICON_LUNGS;
+		}
+
 		array<ref OMD_IDS_HudGroupIcon> defaults = new array<ref OMD_IDS_HudGroupIcon>();
 		FillDefaultGroups(defaults);
 

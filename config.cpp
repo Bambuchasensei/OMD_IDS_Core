@@ -73,7 +73,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -91,7 +91,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -111,7 +111,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -129,7 +129,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -147,7 +147,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -165,7 +165,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -183,7 +183,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -201,7 +201,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -219,7 +219,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -239,7 +239,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -257,7 +257,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -275,7 +275,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -293,7 +293,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -311,7 +311,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -329,7 +329,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -349,7 +349,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -367,7 +367,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -385,7 +385,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -403,7 +403,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -421,7 +421,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -439,7 +439,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -459,7 +459,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -477,7 +477,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -495,7 +495,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -513,7 +513,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -531,7 +531,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -551,7 +551,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -569,7 +569,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -587,7 +587,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -605,7 +605,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -623,7 +623,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -643,7 +643,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 5; }; class Blood { damage = 5; }; class Shock { damage = 5; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -661,7 +661,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 5; }; class Blood { damage = 5; }; class Shock { damage = 5; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -679,7 +679,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -697,7 +697,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -715,7 +715,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -733,7 +733,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};
@@ -751,7 +751,7 @@ class CfgVehicles
 					class ArmorType
 					{
 						class Melee { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
-						class Projectile { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
+						class Projectile { class Health { damage = 1; }; class Blood { damage = 1; }; class Shock { damage = 1; }; };
 						class FragGrenade { class Health { damage = 0; }; class Blood { damage = 0; }; class Shock { damage = 0; }; };
 					};
 					transferToZonesNames[] = {};

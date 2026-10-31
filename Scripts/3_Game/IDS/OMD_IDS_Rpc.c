@@ -4,5 +4,6 @@ class OMD_IDS_Rpc
 {
 	static const int SNAPSHOT = 78551021;
 	static const int DEBUG_LINE = 78551022;
+	static const int SNAPSHOT_REQUEST = 78551023;
 	static const int SNAPSHOT_MAX = 512;
 };

@@ -74,6 +74,7 @@ class OMD_IDS_HudConfig
 
 		bool iconsChanged = loaded.MigrateLegacyIcons();
 		bool groupAdded = loaded.EnsureOrganWoundGroup();
+		bool organMerged = loaded.MergeSharedOrganGroup();
 		loaded.ApplyMissingBadgeDefaults();
 		if (iconsChanged)
 		{
@@ -87,6 +88,11 @@ class OMD_IDS_HudConfig
 
 		bool rewrite = iconsChanged;
 		if (groupAdded)
+		{
+			rewrite = true;
+		}
+
+		if (organMerged)
 		{
 			rewrite = true;
 		}
@@ -151,6 +157,65 @@ class OMD_IDS_HudConfig
 		groupIcon.icon = OMD_IDS_HudGroupMap.ICON_ORGAN_WOUND;
 		groups.Insert(groupIcon);
 		return true;
+	}
+
+	bool MergeSharedOrganGroup()
+	{
+		bool changed;
+		string organId;
+		int index;
+		OMD_IDS_HudGroupIcon groupIcon;
+		OMD_IDS_HudZoneLink link;
+
+		changed = false;
+		organId = OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.LUNGS);
+		if (organId == "")
+		{
+			return false;
+		}
+
+		if (!groups)
+		{
+			return false;
+		}
+
+		if (!HasGroup(organId))
+		{
+			groupIcon = new OMD_IDS_HudGroupIcon();
+			groupIcon.id = organId;
+			groupIcon.icon = OMD_IDS_HudGroupMap.ICON_LUNGS;
+			groups.Insert(groupIcon);
+			changed = true;
+		}
+
+		if (!zones)
+		{
+			return changed;
+		}
+
+		for (index = 0; index < zones.Count(); index = index + 1)
+		{
+			link = zones.Get(index);
+			if (!link)
+			{
+				continue;
+			}
+
+			if (!OMD_IDS_HudGroupMap.IsSharedOrganZone(link.zone))
+			{
+				continue;
+			}
+
+			if (link.group == organId)
+			{
+				continue;
+			}
+
+			link.group = organId;
+			changed = true;
+		}
+
+		return changed;
 	}
 
 	void ApplyDefaults()

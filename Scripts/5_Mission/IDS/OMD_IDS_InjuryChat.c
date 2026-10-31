@@ -22,6 +22,11 @@ class OMD_IDS_InjuryChat
 			return false;
 		}
 
+		if (trimmed.Length() > 256)
+		{
+			trimmed = trimmed.Substring(0, 256);
+		}
+
 		Send(trimmed);
 		return true;
 	}

@@ -35,7 +35,7 @@ class OMD_IDS_GroupCatalog
 		Add(OMD_IDS_GroupId.LEG, "Leg");
 		Add(OMD_IDS_GroupId.FOOT, "Foot");
 		Add(OMD_IDS_GroupId.BONE, "Bone");
-		Add(OMD_IDS_GroupId.LUNGS, "Lungs");
+		Add(OMD_IDS_GroupId.LUNGS, "Organ");
 		Add(OMD_IDS_GroupId.HEART, "Heart");
 		Add(OMD_IDS_GroupId.LIVER, "Liver");
 		Add(OMD_IDS_GroupId.KIDNEYS, "Kidneys");

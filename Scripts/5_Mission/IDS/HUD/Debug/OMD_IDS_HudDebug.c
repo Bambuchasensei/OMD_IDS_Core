@@ -326,22 +326,32 @@ class OMD_IDS_HudDebug
 
 		if (token == "Лёгкие")
 		{
-			return OMD_IDS_HudGroupMap.GROUP_LUNGS;
+			return OMD_IDS_HudGroupMap.GROUP_ORGAN;
 		}
 
 		if (token == "лёгкие")
 		{
-			return OMD_IDS_HudGroupMap.GROUP_LUNGS;
+			return OMD_IDS_HudGroupMap.GROUP_ORGAN;
 		}
 
 		if (token == "Легкие")
 		{
-			return OMD_IDS_HudGroupMap.GROUP_LUNGS;
+			return OMD_IDS_HudGroupMap.GROUP_ORGAN;
 		}
 
 		if (token == "легкие")
 		{
-			return OMD_IDS_HudGroupMap.GROUP_LUNGS;
+			return OMD_IDS_HudGroupMap.GROUP_ORGAN;
+		}
+
+		if (token == "Орган")
+		{
+			return OMD_IDS_HudGroupMap.GROUP_ORGAN;
+		}
+
+		if (token == "орган")
+		{
+			return OMD_IDS_HudGroupMap.GROUP_ORGAN;
 		}
 
 		return "";
