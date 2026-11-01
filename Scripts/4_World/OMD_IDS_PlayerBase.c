@@ -14,6 +14,23 @@ modded class PlayerBase
 		RegisterNetSyncVariableInt("m_OMD_IDS_BleedHeavy", 0, 2147483647);
 	}
 
+	override void EEInit()
+	{
+		super.EEInit();
+		OMD_IDS_CaptureBoneBreak();
+		if (!GetGame())
+		{
+			return;
+		}
+
+		if (GetGame().IsDedicatedServer())
+		{
+			return;
+		}
+
+		GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).Call(this.OMD_IDS_ArmBoneBreak);
+	}
+
 	override void OnVariablesSynchronized()
 	{
 		super.OnVariablesSynchronized();
@@ -63,6 +80,31 @@ modded class PlayerBase
 		}
 
 		SetSynchDirty();
+	}
+
+	int OMD_IDS_GetBoneBreakSeq()
+	{
+		return m_OMD_IDS_BoneBreakSeq;
+	}
+
+	protected void OMD_IDS_CaptureBoneBreak()
+	{
+		if (!m_OMD_IDS_BoneBreakSound)
+		{
+			m_OMD_IDS_BoneBreakSound = new OMD_IDS_BoneBreakSoundClient();
+		}
+
+		m_OMD_IDS_BoneBreakSound.Remember(m_OMD_IDS_BoneBreakSeq);
+	}
+
+	void OMD_IDS_ArmBoneBreak()
+	{
+		if (!m_OMD_IDS_BoneBreakSound)
+		{
+			m_OMD_IDS_BoneBreakSound = new OMD_IDS_BoneBreakSoundClient();
+		}
+
+		m_OMD_IDS_BoneBreakSound.GoLive(m_OMD_IDS_BoneBreakSeq);
 	}
 
 	void OMD_IDS_SetBleedMasks(int lightMask, int heavyMask)
