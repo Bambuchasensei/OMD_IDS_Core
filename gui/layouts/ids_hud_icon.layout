@@ -11,7 +11,7 @@ FrameWidgetClass IdsHudIcon {
  priority 50
  visible 1
  clipchildren 0
-
+ {
  PanelWidgetClass IdsHudIconPlate {
   ignorepointer 1
   visible 0
@@ -88,5 +88,6 @@ FrameWidgetClass IdsHudIcon {
   "exact text size" 18
   "text halign" left
   "text valign" center
+ }
  }
 }

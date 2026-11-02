@@ -248,6 +248,7 @@ modded class PlayerBase
 			entries.Insert(entry);
 		}
 
+		Print(string.Format("[OMD_IDS] client snapshot entries=%1", entries.Count()));
 		OMD_IDS_InjuryMailbox.Get().Put(entries);
 	}
 };

@@ -53,8 +53,10 @@ class OMD_IDS_HudConfig
 			return fallback;
 		}
 
+		string rawJson;
 		string errorMessage;
 		OMD_IDS_HudConfig loaded;
+		rawJson = ReadProfileText();
 		bool ok = JsonFileLoader<OMD_IDS_HudConfig>.LoadFile(PROFILE_FILE, loaded, errorMessage);
 		if (!ok)
 		{
@@ -75,7 +77,7 @@ class OMD_IDS_HudConfig
 		bool iconsChanged = loaded.MigrateLegacyIcons();
 		bool groupAdded = loaded.EnsureOrganWoundGroup();
 		bool organMerged = loaded.MergeSharedOrganGroup();
-		loaded.ApplyMissingBadgeDefaults();
+		loaded.ApplyMissingBadgeDefaults(rawJson);
 		if (iconsChanged)
 		{
 			Print("[OMD_IDS] hud.json: icon paths switched to atlas ids_icons");
@@ -260,14 +262,61 @@ class OMD_IDS_HudConfig
 		badgeOffsetY = 16;
 	}
 
-	void ApplyMissingBadgeDefaults()
+	void ApplyMissingBadgeDefaults(string rawJson)
 	{
-		if (badgeSize > 0)
+		if (JsonHasKey(rawJson, "badgeSize"))
 		{
 			return;
 		}
 
 		ApplyBadgeDefaults();
+	}
+
+	private static bool JsonHasKey(string json, string key)
+	{
+		string token;
+		int at;
+
+		if (json == "")
+		{
+			return false;
+		}
+
+		if (key == "")
+		{
+			return false;
+		}
+
+		token = "\"" + key + "\"";
+		at = json.IndexOf(token);
+		if (at < 0)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	private static string ReadProfileText()
+	{
+		FileHandle handle;
+		string content;
+
+		content = "";
+		if (!FileExist(PROFILE_FILE))
+		{
+			return content;
+		}
+
+		handle = OpenFile(PROFILE_FILE, FileMode.READ);
+		if (handle == 0)
+		{
+			return content;
+		}
+
+		ReadFile(handle, content, 1000000);
+		CloseFile(handle);
+		return content;
 	}
 
 	void Save()

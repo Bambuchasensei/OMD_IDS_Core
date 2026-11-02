@@ -40,22 +40,22 @@ class OMD_IDS_HudIcon
 		ImageWidget badge;
 		TextWidget label;
 		TextWidget counter;
-		if (Class.CastTo(image, m_Root.FindWidget("IdsHudIconImage")))
+		if (Class.CastTo(image, m_Root.FindAnyWidget("IdsHudIconImage")))
 		{
 			m_Image = image;
 		}
 
-		if (Class.CastTo(badge, m_Root.FindWidget("IdsHudIconBadge")))
+		if (Class.CastTo(badge, m_Root.FindAnyWidget("IdsHudIconBadge")))
 		{
 			m_Badge = badge;
 		}
 
-		if (Class.CastTo(label, m_Root.FindWidget("IdsHudIconLabel")))
+		if (Class.CastTo(label, m_Root.FindAnyWidget("IdsHudIconLabel")))
 		{
 			m_Label = label;
 		}
 
-		if (Class.CastTo(counter, m_Root.FindWidget("IdsHudIconCounter")))
+		if (Class.CastTo(counter, m_Root.FindAnyWidget("IdsHudIconCounter")))
 		{
 			m_Counter = counter;
 		}
@@ -146,6 +146,7 @@ class OMD_IDS_HudIcon
 		{
 			m_Image.Show(false);
 			ShowPlate();
+			LogShow(entry, imagePath);
 			WarnOnce(entry.groupId, string.Format("[OMD_IDS] no icon file for group '%1'", entry.groupId));
 			return;
 		}
@@ -155,11 +156,22 @@ class OMD_IDS_HudIcon
 		{
 			m_Image.Show(false);
 			ShowPlate();
+			LogShow(entry, imagePath);
+			WarnOnce(imagePath, string.Format("[OMD_IDS] icon did not load: %1", imagePath));
+			return;
+		}
+
+		if (!m_Image.SetImage(0))
+		{
+			m_Image.Show(false);
+			ShowPlate();
+			LogShow(entry, imagePath);
 			WarnOnce(imagePath, string.Format("[OMD_IDS] icon did not load: %1", imagePath));
 			return;
 		}
 
 		m_Image.Show(true);
+		LogShow(entry, imagePath);
 		if (m_Plate)
 		{
 			m_Plate.Show(false);
@@ -218,6 +230,14 @@ class OMD_IDS_HudIcon
 			return;
 		}
 
+		if (!m_Badge.SetImage(0))
+		{
+			m_Badge.Show(false);
+			m_Label.SetText(entry.label);
+			WarnOnce(badgePath, string.Format("[OMD_IDS] wound badge did not load: %1", badgePath));
+			return;
+		}
+
 		m_Badge.Show(true);
 	}
 
@@ -240,6 +260,16 @@ class OMD_IDS_HudIcon
 		}
 
 		m_Counter.SetText(counterText);
+	}
+
+	private void LogShow(OMD_IDS_HudDamageEntry entry, string imagePath)
+	{
+		if (!entry)
+		{
+			return;
+		}
+
+		Print(string.Format("[OMD_IDS] hud show group=%1 icon=%2", entry.groupId, imagePath));
 	}
 
 	private void ShowPlate()
