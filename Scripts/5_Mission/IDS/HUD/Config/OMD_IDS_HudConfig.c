@@ -7,6 +7,24 @@ class OMD_IDS_HudConfig
 	static const string LAYOUT_ROOT = "OMD_IDS_Core/gui/layouts/ids_hud.layout";
 	static const string LAYOUT_ICON = "OMD_IDS_Core/gui/layouts/ids_hud_icon.layout";
 	static const int MIN_ICONS_PER_ROW = 1;
+	static const int DEFAULT_WOUND_A = 255;
+	static const int DEFAULT_WOUND_R = 170;
+	static const int DEFAULT_WOUND_G = 10;
+	static const int DEFAULT_WOUND_B = 10;
+	static const int DEFAULT_BONE_A = 255;
+	static const int DEFAULT_BONE_R = 230;
+	static const int DEFAULT_BONE_G = 190;
+	static const int DEFAULT_BONE_B = 20;
+	// Старый дефолт: пиксели от левого верхнего угла. Если в файле ровно он, пишем новый.
+	static const float LEGACY_POSITION_X = 48;
+	static const float LEGACY_POSITION_Y = 160;
+	// Новый дефолт: доли экрана 0..1, правый нижний угол ряда, если панель статусов не найдена.
+	static const float DEFAULT_POSITION_X = 0.95;
+	static const float DEFAULT_POSITION_Y = 0.82;
+	static const float POSITION_EPSILON = 0.001;
+	static const float FRACTION_LIMIT = 1.001;
+	// Пиксели над верхней кромкой ванильной панели статусов.
+	static const float PANEL_GAP = 8;
 
 	bool activeEnabled;
 	bool debugEnabled;
@@ -29,6 +47,14 @@ class OMD_IDS_HudConfig
 	int colorR;
 	int colorG;
 	int colorB;
+	int woundA;
+	int woundR;
+	int woundG;
+	int woundB;
+	int boneBulletA;
+	int boneBulletR;
+	int boneBulletG;
+	int boneBulletB;
 	int outlineSize;
 	int outlineA;
 	int outlineR;
@@ -78,6 +104,9 @@ class OMD_IDS_HudConfig
 		bool groupAdded = loaded.EnsureOrganWoundGroup();
 		bool organMerged = loaded.MergeSharedOrganGroup();
 		loaded.ApplyMissingBadgeDefaults(rawJson);
+		loaded.ApplyMissingColorDefaults(rawJson);
+		loaded.ApplyMissingPositionDefaults(rawJson);
+		bool positionMigrated = loaded.MigrateLegacyPosition();
 		if (iconsChanged)
 		{
 			Print("[OMD_IDS] hud.json: icon paths switched to atlas ids_icons");
@@ -97,6 +126,12 @@ class OMD_IDS_HudConfig
 		if (organMerged)
 		{
 			rewrite = true;
+		}
+
+		if (positionMigrated)
+		{
+			rewrite = true;
+			Print("[OMD_IDS] hud.json: position moved from the old top-left default");
 		}
 
 		if (rewrite)
@@ -224,8 +259,8 @@ class OMD_IDS_HudConfig
 	{
 		activeEnabled = true;
 		debugEnabled = false;
-		positionX = 48;
-		positionY = 160;
+		positionX = DEFAULT_POSITION_X;
+		positionY = DEFAULT_POSITION_Y;
 		iconSize = 64;
 		iconGap = 8;
 		rowGap = 10;
@@ -243,6 +278,7 @@ class OMD_IDS_HudConfig
 		colorR = 255;
 		colorG = 255;
 		colorB = 255;
+		ApplyColorDefaults();
 		outlineSize = 1;
 		outlineA = 255;
 		outlineR = 0;
@@ -262,6 +298,80 @@ class OMD_IDS_HudConfig
 		badgeOffsetY = 16;
 	}
 
+	private void ApplyColorDefaults()
+	{
+		woundA = DEFAULT_WOUND_A;
+		woundR = DEFAULT_WOUND_R;
+		woundG = DEFAULT_WOUND_G;
+		woundB = DEFAULT_WOUND_B;
+		boneBulletA = DEFAULT_BONE_A;
+		boneBulletR = DEFAULT_BONE_R;
+		boneBulletG = DEFAULT_BONE_G;
+		boneBulletB = DEFAULT_BONE_B;
+	}
+
+	int MarkColor(string label)
+	{
+		if (OMD_IDS_InjuryTypeCatalog.IsWoundMark(label))
+		{
+			return ARGB(woundA, woundR, woundG, woundB);
+		}
+
+		if (OMD_IDS_InjuryTypeCatalog.IsBoneBulletMark(label))
+		{
+			return ARGB(boneBulletA, boneBulletR, boneBulletG, boneBulletB);
+		}
+
+		return ARGB(colorA, colorR, colorG, colorB);
+	}
+
+	static bool IsFraction(float value)
+	{
+		if (value < -POSITION_EPSILON)
+		{
+			return false;
+		}
+
+		if (value > FRACTION_LIMIT)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool IsDefaultPosition()
+	{
+		if (!Near(positionX, DEFAULT_POSITION_X))
+		{
+			return false;
+		}
+
+		if (!Near(positionY, DEFAULT_POSITION_Y))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool MigrateLegacyPosition()
+	{
+		if (!Near(positionX, LEGACY_POSITION_X))
+		{
+			return false;
+		}
+
+		if (!Near(positionY, LEGACY_POSITION_Y))
+		{
+			return false;
+		}
+
+		positionX = DEFAULT_POSITION_X;
+		positionY = DEFAULT_POSITION_Y;
+		return true;
+	}
+
 	void ApplyMissingBadgeDefaults(string rawJson)
 	{
 		if (JsonHasKey(rawJson, "badgeSize"))
@@ -270,6 +380,80 @@ class OMD_IDS_HudConfig
 		}
 
 		ApplyBadgeDefaults();
+	}
+
+	private void ApplyMissingColorDefaults(string rawJson)
+	{
+		if (!JsonHasKey(rawJson, "woundA"))
+		{
+			woundA = DEFAULT_WOUND_A;
+		}
+
+		if (!JsonHasKey(rawJson, "woundR"))
+		{
+			woundR = DEFAULT_WOUND_R;
+		}
+
+		if (!JsonHasKey(rawJson, "woundG"))
+		{
+			woundG = DEFAULT_WOUND_G;
+		}
+
+		if (!JsonHasKey(rawJson, "woundB"))
+		{
+			woundB = DEFAULT_WOUND_B;
+		}
+
+		if (!JsonHasKey(rawJson, "boneBulletA"))
+		{
+			boneBulletA = DEFAULT_BONE_A;
+		}
+
+		if (!JsonHasKey(rawJson, "boneBulletR"))
+		{
+			boneBulletR = DEFAULT_BONE_R;
+		}
+
+		if (!JsonHasKey(rawJson, "boneBulletG"))
+		{
+			boneBulletG = DEFAULT_BONE_G;
+		}
+
+		if (!JsonHasKey(rawJson, "boneBulletB"))
+		{
+			boneBulletB = DEFAULT_BONE_B;
+		}
+	}
+
+	private void ApplyMissingPositionDefaults(string rawJson)
+	{
+		if (!JsonHasKey(rawJson, "positionX"))
+		{
+			positionX = DEFAULT_POSITION_X;
+		}
+
+		if (!JsonHasKey(rawJson, "positionY"))
+		{
+			positionY = DEFAULT_POSITION_Y;
+		}
+	}
+
+	private static bool Near(float value, float expected)
+	{
+		float delta;
+
+		delta = value - expected;
+		if (delta < 0)
+		{
+			delta = -delta;
+		}
+
+		if (delta <= POSITION_EPSILON)
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	private static bool JsonHasKey(string json, string key)

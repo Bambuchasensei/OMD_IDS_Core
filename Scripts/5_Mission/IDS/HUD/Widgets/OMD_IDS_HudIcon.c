@@ -35,7 +35,7 @@ class OMD_IDS_HudIcon
 			return;
 		}
 
-		m_Plate = m_Root.FindWidget("IdsHudIconPlate");
+		m_Plate = m_Root.FindAnyWidget("IdsHudIconPlate");
 		ImageWidget image;
 		ImageWidget badge;
 		TextWidget label;
@@ -88,14 +88,15 @@ class OMD_IDS_HudIcon
 			return;
 		}
 
-		m_Root.SetPos(posX, posY);
+		m_Root.SetScreenPos(posX, posY);
 		m_Root.SetSize(config.iconSize, config.iconSize + config.labelBand);
-		int color = ARGB(config.colorA, config.colorR, config.colorG, config.colorB);
+		int groupColor = ARGB(config.colorA, config.colorR, config.colorG, config.colorB);
+		int markColor = config.MarkColor(entry.label);
 		int outlineColor = ARGB(config.outlineA, config.outlineR, config.outlineG, config.outlineB);
-		ApplyPlate(config, color);
-		ApplyImage(entry, config, color);
-		ApplyLabel(entry, config, color, outlineColor);
-		ApplyCounter(entry, config, color, outlineColor);
+		ApplyPlate(config, groupColor);
+		ApplyImage(entry, config, groupColor);
+		ApplyLabel(entry, config, markColor, outlineColor);
+		ApplyCounter(entry, config, markColor, outlineColor);
 	}
 
 	void Destroy()
@@ -256,10 +257,20 @@ class OMD_IDS_HudIcon
 		string counterText = "";
 		if (entry.count > 1)
 		{
-			counterText = string.Format("x%1", entry.count);
+			counterText = string.Format("%1", entry.count);
 		}
 
 		m_Counter.SetText(counterText);
+	}
+
+	void SetScreenOrigin(float posX, float posY)
+	{
+		if (!m_Root)
+		{
+			return;
+		}
+
+		m_Root.SetScreenPos(posX, posY);
 	}
 
 	private void LogShow(OMD_IDS_HudDamageEntry entry, string imagePath)

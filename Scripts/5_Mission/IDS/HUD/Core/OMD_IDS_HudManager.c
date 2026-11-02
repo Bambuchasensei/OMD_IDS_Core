@@ -39,6 +39,7 @@ class OMD_IDS_HudManager
 
 	void OnUpdate(float timeslice)
 	{
+		RefreshPositions();
 	}
 
 	// Единственный вход списка. Команды отладки тоже идут только сюда.
@@ -203,23 +204,12 @@ class OMD_IDS_HudManager
 			return;
 		}
 
-		int perRow = m_Config.iconsPerRow;
-		if (perRow < OMD_IDS_HudConfig.MIN_ICONS_PER_ROW)
+		if (m_Config.iconsPerRow < OMD_IDS_HudConfig.MIN_ICONS_PER_ROW)
 		{
 			Print("[OMD_IDS] warning: iconsPerRow < 1, using 1");
-			perRow = OMD_IDS_HudConfig.MIN_ICONS_PER_ROW;
 		}
 
-		float stepX = m_Config.iconSize + m_Config.iconGap;
-		float stepY = m_Config.iconSize + m_Config.labelBand + m_Config.rowGap;
-		int slot = 0;
 		int index;
-		int columnIndex;
-		int rowIndex;
-		float columnDistance;
-		float rowDistance;
-		float posX;
-		float posY;
 		if (!m_Icons)
 		{
 			m_Icons = new array<ref OMD_IDS_HudIcon>();
@@ -233,18 +223,261 @@ class OMD_IDS_HudManager
 				continue;
 			}
 
-			columnIndex = slot % perRow;
-			rowIndex = slot / perRow;
-			columnDistance = columnIndex;
-			rowDistance = rowIndex;
-			posX = m_Config.positionX + (columnDistance * stepX);
-			posY = m_Config.positionY + (rowDistance * stepY);
 			OMD_IDS_HudIcon icon = new OMD_IDS_HudIcon();
 			icon.Create(m_Root);
-			icon.Apply(entry, m_Config, posX, posY);
+			icon.Apply(entry, m_Config, 0, 0);
 			m_Icons.Insert(icon);
-			slot = slot + 1;
 		}
+
+		RefreshPositions();
+	}
+
+	private void RefreshPositions()
+	{
+		Widget workspace;
+		Widget panel;
+		float screenW;
+		float screenH;
+		float panelX;
+		float panelY;
+		float panelW;
+		float panelH;
+		float anchorRight;
+		float anchorBottom;
+		float shiftX;
+		float shiftY;
+		float stepX;
+		float stepY;
+		float cellW;
+		float cellH;
+		float columnDistance;
+		float rowDistance;
+		float posX;
+		float posY;
+		float limitX;
+		float limitY;
+		int perRow;
+		int index;
+		int columnIndex;
+		int rowIndex;
+		int mode;
+		bool fraction;
+		bool haveScreen;
+		bool havePanel;
+
+		if (!m_Config)
+		{
+			return;
+		}
+
+		if (!m_Icons)
+		{
+			return;
+		}
+
+		if (m_Icons.Count() == 0)
+		{
+			return;
+		}
+
+		if (m_Config.iconSize <= 0)
+		{
+			return;
+		}
+
+		perRow = m_Config.iconsPerRow;
+		if (perRow < OMD_IDS_HudConfig.MIN_ICONS_PER_ROW)
+		{
+			perRow = OMD_IDS_HudConfig.MIN_ICONS_PER_ROW;
+		}
+
+		fraction = false;
+		if (OMD_IDS_HudConfig.IsFraction(m_Config.positionX))
+		{
+			if (OMD_IDS_HudConfig.IsFraction(m_Config.positionY))
+			{
+				fraction = true;
+			}
+		}
+
+		screenW = 0;
+		screenH = 0;
+		haveScreen = false;
+		workspace = null;
+		if (GetGame())
+		{
+			workspace = GetGame().GetWorkspace();
+		}
+
+		if (workspace)
+		{
+			workspace.GetScreenSize(screenW, screenH);
+			if (screenW > 0)
+			{
+				if (screenH > 0)
+				{
+					haveScreen = true;
+				}
+			}
+		}
+
+		if (fraction)
+		{
+			if (!haveScreen)
+			{
+				return;
+			}
+		}
+
+		panelX = 0;
+		panelY = 0;
+		panelW = 0;
+		panelH = 0;
+		havePanel = false;
+		panel = FindStatusPanel();
+		if (panel)
+		{
+			panel.GetScreenPos(panelX, panelY);
+			panel.GetScreenSize(panelW, panelH);
+			if (panelW > 0)
+			{
+				if (panelH > 0)
+				{
+					havePanel = true;
+				}
+			}
+		}
+
+		mode = 0;
+		if (fraction)
+		{
+			mode = 2;
+			if (havePanel)
+			{
+				mode = 1;
+			}
+		}
+
+		anchorRight = 0;
+		anchorBottom = 0;
+		shiftX = 0;
+		shiftY = 0;
+		if (mode == 1)
+		{
+			if (!m_Config.IsDefaultPosition())
+			{
+				shiftX = (m_Config.positionX - OMD_IDS_HudConfig.DEFAULT_POSITION_X) * screenW;
+				shiftY = (m_Config.positionY - OMD_IDS_HudConfig.DEFAULT_POSITION_Y) * screenH;
+			}
+
+			anchorRight = panelX + panelW + shiftX;
+			anchorBottom = panelY - OMD_IDS_HudConfig.PANEL_GAP + shiftY;
+		}
+
+		if (mode == 2)
+		{
+			anchorRight = m_Config.positionX * screenW;
+			anchorBottom = m_Config.positionY * screenH;
+		}
+
+		stepX = m_Config.iconSize + m_Config.iconGap;
+		stepY = m_Config.iconSize + m_Config.labelBand + m_Config.rowGap;
+		cellW = m_Config.iconSize;
+		cellH = m_Config.iconSize + m_Config.labelBand;
+		for (index = 0; index < m_Icons.Count(); index = index + 1)
+		{
+			OMD_IDS_HudIcon icon = m_Icons.Get(index);
+			if (!icon)
+			{
+				continue;
+			}
+
+			columnIndex = index % perRow;
+			rowIndex = index / perRow;
+			columnDistance = columnIndex;
+			rowDistance = rowIndex;
+			if (mode == 0)
+			{
+				posX = m_Config.positionX + (columnDistance * stepX);
+				posY = m_Config.positionY + (rowDistance * stepY);
+			}
+			else
+			{
+				posX = anchorRight - cellW - (columnDistance * stepX);
+				posY = anchorBottom - cellH - (rowDistance * stepY);
+				if (posX < 0)
+				{
+					posX = 0;
+				}
+
+				if (posY < 0)
+				{
+					posY = 0;
+				}
+
+				limitX = screenW - cellW;
+				limitY = screenH - cellH;
+				if (limitX < 0)
+				{
+					limitX = 0;
+				}
+
+				if (limitY < 0)
+				{
+					limitY = 0;
+				}
+
+				if (posX > limitX)
+				{
+					posX = limitX;
+				}
+
+				if (posY > limitY)
+				{
+					posY = limitY;
+				}
+			}
+
+			icon.SetScreenOrigin(posX, posY);
+		}
+	}
+
+	// Ванильные статусы: вода, еда, температура, кровь, здоровье. Корень — HudPanel.
+	private Widget FindStatusPanel()
+	{
+		MissionGameplay gameplay;
+		Hud hud;
+		IngameHud ingame;
+		Widget hudPanel;
+
+		if (!GetGame())
+		{
+			return null;
+		}
+
+		if (!Class.CastTo(gameplay, GetGame().GetMission()))
+		{
+			return null;
+		}
+
+		hud = gameplay.GetHud();
+		if (!hud)
+		{
+			return null;
+		}
+
+		if (!Class.CastTo(ingame, hud))
+		{
+			return null;
+		}
+
+		hudPanel = ingame.GetHudPanelWidget();
+		if (!hudPanel)
+		{
+			return null;
+		}
+
+		return hudPanel.FindAnyWidget("NotifiersPanel");
 	}
 
 	private void ClearIcons()

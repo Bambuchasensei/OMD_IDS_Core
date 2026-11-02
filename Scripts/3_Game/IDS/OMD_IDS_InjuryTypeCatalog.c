@@ -171,6 +171,66 @@ class OMD_IDS_InjuryTypeCatalog
 		return false;
 	}
 
+	static bool IsWoundMark(string label)
+	{
+		if (label == LABEL_SCRATCH)
+		{
+			return true;
+		}
+
+		if (label == LABEL_LIGHT)
+		{
+			return true;
+		}
+
+		if (label == LABEL_DEEP)
+		{
+			return true;
+		}
+
+		if (label == LABEL_BIG)
+		{
+			return true;
+		}
+
+		if (label == LABEL_ARTERIAL)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	static bool IsBoneBulletMark(string label)
+	{
+		if (label == LABEL_BULLET)
+		{
+			return true;
+		}
+
+		if (label == LABEL_BONE_BRUISE)
+		{
+			return true;
+		}
+
+		if (label == LABEL_BONE_STRESS)
+		{
+			return true;
+		}
+
+		if (label == LABEL_BONE_CLOSED)
+		{
+			return true;
+		}
+
+		if (label == LABEL_BONE_OPEN)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 	static string BadgePath(string label)
 	{
 		return "set:ids_icons image:" + label;
