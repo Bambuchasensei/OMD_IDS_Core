@@ -19,7 +19,6 @@ modded class MissionGameplay
 			return;
 		}
 
-		manager.OnUpdate(timeslice);
 		RequestSnapshotOnce();
 		OMD_IDS_InjuryMailbox mailbox = OMD_IDS_InjuryMailbox.Get();
 		if (!mailbox)

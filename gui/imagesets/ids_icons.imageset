@@ -134,5 +134,11 @@ ImageSetClass {
    Size 64 64
    Flags 0
   }
+  ImageSetDefClass wound_arterial {
+   Name "wound_arterial"
+   Pos 2 206
+   Size 64 64
+   Flags 0
+  }
  }
 }

@@ -8,9 +8,9 @@ class OMD_IDS_HudConfig
 	static const string LAYOUT_ICON = "OMD_IDS_Core/gui/layouts/ids_hud_icon.layout";
 	static const int MIN_ICONS_PER_ROW = 1;
 	static const int DEFAULT_WOUND_A = 255;
-	static const int DEFAULT_WOUND_R = 170;
-	static const int DEFAULT_WOUND_G = 10;
-	static const int DEFAULT_WOUND_B = 10;
+	static const int DEFAULT_WOUND_R = 220;
+	static const int DEFAULT_WOUND_G = 20;
+	static const int DEFAULT_WOUND_B = 20;
 	static const int DEFAULT_BONE_A = 255;
 	static const int DEFAULT_BONE_R = 230;
 	static const int DEFAULT_BONE_G = 190;
@@ -18,13 +18,10 @@ class OMD_IDS_HudConfig
 	// Старый дефолт: пиксели от левого верхнего угла. Если в файле ровно он, пишем новый.
 	static const float LEGACY_POSITION_X = 48;
 	static const float LEGACY_POSITION_Y = 160;
-	// Новый дефолт: доли экрана 0..1, правый нижний угол ряда, если панель статусов не найдена.
+	// Поля остаются в json, миграция тоже. На экран не влияют: ряд собирает WrapSpacer.
 	static const float DEFAULT_POSITION_X = 0.95;
 	static const float DEFAULT_POSITION_Y = 0.82;
 	static const float POSITION_EPSILON = 0.001;
-	static const float FRACTION_LIMIT = 1.001;
-	// Пиксели над верхней кромкой ванильной панели статусов.
-	static const float PANEL_GAP = 8;
 
 	bool activeEnabled;
 	bool debugEnabled;
@@ -107,6 +104,7 @@ class OMD_IDS_HudConfig
 		loaded.ApplyMissingColorDefaults(rawJson);
 		loaded.ApplyMissingPositionDefaults(rawJson);
 		bool positionMigrated = loaded.MigrateLegacyPosition();
+		bool metricsMigrated = loaded.MigrateLegacyBadgeMetrics();
 		if (iconsChanged)
 		{
 			Print("[OMD_IDS] hud.json: icon paths switched to atlas ids_icons");
@@ -132,6 +130,12 @@ class OMD_IDS_HudConfig
 		{
 			rewrite = true;
 			Print("[OMD_IDS] hud.json: position moved from the old top-left default");
+		}
+
+		if (metricsMigrated)
+		{
+			rewrite = true;
+			Print("[OMD_IDS] hud.json: badge metrics moved to the 35px row");
 		}
 
 		if (rewrite)
@@ -261,23 +265,23 @@ class OMD_IDS_HudConfig
 		debugEnabled = false;
 		positionX = DEFAULT_POSITION_X;
 		positionY = DEFAULT_POSITION_Y;
-		iconSize = 64;
+		iconSize = 35;
 		iconGap = 8;
 		rowGap = 10;
 		iconsPerRow = 8;
-		labelBand = 18;
+		labelBand = 0;
 		labelOffsetX = 0;
 		labelOffsetY = 0;
 		labelTextSize = 14;
-		counterOffsetX = 36;
-		counterOffsetY = 0;
-		counterWidth = 28;
-		counterHeight = 20;
-		counterTextSize = 18;
+		counterOffsetX = 17;
+		counterOffsetY = 1;
+		counterWidth = 18;
+		counterHeight = 15;
+		counterTextSize = 14;
 		colorA = 255;
-		colorR = 255;
-		colorG = 255;
-		colorB = 255;
+		colorR = 220;
+		colorG = 220;
+		colorB = 220;
 		ApplyColorDefaults();
 		outlineSize = 1;
 		outlineA = 255;
@@ -293,9 +297,9 @@ class OMD_IDS_HudConfig
 
 	private void ApplyBadgeDefaults()
 	{
-		badgeSize = 32;
-		badgeOffsetX = 16;
-		badgeOffsetY = 16;
+		badgeSize = 18;
+		badgeOffsetX = 17;
+		badgeOffsetY = 17;
 	}
 
 	private void ApplyColorDefaults()
@@ -325,34 +329,68 @@ class OMD_IDS_HudConfig
 		return ARGB(colorA, colorR, colorG, colorB);
 	}
 
-	static bool IsFraction(float value)
+	bool MigrateLegacyBadgeMetrics()
 	{
-		if (value < -POSITION_EPSILON)
+		bool changed;
+
+		changed = false;
+		if (Near(iconSize, 64))
 		{
-			return false;
+			iconSize = 35;
+			changed = true;
 		}
 
-		if (value > FRACTION_LIMIT)
+		if (Near(badgeSize, 32))
 		{
-			return false;
+			if (Near(badgeOffsetX, 16))
+			{
+				if (Near(badgeOffsetY, 16))
+				{
+					badgeSize = 18;
+					badgeOffsetX = 17;
+					badgeOffsetY = 17;
+					changed = true;
+				}
+			}
 		}
 
-		return true;
-	}
-
-	bool IsDefaultPosition()
-	{
-		if (!Near(positionX, DEFAULT_POSITION_X))
+		if (Near(counterOffsetX, 36))
 		{
-			return false;
+			if (Near(counterOffsetY, 0))
+			{
+				if (Near(counterWidth, 28))
+				{
+					if (Near(counterHeight, 20))
+					{
+						counterOffsetX = 17;
+						counterOffsetY = 1;
+						counterWidth = 18;
+						counterHeight = 15;
+						counterTextSize = 14;
+						changed = true;
+					}
+				}
+			}
 		}
 
-		if (!Near(positionY, DEFAULT_POSITION_Y))
+		if (colorA == 255)
 		{
-			return false;
+			if (colorR == 255)
+			{
+				if (colorG == 255)
+				{
+					if (colorB == 255)
+					{
+						colorR = 220;
+						colorG = 220;
+						colorB = 220;
+						changed = true;
+					}
+				}
+			}
 		}
 
-		return true;
+		return changed;
 	}
 
 	bool MigrateLegacyPosition()

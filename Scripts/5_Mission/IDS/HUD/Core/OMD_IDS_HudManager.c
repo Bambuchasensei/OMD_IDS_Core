@@ -8,7 +8,10 @@ class OMD_IDS_HudManager
 	private ref OMD_IDS_HudGroupMap m_Map;
 	private ref array<ref OMD_IDS_HudDamageEntry> m_Entries;
 	private ref array<ref OMD_IDS_HudIcon> m_Icons;
-	private Widget m_Root;
+	private Widget m_BadgesPanel;
+	private bool m_PanelRetry;
+	private bool m_ReportedPlace;
+	private bool m_ReportedMissingPanel;
 
 	static void Create()
 	{
@@ -35,11 +38,6 @@ class OMD_IDS_HudManager
 	static OMD_IDS_HudManager Get()
 	{
 		return s_Instance;
-	}
-
-	void OnUpdate(float timeslice)
-	{
-		RefreshPositions();
 	}
 
 	// Единственный вход списка. Команды отладки тоже идут только сюда.
@@ -134,19 +132,16 @@ class OMD_IDS_HudManager
 		m_Map.WarnIfZoneCountWrong();
 		m_Entries = new array<ref OMD_IDS_HudDamageEntry>();
 		m_Icons = new array<ref OMD_IDS_HudIcon>();
-		CreateRoot();
+		m_ReportedPlace = false;
+		m_ReportedMissingPanel = false;
 		Rebuild();
 	}
 
 	private void Shutdown()
 	{
+		CancelPanelRetry();
 		ClearIcons();
-		if (m_Root)
-		{
-			m_Root.Unlink();
-			m_Root = null;
-		}
-
+		m_BadgesPanel = null;
 		OMD_IDS_HudIcon.ResetWarnings();
 		m_Entries = null;
 		m_Config = null;
@@ -154,33 +149,9 @@ class OMD_IDS_HudManager
 		m_Icons = null;
 	}
 
-	private void CreateRoot()
-	{
-		if (!GetGame())
-		{
-			return;
-		}
-
-		if (!GetGame().GetWorkspace())
-		{
-			return;
-		}
-
-		m_Root = GetGame().GetWorkspace().CreateWidgets(OMD_IDS_HudConfig.LAYOUT_ROOT);
-		if (!m_Root)
-		{
-			Print("[OMD_IDS] failed to create ids_hud.layout");
-		}
-	}
-
 	private void Rebuild()
 	{
 		ClearIcons();
-		if (!m_Root)
-		{
-			return;
-		}
-
 		if (!m_Config)
 		{
 			return;
@@ -188,12 +159,15 @@ class OMD_IDS_HudManager
 
 		if (!m_Config.activeEnabled)
 		{
-			m_Root.Show(false);
 			return;
 		}
 
-		m_Root.Show(true);
 		if (!m_Entries)
+		{
+			return;
+		}
+
+		if (m_Entries.Count() == 0)
 		{
 			return;
 		}
@@ -204,17 +178,19 @@ class OMD_IDS_HudManager
 			return;
 		}
 
-		if (m_Config.iconsPerRow < OMD_IDS_HudConfig.MIN_ICONS_PER_ROW)
+		m_BadgesPanel = FindBadgesPanel();
+		if (!m_BadgesPanel)
 		{
-			Print("[OMD_IDS] warning: iconsPerRow < 1, using 1");
+			SchedulePanelRetry();
+			return;
 		}
 
-		int index;
 		if (!m_Icons)
 		{
 			m_Icons = new array<ref OMD_IDS_HudIcon>();
 		}
 
+		int index;
 		for (index = 0; index < m_Entries.Count(); index = index + 1)
 		{
 			OMD_IDS_HudDamageEntry entry = m_Entries.Get(index);
@@ -224,226 +200,61 @@ class OMD_IDS_HudManager
 			}
 
 			OMD_IDS_HudIcon icon = new OMD_IDS_HudIcon();
-			icon.Create(m_Root);
-			icon.Apply(entry, m_Config, 0, 0);
+			icon.Create();
+			icon.Apply(entry, m_Config);
 			m_Icons.Insert(icon);
 		}
 
-		RefreshPositions();
+		PlaceRow();
+		m_BadgesPanel.Update();
 	}
 
-	private void RefreshPositions()
+	private void SchedulePanelRetry()
 	{
-		Widget workspace;
-		Widget panel;
-		float screenW;
-		float screenH;
-		float panelX;
-		float panelY;
-		float panelW;
-		float panelH;
-		float anchorRight;
-		float anchorBottom;
-		float shiftX;
-		float shiftY;
-		float stepX;
-		float stepY;
-		float cellW;
-		float cellH;
-		float columnDistance;
-		float rowDistance;
-		float posX;
-		float posY;
-		float limitX;
-		float limitY;
-		int perRow;
-		int index;
-		int columnIndex;
-		int rowIndex;
-		int mode;
-		bool fraction;
-		bool haveScreen;
-		bool havePanel;
+		if (m_PanelRetry)
+		{
+			return;
+		}
 
+		if (!GetGame())
+		{
+			return;
+		}
+
+		if (!m_ReportedMissingPanel)
+		{
+			m_ReportedMissingPanel = true;
+			Print("[OMD_IDS] BadgesPanel is not ready, retrying");
+		}
+
+		m_PanelRetry = true;
+		GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(RetryBadgesPanel, 100, false);
+	}
+
+	private void CancelPanelRetry()
+	{
+		m_PanelRetry = false;
+		if (!GetGame())
+		{
+			return;
+		}
+
+		GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).Remove(RetryBadgesPanel);
+	}
+
+	private void RetryBadgesPanel()
+	{
+		m_PanelRetry = false;
 		if (!m_Config)
 		{
 			return;
 		}
 
-		if (!m_Icons)
-		{
-			return;
-		}
-
-		if (m_Icons.Count() == 0)
-		{
-			return;
-		}
-
-		if (m_Config.iconSize <= 0)
-		{
-			return;
-		}
-
-		perRow = m_Config.iconsPerRow;
-		if (perRow < OMD_IDS_HudConfig.MIN_ICONS_PER_ROW)
-		{
-			perRow = OMD_IDS_HudConfig.MIN_ICONS_PER_ROW;
-		}
-
-		fraction = false;
-		if (OMD_IDS_HudConfig.IsFraction(m_Config.positionX))
-		{
-			if (OMD_IDS_HudConfig.IsFraction(m_Config.positionY))
-			{
-				fraction = true;
-			}
-		}
-
-		screenW = 0;
-		screenH = 0;
-		haveScreen = false;
-		workspace = null;
-		if (GetGame())
-		{
-			workspace = GetGame().GetWorkspace();
-		}
-
-		if (workspace)
-		{
-			workspace.GetScreenSize(screenW, screenH);
-			if (screenW > 0)
-			{
-				if (screenH > 0)
-				{
-					haveScreen = true;
-				}
-			}
-		}
-
-		if (fraction)
-		{
-			if (!haveScreen)
-			{
-				return;
-			}
-		}
-
-		panelX = 0;
-		panelY = 0;
-		panelW = 0;
-		panelH = 0;
-		havePanel = false;
-		panel = FindStatusPanel();
-		if (panel)
-		{
-			panel.GetScreenPos(panelX, panelY);
-			panel.GetScreenSize(panelW, panelH);
-			if (panelW > 0)
-			{
-				if (panelH > 0)
-				{
-					havePanel = true;
-				}
-			}
-		}
-
-		mode = 0;
-		if (fraction)
-		{
-			mode = 2;
-			if (havePanel)
-			{
-				mode = 1;
-			}
-		}
-
-		anchorRight = 0;
-		anchorBottom = 0;
-		shiftX = 0;
-		shiftY = 0;
-		if (mode == 1)
-		{
-			if (!m_Config.IsDefaultPosition())
-			{
-				shiftX = (m_Config.positionX - OMD_IDS_HudConfig.DEFAULT_POSITION_X) * screenW;
-				shiftY = (m_Config.positionY - OMD_IDS_HudConfig.DEFAULT_POSITION_Y) * screenH;
-			}
-
-			anchorRight = panelX + panelW + shiftX;
-			anchorBottom = panelY - OMD_IDS_HudConfig.PANEL_GAP + shiftY;
-		}
-
-		if (mode == 2)
-		{
-			anchorRight = m_Config.positionX * screenW;
-			anchorBottom = m_Config.positionY * screenH;
-		}
-
-		stepX = m_Config.iconSize + m_Config.iconGap;
-		stepY = m_Config.iconSize + m_Config.labelBand + m_Config.rowGap;
-		cellW = m_Config.iconSize;
-		cellH = m_Config.iconSize + m_Config.labelBand;
-		for (index = 0; index < m_Icons.Count(); index = index + 1)
-		{
-			OMD_IDS_HudIcon icon = m_Icons.Get(index);
-			if (!icon)
-			{
-				continue;
-			}
-
-			columnIndex = index % perRow;
-			rowIndex = index / perRow;
-			columnDistance = columnIndex;
-			rowDistance = rowIndex;
-			if (mode == 0)
-			{
-				posX = m_Config.positionX + (columnDistance * stepX);
-				posY = m_Config.positionY + (rowDistance * stepY);
-			}
-			else
-			{
-				posX = anchorRight - cellW - (columnDistance * stepX);
-				posY = anchorBottom - cellH - (rowDistance * stepY);
-				if (posX < 0)
-				{
-					posX = 0;
-				}
-
-				if (posY < 0)
-				{
-					posY = 0;
-				}
-
-				limitX = screenW - cellW;
-				limitY = screenH - cellH;
-				if (limitX < 0)
-				{
-					limitX = 0;
-				}
-
-				if (limitY < 0)
-				{
-					limitY = 0;
-				}
-
-				if (posX > limitX)
-				{
-					posX = limitX;
-				}
-
-				if (posY > limitY)
-				{
-					posY = limitY;
-				}
-			}
-
-			icon.SetScreenOrigin(posX, posY);
-		}
+		Rebuild();
 	}
 
-	// Ванильные статусы: вода, еда, температура, кровь, здоровье. Корень — HudPanel.
-	private Widget FindStatusPanel()
+	// Ванильный ряд значков. Корень — HudPanel, панель — WrapSpacer BadgesPanel.
+	private Widget FindBadgesPanel()
 	{
 		MissionGameplay gameplay;
 		Hud hud;
@@ -477,7 +288,188 @@ class OMD_IDS_HudManager
 			return null;
 		}
 
-		return hudPanel.FindAnyWidget("NotifiersPanel");
+		return hudPanel.FindAnyWidget("BadgesPanel");
+	}
+
+	// Поток WrapSpacer идёт слева направо. AddChild дописывает в конец и оказывается правее крови.
+	// AddChildAfter ставит наш значок сразу перед Bleeding, поэтому ряд остаётся слева от него.
+	private void PlaceRow()
+	{
+		WrapSpacerWidget spacer;
+		Widget bleeding;
+		Widget anchor;
+		Widget iconRoot;
+		int index;
+		bool placed;
+
+		if (!m_BadgesPanel)
+		{
+			return;
+		}
+
+		if (!m_Icons)
+		{
+			return;
+		}
+
+		if (!Class.CastTo(spacer, m_BadgesPanel))
+		{
+			for (index = 0; index < m_Icons.Count(); index = index + 1)
+			{
+				if (!m_Icons.Get(index))
+				{
+					continue;
+				}
+
+				iconRoot = m_Icons.Get(index).GetRoot();
+				DetachWidget(iconRoot);
+				if (!iconRoot)
+				{
+					continue;
+				}
+
+				m_BadgesPanel.AddChild(iconRoot);
+			}
+
+			return;
+		}
+
+		bleeding = m_BadgesPanel.FindAnyWidget("Bleeding");
+		anchor = FindChildBefore(m_BadgesPanel, bleeding);
+		placed = false;
+		for (index = 0; index < m_Icons.Count(); index = index + 1)
+		{
+			if (!m_Icons.Get(index))
+			{
+				continue;
+			}
+
+			iconRoot = m_Icons.Get(index).GetRoot();
+			if (!iconRoot)
+			{
+				continue;
+			}
+
+			DetachWidget(iconRoot);
+			if (anchor)
+			{
+				spacer.AddChildAfter(iconRoot, anchor);
+				anchor = iconRoot;
+				placed = true;
+				continue;
+			}
+
+			InsertAtFront(m_BadgesPanel, iconRoot);
+			anchor = iconRoot;
+			placed = true;
+		}
+
+		if (!placed)
+		{
+			return;
+		}
+
+		if (m_ReportedPlace)
+		{
+			return;
+		}
+
+		m_ReportedPlace = true;
+		if (bleeding)
+		{
+			Print("[OMD_IDS] hud row uses AddChildAfter, left of Bleeding");
+			return;
+		}
+
+		Print("[OMD_IDS] hud row uses InsertAtFront, Bleeding widget was missing");
+	}
+
+	private Widget FindChildBefore(Widget panel, Widget target)
+	{
+		Widget child;
+		Widget previous;
+
+		if (!panel)
+		{
+			return null;
+		}
+
+		if (!target)
+		{
+			return null;
+		}
+
+		previous = null;
+		child = panel.GetChildren();
+		while (child)
+		{
+			if (child == target)
+			{
+				return previous;
+			}
+
+			previous = child;
+			child = child.GetSibling();
+		}
+
+		return null;
+	}
+
+	private void InsertAtFront(Widget panel, Widget iconRoot)
+	{
+		array<Widget> existing;
+		Widget child;
+		Widget next;
+		int index;
+
+		if (!panel)
+		{
+			return;
+		}
+
+		if (!iconRoot)
+		{
+			return;
+		}
+
+		DetachWidget(iconRoot);
+		existing = new array<Widget>();
+		child = panel.GetChildren();
+		while (child)
+		{
+			next = child.GetSibling();
+			existing.Insert(child);
+			child = next;
+		}
+
+		for (index = 0; index < existing.Count(); index = index + 1)
+		{
+			panel.RemoveChild(existing.Get(index));
+		}
+
+		panel.AddChild(iconRoot);
+		for (index = 0; index < existing.Count(); index = index + 1)
+		{
+			panel.AddChild(existing.Get(index));
+		}
+	}
+
+	private void DetachWidget(Widget iconRoot)
+	{
+		Widget holder;
+
+		if (!iconRoot)
+		{
+			return;
+		}
+
+		holder = iconRoot.GetParent();
+		if (!holder)
+		{
+			return;
+		}
+
+		holder.RemoveChild(iconRoot);
 	}
 
 	private void ClearIcons()

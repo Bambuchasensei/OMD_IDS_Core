@@ -1,93 +1,88 @@
 FrameWidgetClass IdsHudIcon {
  ignorepointer 1
+ visible 1
+ clipchildren 0
  position 0 0
- size 64 82
+ size 35 35
+ halign right_ref
+ valign bottom_ref
  hexactpos 1
  vexactpos 1
  hexactsize 1
  vexactsize 1
- halign left_ref
- valign top_ref
- priority 50
- visible 1
- clipchildren 0
+ fixaspect fixwidth
  {
- PanelWidgetClass IdsHudIconPlate {
-  ignorepointer 1
-  visible 0
-  position 0 0
-  size 64 64
-  hexactpos 1
-  vexactpos 1
-  hexactsize 1
-  vexactsize 1
-  color 1 1 1 1
- }
-
- ImageWidgetClass IdsHudIconImage {
-  ignorepointer 1
-  position 0 0
-  size 64 64
-  hexactpos 1
-  vexactpos 1
-  hexactsize 1
-  vexactsize 1
-  visible 1
-  inheritalpha 1
-  color 1 1 1 1
-  mode blend
-  "src alpha" 1
-  image0 ""
- }
-
- ImageWidgetClass IdsHudIconBadge {
-  ignorepointer 1
-  position 16 16
-  size 32 32
-  hexactpos 1
-  vexactpos 1
-  hexactsize 1
-  vexactsize 1
-  visible 0
-  inheritalpha 1
-  color 1 1 1 1
-  mode blend
-  "src alpha" 1
-  image0 ""
- }
-
- TextWidgetClass IdsHudIconLabel {
-  ignorepointer 1
-  position 0 64
-  size 64 18
-  hexactpos 1
-  vexactpos 1
-  hexactsize 1
-  vexactsize 1
-  visible 1
-  text ""
-  font "gui/fonts/sdf_MetronLight24"
-  "exact text" 1
-  "exact text size" 14
-  "text halign" center
-  "text valign" center
- }
-
- TextWidgetClass IdsHudIconCounter {
-  ignorepointer 1
-  position 36 0
-  size 28 20
-  hexactpos 1
-  vexactpos 1
-  hexactsize 1
-  vexactsize 1
-  visible 1
-  text ""
-  font "gui/fonts/sdf_MetronLight24"
-  "exact text" 1
-  "exact text size" 18
-  "text halign" left
-  "text valign" center
- }
+  PanelWidgetClass IdsHudIconPlate {
+   ignorepointer 1
+   visible 0
+   position 0 0
+   size 35 35
+   hexactpos 1
+   vexactpos 1
+   hexactsize 1
+   vexactsize 1
+   color 0.8627 0.8627 0.8627 1
+  }
+  ImageWidgetClass IdsHudIconImage {
+   ignorepointer 1
+   position 0 0
+   size 35 35
+   hexactpos 1
+   vexactpos 1
+   hexactsize 1
+   vexactsize 1
+   visible 1
+   inheritalpha 1
+   color 0.8627 0.8627 0.8627 1
+   mode blend
+   "src alpha" 1
+   image0 ""
+  }
+  ImageWidgetClass IdsHudIconBadgeShadow {
+   ignorepointer 1
+   position 18 18
+   size 18 18
+   hexactpos 1
+   vexactpos 1
+   hexactsize 1
+   vexactsize 1
+   visible 0
+   inheritalpha 1
+   color 0 0 0 1
+   mode blend
+   "src alpha" 1
+   image0 ""
+  }
+  ImageWidgetClass IdsHudIconBadge {
+   ignorepointer 1
+   position 17 17
+   size 18 18
+   hexactpos 1
+   vexactpos 1
+   hexactsize 1
+   vexactsize 1
+   visible 0
+   inheritalpha 1
+   color 0.8627 0.0784 0.0784 1
+   mode blend
+   "src alpha" 1
+   image0 ""
+  }
+  TextWidgetClass IdsHudIconCounter {
+   ignorepointer 1
+   position 17 1
+   size 18 15
+   hexactpos 1
+   vexactpos 1
+   hexactsize 1
+   vexactsize 1
+   visible 0
+   text ""
+   font "gui/fonts/sdf_MetronLight24"
+   "exact text" 1
+   "exact text size" 14
+   "text halign" right
+   "text valign" bottom
+  }
  }
 }

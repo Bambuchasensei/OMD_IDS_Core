@@ -148,6 +148,11 @@ class OMD_IDS_InjuryTypeCatalog
 			return true;
 		}
 
+		if (label == LABEL_ARTERIAL)
+		{
+			return true;
+		}
+
 		if (label == LABEL_BONE_BRUISE)
 		{
 			return true;
@@ -233,6 +238,11 @@ class OMD_IDS_InjuryTypeCatalog
 
 	static string BadgePath(string label)
 	{
+		if (label == LABEL_ARTERIAL)
+		{
+			return "set:ids_icons image:wound_arterial";
+		}
+
 		return "set:ids_icons image:" + label;
 	}
 

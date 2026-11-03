@@ -72,6 +72,72 @@ class OMD_IDS_ZoneCatalog
 		return s_Groups.Get(zoneId);
 	}
 
+	// Silhouette for the HUD snapshot. GetGroupId is unchanged, including GroupId.BONE.
+	static int GetHudGroupId(int zoneId)
+	{
+		if (zoneId == OMD_IDS_ZoneId.LEFT_UPPER_ARM_BONE)
+		{
+			return OMD_IDS_GroupId.ARM;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_UPPER_ARM_BONE)
+		{
+			return OMD_IDS_GroupId.ARM;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_LOWER_ARM_BONE)
+		{
+			return OMD_IDS_GroupId.ARM;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_LOWER_ARM_BONE)
+		{
+			return OMD_IDS_GroupId.ARM;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_UPPER_LEG_BONE)
+		{
+			return OMD_IDS_GroupId.LEG;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_UPPER_LEG_BONE)
+		{
+			return OMD_IDS_GroupId.LEG;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_LOWER_LEG_BONE)
+		{
+			return OMD_IDS_GroupId.LEG;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_LOWER_LEG_BONE)
+		{
+			return OMD_IDS_GroupId.LEG;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_HAND)
+		{
+			return OMD_IDS_GroupId.HAND;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_HAND)
+		{
+			return OMD_IDS_GroupId.HAND;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_FOOT)
+		{
+			return OMD_IDS_GroupId.FOOT;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_FOOT)
+		{
+			return OMD_IDS_GroupId.FOOT;
+		}
+
+		return GetGroupId(zoneId);
+	}
+
 	private static void Ensure()
 	{
 		if (s_Names)
