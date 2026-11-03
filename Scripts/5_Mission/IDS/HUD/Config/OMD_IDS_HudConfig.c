@@ -278,7 +278,7 @@ class OMD_IDS_HudConfig
 		labelOffsetY = 0;
 		labelTextSize = 14;
 		counterOffsetX = 44;
-		counterOffsetY = 0;
+		counterOffsetY = 16;
 		counterWidth = 12;
 		counterHeight = 15;
 		counterTextSize = 14;
@@ -304,7 +304,7 @@ class OMD_IDS_HudConfig
 	{
 		badgeSize = 24;
 		badgeOffsetX = 19;
-		badgeOffsetY = -2;
+		badgeOffsetY = 18;
 	}
 
 	private void ApplyColorDefaults()
@@ -375,7 +375,7 @@ class OMD_IDS_HudConfig
 				{
 					badgeSize = 24;
 					badgeOffsetX = 19;
-					badgeOffsetY = -2;
+					badgeOffsetY = 18;
 					changed = true;
 				}
 				else
@@ -388,6 +388,18 @@ class OMD_IDS_HudConfig
 			{
 				badgeSize = 24;
 				changed = true;
+			}
+		}
+
+		if (Near(badgeSize, 24))
+		{
+			if (Near(badgeOffsetX, 19))
+			{
+				if (Near(badgeOffsetY, -2))
+				{
+					badgeOffsetY = 18;
+					changed = true;
+				}
 			}
 		}
 
@@ -419,11 +431,26 @@ class OMD_IDS_HudConfig
 					if (Near(counterHeight, 15))
 					{
 						counterOffsetX = 44;
-						counterOffsetY = 0;
+						counterOffsetY = 16;
 						counterWidth = 12;
 						counterHeight = 15;
 						changed = true;
 						counterMigrated = true;
+					}
+				}
+			}
+		}
+
+		if (Near(counterOffsetX, 44))
+		{
+			if (Near(counterOffsetY, 0))
+			{
+				if (Near(counterWidth, 12))
+				{
+					if (Near(counterHeight, 15))
+					{
+						counterOffsetY = 16;
+						changed = true;
 					}
 				}
 			}
