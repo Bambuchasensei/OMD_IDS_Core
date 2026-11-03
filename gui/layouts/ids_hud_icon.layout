@@ -3,7 +3,7 @@ FrameWidgetClass IdsHudIcon {
  visible 1
  clipchildren 0
  position 0 0
- size 35 35
+ size 52 40
  halign right_ref
  valign bottom_ref
  hexactpos 1
@@ -16,7 +16,7 @@ FrameWidgetClass IdsHudIcon {
    ignorepointer 1
    visible 0
    position 0 0
-   size 35 35
+   size 40 40
    hexactpos 1
    vexactpos 1
    hexactsize 1
@@ -26,7 +26,7 @@ FrameWidgetClass IdsHudIcon {
   ImageWidgetClass IdsHudIconImage {
    ignorepointer 1
    position 0 0
-   size 35 35
+   size 40 40
    hexactpos 1
    vexactpos 1
    hexactsize 1
@@ -40,8 +40,8 @@ FrameWidgetClass IdsHudIcon {
   }
   ImageWidgetClass IdsHudIconBadgeShadow {
    ignorepointer 1
-   position 18 18
-   size 18 18
+   position 21 20
+   size 24 24
    hexactpos 1
    vexactpos 1
    hexactsize 1
@@ -55,8 +55,8 @@ FrameWidgetClass IdsHudIcon {
   }
   ImageWidgetClass IdsHudIconBadge {
    ignorepointer 1
-   position 17 17
-   size 18 18
+   position 19 18
+   size 24 24
    hexactpos 1
    vexactpos 1
    hexactsize 1
@@ -70,8 +70,8 @@ FrameWidgetClass IdsHudIcon {
   }
   TextWidgetClass IdsHudIconCounter {
    ignorepointer 1
-   position 17 1
-   size 18 15
+   position 44 16
+   size 12 15
    hexactpos 1
    vexactpos 1
    hexactsize 1
@@ -81,8 +81,8 @@ FrameWidgetClass IdsHudIcon {
    font "gui/fonts/sdf_MetronLight24"
    "exact text" 1
    "exact text size" 14
-   "text halign" right
-   "text valign" bottom
+   "text halign" left
+   "text valign" top
   }
  }
 }

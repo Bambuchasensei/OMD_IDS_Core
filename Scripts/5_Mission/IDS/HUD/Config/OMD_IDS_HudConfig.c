@@ -28,6 +28,7 @@ class OMD_IDS_HudConfig
 	float positionX;
 	float positionY;
 	float iconSize;
+	float slotExtraWidth;
 	float iconGap;
 	float rowGap;
 	int iconsPerRow;
@@ -60,6 +61,7 @@ class OMD_IDS_HudConfig
 	float badgeSize;
 	float badgeOffsetX;
 	float badgeOffsetY;
+	float badgeShadowOffset;
 	ref array<ref OMD_IDS_HudZoneLink> zones;
 	ref array<ref OMD_IDS_HudGroupIcon> groups;
 
@@ -103,6 +105,7 @@ class OMD_IDS_HudConfig
 		loaded.ApplyMissingBadgeDefaults(rawJson);
 		loaded.ApplyMissingColorDefaults(rawJson);
 		loaded.ApplyMissingPositionDefaults(rawJson);
+		loaded.ApplyMissingLayoutDefaults(rawJson);
 		bool positionMigrated = loaded.MigrateLegacyPosition();
 		bool metricsMigrated = loaded.MigrateLegacyBadgeMetrics();
 		if (iconsChanged)
@@ -135,7 +138,7 @@ class OMD_IDS_HudConfig
 		if (metricsMigrated)
 		{
 			rewrite = true;
-			Print("[OMD_IDS] hud.json: badge metrics moved to the 35px row");
+			Print("[OMD_IDS] hud.json: badge metrics moved to the 40px row and the counter column");
 		}
 
 		if (rewrite)
@@ -265,7 +268,8 @@ class OMD_IDS_HudConfig
 		debugEnabled = false;
 		positionX = DEFAULT_POSITION_X;
 		positionY = DEFAULT_POSITION_Y;
-		iconSize = 35;
+		iconSize = 40;
+		slotExtraWidth = 12;
 		iconGap = 8;
 		rowGap = 10;
 		iconsPerRow = 8;
@@ -273,9 +277,9 @@ class OMD_IDS_HudConfig
 		labelOffsetX = 0;
 		labelOffsetY = 0;
 		labelTextSize = 14;
-		counterOffsetX = 17;
-		counterOffsetY = 1;
-		counterWidth = 18;
+		counterOffsetX = 44;
+		counterOffsetY = 16;
+		counterWidth = 12;
 		counterHeight = 15;
 		counterTextSize = 14;
 		colorA = 255;
@@ -283,12 +287,13 @@ class OMD_IDS_HudConfig
 		colorG = 220;
 		colorB = 220;
 		ApplyColorDefaults();
-		outlineSize = 1;
+		outlineSize = 2;
 		outlineA = 255;
 		outlineR = 0;
 		outlineG = 0;
 		outlineB = 0;
 		ApplyBadgeDefaults();
+		badgeShadowOffset = 2;
 		zones = new array<ref OMD_IDS_HudZoneLink>();
 		groups = new array<ref OMD_IDS_HudGroupIcon>();
 		OMD_IDS_HudGroupMap.FillDefaultZones(zones);
@@ -297,9 +302,9 @@ class OMD_IDS_HudConfig
 
 	private void ApplyBadgeDefaults()
 	{
-		badgeSize = 18;
-		badgeOffsetX = 17;
-		badgeOffsetY = 17;
+		badgeSize = 24;
+		badgeOffsetX = 19;
+		badgeOffsetY = 18;
 	}
 
 	private void ApplyColorDefaults()
@@ -332,11 +337,19 @@ class OMD_IDS_HudConfig
 	bool MigrateLegacyBadgeMetrics()
 	{
 		bool changed;
+		bool counterMigrated;
 
 		changed = false;
+		counterMigrated = false;
 		if (Near(iconSize, 64))
 		{
 			iconSize = 35;
+			changed = true;
+		}
+
+		if (Near(iconSize, 35))
+		{
+			iconSize = 40;
 			changed = true;
 		}
 
@@ -351,6 +364,30 @@ class OMD_IDS_HudConfig
 					badgeOffsetY = 17;
 					changed = true;
 				}
+			}
+		}
+
+		if (Near(badgeSize, 18))
+		{
+			if (Near(badgeOffsetX, 17))
+			{
+				if (Near(badgeOffsetY, 17))
+				{
+					badgeSize = 24;
+					badgeOffsetX = 19;
+					badgeOffsetY = 18;
+					changed = true;
+				}
+				else
+				{
+					badgeSize = 24;
+					changed = true;
+				}
+			}
+			else
+			{
+				badgeSize = 24;
+				changed = true;
 			}
 		}
 
@@ -370,6 +407,34 @@ class OMD_IDS_HudConfig
 						changed = true;
 					}
 				}
+			}
+		}
+
+		if (Near(counterOffsetX, 17))
+		{
+			if (Near(counterOffsetY, 1))
+			{
+				if (Near(counterWidth, 18))
+				{
+					if (Near(counterHeight, 15))
+					{
+						counterOffsetX = 44;
+						counterOffsetY = 16;
+						counterWidth = 12;
+						counterHeight = 15;
+						changed = true;
+						counterMigrated = true;
+					}
+				}
+			}
+		}
+
+		if (counterMigrated)
+		{
+			if (outlineSize == 1)
+			{
+				outlineSize = 2;
+				changed = true;
 			}
 		}
 
@@ -473,6 +538,19 @@ class OMD_IDS_HudConfig
 		if (!JsonHasKey(rawJson, "positionY"))
 		{
 			positionY = DEFAULT_POSITION_Y;
+		}
+	}
+
+	private void ApplyMissingLayoutDefaults(string rawJson)
+	{
+		if (!JsonHasKey(rawJson, "slotExtraWidth"))
+		{
+			slotExtraWidth = 12;
+		}
+
+		if (!JsonHasKey(rawJson, "badgeShadowOffset"))
+		{
+			badgeShadowOffset = 2;
 		}
 	}
 

@@ -75,6 +75,7 @@ class OMD_IDS_HudIcon
 	{
 		int groupColor;
 		int markColor;
+		float slotWidth;
 
 		if (!m_Root)
 		{
@@ -91,7 +92,8 @@ class OMD_IDS_HudIcon
 			return;
 		}
 
-		m_Root.SetSize(config.iconSize, config.iconSize);
+		slotWidth = config.iconSize + config.slotExtraWidth;
+		m_Root.SetSize(slotWidth, config.iconSize);
 		groupColor = ARGB(config.colorA, config.colorR, config.colorG, config.colorB);
 		markColor = config.MarkColor(entry.label);
 		ApplyPlate(config, groupColor);
@@ -219,11 +221,11 @@ class OMD_IDS_HudIcon
 		size = config.badgeSize;
 		if (size <= 0)
 		{
-			size = 18;
+			size = 24;
 		}
 
-		shadowX = config.badgeOffsetX + 1;
-		shadowY = config.badgeOffsetY + 1;
+		shadowX = config.badgeOffsetX + config.badgeShadowOffset;
+		shadowY = config.badgeOffsetY + config.badgeShadowOffset;
 		m_Badge.SetPos(config.badgeOffsetX, config.badgeOffsetY);
 		m_Badge.SetSize(size, size);
 		m_Badge.SetColor(color);
