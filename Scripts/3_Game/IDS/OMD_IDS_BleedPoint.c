@@ -1,5 +1,6 @@
 // External zone id to a vanilla bleeding bone.
 // Orientation and offset are copied from the vanilla source registration.
+// Torso meat uses Spine3, Spine2, Spine1 and Spine. Groin uses Pelvis.
 // Zones without a matching bone are absent on purpose.
 class OMD_IDS_BleedPoint
 {
@@ -141,6 +142,54 @@ class OMD_IDS_BleedPoint
 			bone = "RightFoot";
 			orientation = "0 0 0";
 			offset = "0 0 -0.035";
+			return true;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.UPPER_CHEST)
+		{
+			bone = "Spine3";
+			orientation = "0 90 0";
+			offset = "0 -0.05 0";
+			return true;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.MIDDLE_CHEST)
+		{
+			bone = "Spine2";
+			orientation = "0 55 0";
+			offset = "0 -0.07 0";
+			return true;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LOWER_CHEST)
+		{
+			bone = "Spine1";
+			orientation = "0 155 0";
+			offset = "0 -0.1 0";
+			return true;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.UPPER_ABDOMEN)
+		{
+			bone = "Spine";
+			orientation = "0 55 0";
+			offset = "0 -0.1 0";
+			return true;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LOWER_ABDOMEN)
+		{
+			bone = "Spine";
+			orientation = "0 55 0";
+			offset = "0 -0.1 0";
+			return true;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.GROIN)
+		{
+			bone = "Pelvis";
+			orientation = "0 -135 0";
+			offset = "0 0.12 0";
 			return true;
 		}
 
