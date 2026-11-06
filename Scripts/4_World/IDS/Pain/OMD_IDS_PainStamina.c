@@ -42,4 +42,41 @@ modded class StaminaHandler
 
 		return fx.GetBreathAdd();
 	}
+
+	override void ProcessStaminaChanges(float deltaT, bool isServerOrSingleplayer)
+	{
+		float saved;
+		float extra;
+		float scaled;
+
+		saved = m_StaminaRecoveryMultiplier;
+		extra = RecoveryExtra();
+		scaled = saved * (1 + extra);
+		if (scaled < 0)
+		{
+			scaled = 0;
+		}
+
+		m_StaminaRecoveryMultiplier = scaled;
+		super.ProcessStaminaChanges(deltaT, isServerOrSingleplayer);
+		m_StaminaRecoveryMultiplier = saved;
+	}
+
+	protected float RecoveryExtra()
+	{
+		OMD_IDS_PainEffectState fx;
+
+		if (!m_Player)
+		{
+			return 0;
+		}
+
+		fx = m_Player.OMD_IDS_GetPainFx();
+		if (!fx)
+		{
+			return 0;
+		}
+
+		return fx.GetRecoveryAdd();
+	}
 };
