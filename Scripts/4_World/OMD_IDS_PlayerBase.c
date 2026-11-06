@@ -181,6 +181,12 @@ modded class PlayerBase
 	override void OnRPC(PlayerIdentity sender, int rpc_type, ParamsReadContext ctx)
 	{
 		super.OnRPC(sender, rpc_type, ctx);
+		if (rpc_type == OMD_IDS_Rpc.PAIN_LEVELS)
+		{
+			OMD_IDS_ReadPainLevels(ctx);
+			return;
+		}
+
 		if (rpc_type != OMD_IDS_Rpc.SNAPSHOT)
 		{
 			return;
@@ -250,5 +256,73 @@ modded class PlayerBase
 
 		Print(string.Format("[OMD_IDS] client snapshot entries=%1", entries.Count()));
 		OMD_IDS_InjuryMailbox.Get().Put(entries);
+	}
+
+	protected void OMD_IDS_ReadPainLevels(ParamsReadContext ctx)
+	{
+		int bodyLevel;
+		int count;
+		int index;
+		int zoneId;
+		int level;
+		array<int> zoneIds;
+		array<int> levels;
+
+		if (!GetGame())
+		{
+			return;
+		}
+
+		if (!GetGame().IsClient())
+		{
+			return;
+		}
+
+		if (!ctx.Read(bodyLevel))
+		{
+			Print("[OMD_IDS][Pain] client levels were not read");
+			return;
+		}
+
+		if (!ctx.Read(count))
+		{
+			Print("[OMD_IDS][Pain] client levels were not read");
+			return;
+		}
+
+		if (count < 0)
+		{
+			Print("[OMD_IDS][Pain] client levels count is invalid");
+			return;
+		}
+
+		if (count > OMD_IDS_ZoneId.GUTS)
+		{
+			Print("[OMD_IDS][Pain] client levels count is invalid");
+			return;
+		}
+
+		zoneIds = new array<int>();
+		levels = new array<int>();
+		for (index = 0; index < count; index = index + 1)
+		{
+			if (!ctx.Read(zoneId))
+			{
+				Print("[OMD_IDS][Pain] client levels were cut short");
+				return;
+			}
+
+			if (!ctx.Read(level))
+			{
+				Print("[OMD_IDS][Pain] client levels were cut short");
+				return;
+			}
+
+			zoneIds.Insert(zoneId);
+			levels.Insert(level);
+		}
+
+		OMD_IDS_PainStore.Get().Replace(bodyLevel, zoneIds, levels);
+		Print(string.Format("[OMD_IDS][Pain] client body=%1 zones=%2", bodyLevel, count));
 	}
 };
