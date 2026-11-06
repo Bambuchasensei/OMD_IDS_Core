@@ -113,6 +113,7 @@ modded class MissionGameplay
 				requester.Start();
 			}
 
+			requester.SetVisual(fx.GetChromMin(), fx.GetChromMax(), fx.GetGaussMin(), fx.GetGaussMax(), fx.GetWaveStep());
 			return;
 		}
 
@@ -121,6 +122,7 @@ modded class MissionGameplay
 			return;
 		}
 
+		requester.SetVisual(0, 0, 0, 0, 0);
 		if (requester.OMD_IDS_IsFaded())
 		{
 			requester.Stop();

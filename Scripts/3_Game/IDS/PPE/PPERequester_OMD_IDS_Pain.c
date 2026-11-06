@@ -1,49 +1,37 @@
-// One requester for the whole session. MissionGameplay starts it and stops it.
+// One requester for the whole session. MissionGameplay starts it, feeds the numbers, and stops it.
 // ChromAber above the vanilla material max is clamped by the engine to 0.05.
 class PPERequester_OMD_IDS_Pain extends PPERequester_GameplayBase
 {
 	static const int LAYER = 1200;
 
+	protected float m_ChromMin;
+	protected float m_ChromMax;
+	protected float m_GaussMin;
+	protected float m_GaussMax;
+	protected float m_WaveStep;
 	protected float m_Phase;
 	protected float m_ShownChrom;
 	protected float m_ShownGauss;
+
+	void SetVisual(float chromMin, float chromMax, float gaussMin, float gaussMax, float waveStep)
+	{
+		m_ChromMin = chromMin;
+		m_ChromMax = chromMax;
+		m_GaussMin = gaussMin;
+		m_GaussMax = gaussMax;
+		m_WaveStep = waveStep;
+	}
 
 	override void OnUpdate(float delta)
 	{
 		float step;
 		float sine;
-		float chromLo;
-		float chromHi;
-		float gaussLo;
-		float gaussHi;
 		float targetChrom;
 		float targetGauss;
 		float blend;
-		PlayerBase player;
-		OMD_IDS_PainEffectState fx;
 
 		super.OnUpdate(delta);
-		step = 0.5;
-		chromLo = 0;
-		chromHi = 0;
-		gaussLo = 0;
-		gaussHi = 0;
-		if (GetGame())
-		{
-			if (Class.CastTo(player, GetGame().GetPlayer()))
-			{
-				fx = player.OMD_IDS_GetPainFx();
-				if (fx)
-				{
-					step = fx.GetWaveStep();
-					chromLo = fx.GetChromMin();
-					chromHi = fx.GetChromMax();
-					gaussLo = fx.GetGaussMin();
-					gaussHi = fx.GetGaussMax();
-				}
-			}
-		}
-
+		step = m_WaveStep;
 		if (step <= 0)
 		{
 			step = 0.5;
@@ -57,8 +45,8 @@ class PPERequester_OMD_IDS_Pain extends PPERequester_GameplayBase
 
 		sine = Math.Sin(m_Phase);
 		sine = (sine + 1) * 0.5;
-		targetChrom = chromLo + ((chromHi - chromLo) * sine);
-		targetGauss = gaussLo + ((gaussHi - gaussLo) * sine);
+		targetChrom = m_ChromMin + ((m_ChromMax - m_ChromMin) * sine);
+		targetGauss = m_GaussMin + ((m_GaussMax - m_GaussMin) * sine);
 		blend = delta * 2;
 		if (blend > 1)
 		{
@@ -90,6 +78,11 @@ class PPERequester_OMD_IDS_Pain extends PPERequester_GameplayBase
 	override protected void OnStop(Param par = null)
 	{
 		super.OnStop(par);
+		m_ChromMin = 0;
+		m_ChromMax = 0;
+		m_GaussMin = 0;
+		m_GaussMax = 0;
+		m_WaveStep = 0;
 		m_Phase = 0;
 		m_ShownChrom = 0;
 		m_ShownGauss = 0;
