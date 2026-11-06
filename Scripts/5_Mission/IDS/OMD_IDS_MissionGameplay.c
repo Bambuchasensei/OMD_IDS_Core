@@ -57,9 +57,33 @@ modded class MissionGameplay
 			painStore.Replace(0, null, null);
 		}
 
+		OMD_IDS_ClearPainFx();
+
 		m_OMD_IDS_SnapshotRequested = false;
 		OMD_IDS_HudManager.Destroy();
 		super.OnMissionFinish();
+	}
+
+	private void OMD_IDS_ClearPainFx()
+	{
+		PlayerBase player;
+
+		if (!GetGame())
+		{
+			return;
+		}
+
+		if (!Class.CastTo(player, GetGame().GetPlayer()))
+		{
+			return;
+		}
+
+		if (!player.OMD_IDS_GetPainFx())
+		{
+			return;
+		}
+
+		player.OMD_IDS_GetPainFx().Clear();
 	}
 
 	private void RequestSnapshotOnce()

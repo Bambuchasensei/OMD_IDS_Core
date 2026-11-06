@@ -5,6 +5,7 @@ modded class PlayerBase
 	protected int m_OMD_IDS_BleedHeavy;
 	protected ref OMD_IDS_BoneBreakSoundClient m_OMD_IDS_BoneBreakSound;
 	protected ref OMD_IDS_BleedFx m_OMD_IDS_BleedFx;
+	protected ref OMD_IDS_PainEffectState m_OMD_IDS_PainFx;
 
 	override void Init()
 	{
@@ -258,6 +259,16 @@ modded class PlayerBase
 		OMD_IDS_InjuryMailbox.Get().Put(entries);
 	}
 
+	OMD_IDS_PainEffectState OMD_IDS_GetPainFx()
+	{
+		if (!m_OMD_IDS_PainFx)
+		{
+			m_OMD_IDS_PainFx = new OMD_IDS_PainEffectState();
+		}
+
+		return m_OMD_IDS_PainFx;
+	}
+
 	protected void OMD_IDS_ReadPainLevels(ParamsReadContext ctx)
 	{
 		int bodyLevel;
@@ -320,6 +331,12 @@ modded class PlayerBase
 
 			zoneIds.Insert(zoneId);
 			levels.Insert(level);
+		}
+
+		if (!OMD_IDS_GetPainFx().ReadRpc(ctx))
+		{
+			Print("[OMD_IDS][Pain] client effect numbers were not read");
+			return;
 		}
 
 		OMD_IDS_PainStore.Get().Replace(bodyLevel, zoneIds, levels);
