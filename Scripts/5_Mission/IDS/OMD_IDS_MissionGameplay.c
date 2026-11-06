@@ -3,6 +3,7 @@
 modded class MissionGameplay
 {
 	private bool m_OMD_IDS_SnapshotRequested;
+	private bool m_OMD_IDS_WasRaised;
 
 	override void OnInit()
 	{
@@ -13,6 +14,7 @@ modded class MissionGameplay
 	override void OnUpdate(float timeslice)
 	{
 		super.OnUpdate(timeslice);
+		OMD_IDS_WatchAim();
 		OMD_IDS_HudManager manager = OMD_IDS_HudManager.Get();
 		if (!manager)
 		{
@@ -60,8 +62,37 @@ modded class MissionGameplay
 		OMD_IDS_ClearPainFx();
 
 		m_OMD_IDS_SnapshotRequested = false;
+		m_OMD_IDS_WasRaised = false;
 		OMD_IDS_HudManager.Destroy();
 		super.OnMissionFinish();
+	}
+
+	private void OMD_IDS_WatchAim()
+	{
+		PlayerBase player;
+		bool raised;
+
+		if (!GetGame())
+		{
+			return;
+		}
+
+		if (!Class.CastTo(player, GetGame().GetPlayer()))
+		{
+			m_OMD_IDS_WasRaised = false;
+			return;
+		}
+
+		raised = player.IsFireWeaponRaised();
+		if (raised)
+		{
+			if (!m_OMD_IDS_WasRaised)
+			{
+				OMD_IDS_PainJerk.Try(player);
+			}
+		}
+
+		m_OMD_IDS_WasRaised = raised;
 	}
 
 	private void OMD_IDS_ClearPainFx()
