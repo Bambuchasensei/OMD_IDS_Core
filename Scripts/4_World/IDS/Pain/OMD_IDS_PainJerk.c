@@ -1,8 +1,13 @@
 // One camera jerk at most every cooldown. A miss does not start the cooldown.
-// If it lands while holding breath, the breath cycle starts over and aim stays up.
+// SpawnCameraShake only. Hold breath and the raised weapon are left alone.
 class OMD_IDS_PainJerk
 {
 	protected static float s_NextAt;
+
+	static void Reset()
+	{
+		s_NextAt = 0;
+	}
 
 	static void Try(PlayerBase player)
 	{
@@ -11,7 +16,6 @@ class OMD_IDS_PainJerk
 		float cooldown;
 		float roll;
 		OMD_IDS_PainEffectState fx;
-		DayZPlayerImplementAiming aiming;
 
 		if (!GetGame())
 		{
@@ -68,18 +72,5 @@ class OMD_IDS_PainJerk
 		{
 			player.GetCurrentCamera().SpawnCameraShake();
 		}
-
-		if (!player.IsHoldingBreath())
-		{
-			return;
-		}
-
-		aiming = player.GetAimingModel();
-		if (!aiming)
-		{
-			return;
-		}
-
-		aiming.OMD_IDS_ResetBreathHold();
 	}
 };

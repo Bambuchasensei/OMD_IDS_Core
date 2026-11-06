@@ -41,6 +41,15 @@ modded class PlayerBase
 	override void EEKilled(Object killer)
 	{
 		super.EEKilled(killer);
+		if (IsControlledPlayer())
+		{
+			OMD_IDS_PainJerk.Reset();
+			if (m_OMD_IDS_PainFx)
+			{
+				m_OMD_IDS_PainFx.Clear();
+			}
+		}
+
 		OMD_IDS_RefreshFx();
 	}
 

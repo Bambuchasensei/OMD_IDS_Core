@@ -60,6 +60,7 @@ modded class MissionGameplay
 			painStore.Replace(0, null, null);
 		}
 
+		OMD_IDS_PainJerk.Reset();
 		OMD_IDS_ClearPainFx();
 		OMD_IDS_StopPainVisual();
 
