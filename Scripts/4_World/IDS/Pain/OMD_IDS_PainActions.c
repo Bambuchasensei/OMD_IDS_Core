@@ -105,6 +105,16 @@ class OMD_IDS_PainActions
 			return true;
 		}
 
+		if (action.IsInherited(ActionGiveBloodSelf))
+		{
+			return true;
+		}
+
+		if (action.IsInherited(ActionGiveBloodTarget))
+		{
+			return true;
+		}
+
 		if (action.IsInherited(ActionTestBloodSelf))
 		{
 			return true;
@@ -191,5 +201,37 @@ modded class CAContinuousRepeat
 		}
 
 		m_TimeToComplete = m_TimeToComplete * (1 + extra);
+	}
+};
+
+// Blood transfer spends quantity, not CAContinuousTime. Slow the rate once per action.
+// Setup runs again after every chunk, so the rate must not be divided twice.
+modded class CAContinuousQuantityBloodTransfer
+{
+	protected bool m_OMD_IDS_RateScaled;
+
+	override void Setup(ActionData action_data)
+	{
+		float extra;
+
+		super.Setup(action_data);
+		if (m_OMD_IDS_RateScaled)
+		{
+			return;
+		}
+
+		extra = OMD_IDS_PainActions.Extra(action_data);
+		if (extra <= 0)
+		{
+			return;
+		}
+
+		if (m_QuantityUsedPerSecond <= 0)
+		{
+			return;
+		}
+
+		m_QuantityUsedPerSecond = m_QuantityUsedPerSecond / (1 + extra);
+		m_OMD_IDS_RateScaled = true;
 	}
 };
