@@ -1,15 +1,17 @@
 #ifndef SERVER
 
-// Отдельная иконка боли тела. Не входит в ряд ран и не имеет groupId.
-// Корень создаётся один раз в HudPanel. Детей BadgesPanel не двигаем.
+// Отдельная иконка боли тела. Не входит в ряд ран.
+// Один раз создаётся в ванильном NotifiersPanel, слот левее жажды.
+// Детей ряда не двигаем и экранную позицию не подгоняем.
 class OMD_IDS_PainHudIcon
 {
+	private static const string ICON_LV0 = "set:ids_icons image:pain_doom_lv0";
 	private static const string ICON_LV1 = "set:ids_icons image:pain_doom_lv1";
 	private static const string ICON_LV2 = "set:ids_icons image:pain_doom_lv2";
 	private static const string ICON_LV3 = "set:ids_icons image:pain_doom_lv3";
 	private static const string ICON_LV4 = "set:ids_icons image:pain_doom_lv4";
 	private static const float DEFAULT_BLINK_PERIOD = 0.25;
-	private static const float FACE_GAP = 2;
+	private static const float LAYOUT_ICON_SIZE = 35;
 
 	private Widget m_Root;
 	private ImageWidget m_Image;
@@ -23,48 +25,55 @@ class OMD_IDS_PainHudIcon
 	private bool m_ColorSet;
 	private bool m_CreateFailed;
 
-	void Update(int level, float timeslice, OMD_IDS_HudConfig config, Widget parent, Widget badges)
+	void OMD_IDS_PainHudIcon()
+	{
+		m_Level = -1;
+		m_FailedLevel = -1;
+		m_ReportedLevel = -1;
+	}
+
+	void Update(int level, float timeslice, OMD_IDS_HudConfig config, Widget notifiers)
 	{
 		int levelColor;
 
 		if (!config)
 		{
-			m_FailedLevel = 0;
+			m_FailedLevel = -1;
 			Hide();
 			return;
 		}
 
 		if (!config.activeEnabled)
 		{
-			m_FailedLevel = 0;
+			m_FailedLevel = -1;
 			Hide();
 			return;
 		}
 
 		if (!config.painIconEnabled)
 		{
-			m_FailedLevel = 0;
+			m_FailedLevel = -1;
 			Hide();
 			return;
 		}
 
-		if (level < 1)
+		if (level < 0)
 		{
-			m_FailedLevel = 0;
+			m_FailedLevel = -1;
 			Hide();
 			return;
 		}
 
 		if (level > 4)
 		{
-			m_FailedLevel = 0;
+			m_FailedLevel = -1;
 			Hide();
 			return;
 		}
 
-		if (config.iconSize <= 0)
+		if (config.painIconSize <= 0)
 		{
-			m_FailedLevel = 0;
+			m_FailedLevel = -1;
 			Hide();
 			return;
 		}
@@ -74,7 +83,7 @@ class OMD_IDS_PainHudIcon
 			return;
 		}
 
-		if (!EnsureRoot(parent))
+		if (!EnsureRoot(notifiers))
 		{
 			return;
 		}
@@ -98,14 +107,13 @@ class OMD_IDS_PainHudIcon
 				return;
 			}
 
-			m_FailedLevel = 0;
+			m_FailedLevel = -1;
 			Print(string.Format("[OMD_IDS] pain hud level=%1 icon=%2", level, IconPath(level)));
 		}
 
 		ApplySize(config);
 		levelColor = config.PainColor(level);
 		ApplyBlink(config, levelColor, timeslice);
-		AlignLeft(badges, config.iconSize);
 		if (!m_Root)
 		{
 			return;
@@ -123,10 +131,11 @@ class OMD_IDS_PainHudIcon
 
 		m_Root = null;
 		m_Image = null;
-		m_Level = 0;
+		m_Level = -1;
+		m_FailedLevel = -1;
 	}
 
-	private bool EnsureRoot(Widget parent)
+	private bool EnsureRoot(Widget notifiers)
 	{
 		ImageWidget image;
 
@@ -145,7 +154,7 @@ class OMD_IDS_PainHudIcon
 			return false;
 		}
 
-		if (!parent)
+		if (!notifiers)
 		{
 			return false;
 		}
@@ -160,7 +169,7 @@ class OMD_IDS_PainHudIcon
 			return false;
 		}
 
-		m_Root = GetGame().GetWorkspace().CreateWidgets(OMD_IDS_HudConfig.LAYOUT_PAIN, parent);
+		m_Root = GetGame().GetWorkspace().CreateWidgets(OMD_IDS_HudConfig.LAYOUT_PAIN, notifiers);
 		if (!m_Root)
 		{
 			m_CreateFailed = true;
@@ -184,93 +193,6 @@ class OMD_IDS_PainHudIcon
 
 		m_Root.Show(false);
 		return true;
-	}
-
-	private void AlignLeft(Widget badges, float size)
-	{
-		Widget child;
-		Widget leftmost;
-		float childX;
-		float childY;
-		float childW;
-		float childH;
-		float bestX;
-		float bestY;
-		float bestH;
-		float panelX;
-		float panelY;
-		float panelW;
-		float panelH;
-		float posX;
-		float posY;
-
-		if (!m_Root)
-		{
-			return;
-		}
-
-		if (!badges)
-		{
-			return;
-		}
-
-		if (size <= 0)
-		{
-			return;
-		}
-
-		leftmost = null;
-		bestX = 0;
-		bestY = 0;
-		bestH = 0;
-		child = badges.GetChildren();
-		while (child)
-		{
-			if (child != m_Root)
-			{
-				if (child.IsVisible())
-				{
-					child.GetScreenSize(childW, childH);
-					if (childW > 0)
-					{
-						child.GetScreenPos(childX, childY);
-						if (!leftmost)
-						{
-							leftmost = child;
-							bestX = childX;
-							bestY = childY;
-							bestH = childH;
-						}
-						else
-						{
-							if (childX < bestX)
-							{
-								leftmost = child;
-								bestX = childX;
-								bestY = childY;
-								bestH = childH;
-							}
-						}
-					}
-				}
-			}
-
-			child = child.GetSibling();
-		}
-
-		if (leftmost)
-		{
-			posX = bestX - size - FACE_GAP;
-			posY = bestY + ((bestH - size) * 0.5);
-			m_Root.SetScreenPos(posX, posY, true);
-			return;
-		}
-
-		badges.GetScreenPos(panelX, panelY);
-		badges.GetScreenSize(panelW, panelH);
-		posX = panelX + panelW - size;
-		posY = panelY + ((panelH - size) * 0.5);
-		m_Root.SetScreenPos(posX, posY, true);
 	}
 
 	private bool LoadFace(int level)
@@ -323,15 +245,19 @@ class OMD_IDS_PainHudIcon
 			return;
 		}
 
-		if (m_AppliedSize == config.iconSize)
+		if (m_AppliedSize == config.painIconSize)
 		{
 			return;
 		}
 
-		m_Root.SetSize(config.iconSize, config.iconSize);
-		m_Image.SetPos(0, 0);
-		m_Image.SetSize(config.iconSize, config.iconSize);
-		m_AppliedSize = config.iconSize;
+		m_AppliedSize = config.painIconSize;
+		if (config.painIconSize == LAYOUT_ICON_SIZE)
+		{
+			return;
+		}
+
+		m_Root.SetSize(config.painIconSize, config.painIconSize);
+		m_Image.SetSize(config.painIconSize, config.painIconSize);
 	}
 
 	private void ApplyBlink(OMD_IDS_HudConfig config, int levelColor, float timeslice)
@@ -411,7 +337,7 @@ class OMD_IDS_PainHudIcon
 
 	private void Hide()
 	{
-		m_Level = 0;
+		m_Level = -1;
 		m_BlinkTime = 0;
 		m_BlinkWhite = false;
 		m_ColorSet = false;
@@ -425,6 +351,11 @@ class OMD_IDS_PainHudIcon
 
 	private string IconPath(int level)
 	{
+		if (level == 0)
+		{
+			return ICON_LV0;
+		}
+
 		if (level == 1)
 		{
 			return ICON_LV1;

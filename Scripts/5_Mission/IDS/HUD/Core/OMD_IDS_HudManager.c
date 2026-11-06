@@ -12,6 +12,7 @@ class OMD_IDS_HudManager
 	private bool m_PanelRetry;
 	private bool m_ReportedPlace;
 	private bool m_ReportedMissingPanel;
+	private bool m_ReportedMissingNotifiers;
 	private ref OMD_IDS_PainHudIcon m_PainIcon;
 
 	static void Create()
@@ -126,13 +127,12 @@ class OMD_IDS_HudManager
 	}
 
 	// Иконка боли отдельно от списка ран. Уровень читается из клиентского стора каждый тик.
-	// Лицо создаётся один раз в HudPanel и стоит слева от видимого ряда. Детей панели не двигаем.
+	// Лицо один раз создаётся в NotifiersPanel. Ряд ран и BadgesPanel не двигаем.
 	void UpdatePain(float timeslice)
 	{
 		int level;
 		OMD_IDS_PainStore store;
-		Widget panel;
-		Widget parent;
+		Widget notifiers;
 
 		level = 0;
 		store = OMD_IDS_PainStore.Get();
@@ -146,14 +146,8 @@ class OMD_IDS_HudManager
 			m_PainIcon = new OMD_IDS_PainHudIcon();
 		}
 
-		panel = FindBadgesPanel();
-		parent = null;
-		if (panel)
-		{
-			parent = panel.GetParent();
-		}
-
-		m_PainIcon.Update(level, timeslice, m_Config, parent, panel);
+		notifiers = FindNotifiersPanel();
+		m_PainIcon.Update(level, timeslice, m_Config, notifiers);
 	}
 
 	private void Init()
@@ -166,6 +160,7 @@ class OMD_IDS_HudManager
 		m_Icons = new array<ref OMD_IDS_HudIcon>();
 		m_ReportedPlace = false;
 		m_ReportedMissingPanel = false;
+		m_ReportedMissingNotifiers = false;
 		Rebuild();
 	}
 
@@ -327,6 +322,59 @@ class OMD_IDS_HudManager
 		}
 
 		return hudPanel.FindAnyWidget("BadgesPanel");
+	}
+
+	// Ванильный ряд статусов: крест, кровь, температура, голод, жажда.
+	// Если панель ещё не создана, молчим и пробуем на следующем кадре.
+	// Если корень HUD уже есть, а ряда нет — одно предупреждение, без виджета.
+	private Widget FindNotifiersPanel()
+	{
+		MissionGameplay gameplay;
+		Hud hud;
+		IngameHud ingame;
+		Widget hudPanel;
+		Widget notifiers;
+
+		if (!GetGame())
+		{
+			return null;
+		}
+
+		if (!Class.CastTo(gameplay, GetGame().GetMission()))
+		{
+			return null;
+		}
+
+		hud = gameplay.GetHud();
+		if (!hud)
+		{
+			return null;
+		}
+
+		if (!Class.CastTo(ingame, hud))
+		{
+			return null;
+		}
+
+		hudPanel = ingame.GetHudPanelWidget();
+		if (!hudPanel)
+		{
+			return null;
+		}
+
+		notifiers = hudPanel.FindAnyWidget("NotifiersPanel");
+		if (notifiers)
+		{
+			return notifiers;
+		}
+
+		if (!m_ReportedMissingNotifiers)
+		{
+			m_ReportedMissingNotifiers = true;
+			Print("[OMD_IDS] NotifiersPanel was not found, pain icon is not created");
+		}
+
+		return null;
 	}
 
 	// Поток WrapSpacer идёт слева направо. AddChild дописывает в конец и оказывается правее крови.

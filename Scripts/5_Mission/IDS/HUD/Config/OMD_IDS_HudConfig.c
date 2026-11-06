@@ -25,6 +25,11 @@ class OMD_IDS_HudConfig
 	static const float POSITION_EPSILON = 0.001;
 	static const int DEFAULT_PAIN_BLINK_LEVELS = 3;
 	static const float DEFAULT_PAIN_BLINK_PERIOD = 0.25;
+	static const float DEFAULT_PAIN_ICON_SIZE = 35;
+	static const int DEFAULT_PAIN_0_A = 255;
+	static const int DEFAULT_PAIN_0_R = 255;
+	static const int DEFAULT_PAIN_0_G = 255;
+	static const int DEFAULT_PAIN_0_B = 255;
 	static const int DEFAULT_PAIN_1_A = 255;
 	static const int DEFAULT_PAIN_1_R = 255;
 	static const int DEFAULT_PAIN_1_G = 255;
@@ -85,6 +90,11 @@ class OMD_IDS_HudConfig
 	bool painIconBlink;
 	int painIconBlinkLevels;
 	float painIconBlinkPeriod;
+	float painIconSize;
+	int pain0A;
+	int pain0R;
+	int pain0G;
+	int pain0B;
 	int pain1A;
 	int pain1R;
 	int pain1G;
@@ -354,6 +364,11 @@ class OMD_IDS_HudConfig
 		painIconBlink = true;
 		painIconBlinkLevels = DEFAULT_PAIN_BLINK_LEVELS;
 		painIconBlinkPeriod = DEFAULT_PAIN_BLINK_PERIOD;
+		painIconSize = DEFAULT_PAIN_ICON_SIZE;
+		pain0A = DEFAULT_PAIN_0_A;
+		pain0R = DEFAULT_PAIN_0_R;
+		pain0G = DEFAULT_PAIN_0_G;
+		pain0B = DEFAULT_PAIN_0_B;
 		pain1A = DEFAULT_PAIN_1_A;
 		pain1R = DEFAULT_PAIN_1_R;
 		pain1G = DEFAULT_PAIN_1_G;
@@ -392,6 +407,31 @@ class OMD_IDS_HudConfig
 		if (!JsonHasKey(rawJson, "painIconBlinkPeriod"))
 		{
 			painIconBlinkPeriod = DEFAULT_PAIN_BLINK_PERIOD;
+		}
+
+		if (!JsonHasKey(rawJson, "painIconSize"))
+		{
+			painIconSize = DEFAULT_PAIN_ICON_SIZE;
+		}
+
+		if (!JsonHasKey(rawJson, "pain0A"))
+		{
+			pain0A = DEFAULT_PAIN_0_A;
+		}
+
+		if (!JsonHasKey(rawJson, "pain0R"))
+		{
+			pain0R = DEFAULT_PAIN_0_R;
+		}
+
+		if (!JsonHasKey(rawJson, "pain0G"))
+		{
+			pain0G = DEFAULT_PAIN_0_G;
+		}
+
+		if (!JsonHasKey(rawJson, "pain0B"))
+		{
+			pain0B = DEFAULT_PAIN_0_B;
 		}
 
 		if (!JsonHasKey(rawJson, "pain1A"))
@@ -504,6 +544,11 @@ class OMD_IDS_HudConfig
 
 	int PainColor(int level)
 	{
+		if (level == 0)
+		{
+			return ARGB(pain0A, pain0R, pain0G, pain0B);
+		}
+
 		if (level == 1)
 		{
 			return ARGB(pain1A, pain1R, pain1G, pain1B);

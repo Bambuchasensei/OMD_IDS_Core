@@ -2,10 +2,10 @@ FrameWidgetClass IdsHudPain {
  ignorepointer 1
  visible 0
  clipchildren 0
- position 0 0
- size 40 40
- halign left_ref
- valign top_ref
+ position 225 0
+ size 35 35
+ halign right_ref
+ valign center_ref
  hexactpos 1
  vexactpos 1
  hexactsize 1
@@ -14,7 +14,9 @@ FrameWidgetClass IdsHudPain {
   ImageWidgetClass IdsHudPainImage {
    ignorepointer 1
    position 0 0
-   size 40 40
+   size 35 35
+   halign center_ref
+   valign center_ref
    hexactpos 1
    vexactpos 1
    hexactsize 1
