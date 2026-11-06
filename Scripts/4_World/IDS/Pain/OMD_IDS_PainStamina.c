@@ -16,6 +16,16 @@ modded class StaminaHandler
 			extra = BreathExtra();
 		}
 
+		if (modifier == EStaminaModifiers.MELEE_HEAVY)
+		{
+			extra = PowerExtra();
+		}
+
+		if (modifier == EStaminaModifiers.PUSH_CAR)
+		{
+			extra = PowerExtra();
+		}
+
 		if (extra == 0)
 		{
 			return;
@@ -41,6 +51,24 @@ modded class StaminaHandler
 		}
 
 		return fx.GetBreathAdd();
+	}
+
+	protected float PowerExtra()
+	{
+		OMD_IDS_PainEffectState fx;
+
+		if (!m_Player)
+		{
+			return 0;
+		}
+
+		fx = m_Player.OMD_IDS_GetPainFx();
+		if (!fx)
+		{
+			return 0;
+		}
+
+		return fx.GetPowerAdd();
 	}
 
 	override void ProcessStaminaChanges(float deltaT, bool isServerOrSingleplayer)
