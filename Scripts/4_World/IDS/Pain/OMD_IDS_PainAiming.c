@@ -1,12 +1,13 @@
-// Adds a fraction of the vanilla aim sway. The added fraction is already clamped.
+// Multiplies the vanilla sway weight once, before it is written into the aim model.
+// CalculateWeight builds a fresh weight every frame, so the pain factor does not stack.
 modded class DayZPlayerImplementAiming
 {
-	override bool ProcessAimFilters(float pDt, SDayZPlayerAimingModel pModel, int stance_index)
+	override float CalculateWeight(int stance_index, float current_stamina, float camera_sway_modifier, bool holding_breath)
 	{
-		bool ok;
+		float weight;
 		float extra;
 
-		ok = super.ProcessAimFilters(pDt, pModel, stance_index);
+		weight = super.CalculateWeight(stance_index, current_stamina, camera_sway_modifier, holding_breath);
 		extra = 0;
 		if (m_PlayerPb)
 		{
@@ -18,14 +19,9 @@ modded class DayZPlayerImplementAiming
 
 		if (extra > 0)
 		{
-			m_SwayWeight = m_SwayWeight * (1 + extra);
+			weight = weight * (1 + extra);
 		}
 
-		return ok;
-	}
-
-	void OMD_IDS_ResetBreathHold()
-	{
-		m_HoldingBreathSet = false;
+		return weight;
 	}
 };
