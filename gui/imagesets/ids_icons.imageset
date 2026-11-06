@@ -164,5 +164,11 @@ ImageSetClass {
    Size 64 64
    Flags 0
   }
+  ImageSetDefClass pain_doom_lv0 {
+   Name "pain_doom_lv0"
+   Pos 342 206
+   Size 64 64
+   Flags 0
+  }
  }
 }
