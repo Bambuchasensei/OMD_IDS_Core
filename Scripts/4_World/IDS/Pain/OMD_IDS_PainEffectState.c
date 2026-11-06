@@ -36,6 +36,116 @@ class OMD_IDS_PainEffectState
 		m_WaveStep = 0.5;
 	}
 
+	void CopyFrom(OMD_IDS_PainEffectState other)
+	{
+		if (!other)
+		{
+			Clear();
+			return;
+		}
+
+		m_BreathAdd = other.m_BreathAdd;
+		m_RecoveryAdd = other.m_RecoveryAdd;
+		m_PowerAdd = other.m_PowerAdd;
+		m_SwayAdd = other.m_SwayAdd;
+		m_JerkChance = other.m_JerkChance;
+		m_JerkCooldown = other.m_JerkCooldown;
+		m_ActionAdd = other.m_ActionAdd;
+		m_ChromMin = other.m_ChromMin;
+		m_ChromMax = other.m_ChromMax;
+		m_GaussMin = other.m_GaussMin;
+		m_GaussMax = other.m_GaussMax;
+		m_WaveStep = other.m_WaveStep;
+	}
+
+	bool Matches(OMD_IDS_PainEffectState other)
+	{
+		if (!other)
+		{
+			return false;
+		}
+
+		if (!Near(m_BreathAdd, other.m_BreathAdd))
+		{
+			return false;
+		}
+
+		if (!Near(m_RecoveryAdd, other.m_RecoveryAdd))
+		{
+			return false;
+		}
+
+		if (!Near(m_PowerAdd, other.m_PowerAdd))
+		{
+			return false;
+		}
+
+		if (!Near(m_SwayAdd, other.m_SwayAdd))
+		{
+			return false;
+		}
+
+		if (!Near(m_JerkChance, other.m_JerkChance))
+		{
+			return false;
+		}
+
+		if (!Near(m_JerkCooldown, other.m_JerkCooldown))
+		{
+			return false;
+		}
+
+		if (!Near(m_ActionAdd, other.m_ActionAdd))
+		{
+			return false;
+		}
+
+		if (!Near(m_ChromMin, other.m_ChromMin))
+		{
+			return false;
+		}
+
+		if (!Near(m_ChromMax, other.m_ChromMax))
+		{
+			return false;
+		}
+
+		if (!Near(m_GaussMin, other.m_GaussMin))
+		{
+			return false;
+		}
+
+		if (!Near(m_GaussMax, other.m_GaussMax))
+		{
+			return false;
+		}
+
+		if (!Near(m_WaveStep, other.m_WaveStep))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	protected bool Near(float a, float b)
+	{
+		float delta;
+
+		delta = a - b;
+		if (delta < 0)
+		{
+			delta = -delta;
+		}
+
+		if (delta > 0.0001)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
 	void SetBreathAdd(float value)
 	{
 		m_BreathAdd = value;
