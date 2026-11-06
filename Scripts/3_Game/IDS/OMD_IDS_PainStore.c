@@ -1,5 +1,5 @@
 // Client copy of pain levels. The server sends a fresh list only when a level changes.
-// Zones missing from that list are level 0. HUD does not read this yet.
+// Zones missing from that list are level 0. The client HUD reads GetBodyLevel() each tick.
 class OMD_IDS_PainStore
 {
 	private static ref OMD_IDS_PainStore s_Instance;

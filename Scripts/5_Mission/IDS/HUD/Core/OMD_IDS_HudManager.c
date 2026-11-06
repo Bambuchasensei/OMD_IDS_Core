@@ -12,6 +12,7 @@ class OMD_IDS_HudManager
 	private bool m_PanelRetry;
 	private bool m_ReportedPlace;
 	private bool m_ReportedMissingPanel;
+	private ref OMD_IDS_PainHudIcon m_PainIcon;
 
 	static void Create()
 	{
@@ -124,6 +125,37 @@ class OMD_IDS_HudManager
 		return m_Map.GetHudGroup(zoneName);
 	}
 
+	// Иконка боли отдельно от списка ран. Уровень читается из клиентского стора каждый тик.
+	void UpdatePain(float timeslice)
+	{
+		int level;
+		OMD_IDS_PainStore store;
+		Widget panel;
+		Widget firstWound;
+
+		level = 0;
+		store = OMD_IDS_PainStore.Get();
+		if (store)
+		{
+			level = store.GetBodyLevel();
+		}
+
+		if (!m_PainIcon)
+		{
+			m_PainIcon = new OMD_IDS_PainHudIcon();
+		}
+
+		m_PainIcon.Update(level, timeslice, m_Config);
+		if (!m_PainIcon.IsShown())
+		{
+			return;
+		}
+
+		panel = FindBadgesPanel();
+		firstWound = FirstWoundRoot();
+		m_PainIcon.Place(panel, firstWound);
+	}
+
 	private void Init()
 	{
 		m_Config = OMD_IDS_HudConfig.LoadOrCreate();
@@ -141,6 +173,12 @@ class OMD_IDS_HudManager
 	{
 		CancelPanelRetry();
 		ClearIcons();
+		if (m_PainIcon)
+		{
+			m_PainIcon.Destroy();
+			m_PainIcon = null;
+		}
+
 		m_BadgesPanel = null;
 		OMD_IDS_HudIcon.ResetWarnings();
 		m_Entries = null;
@@ -382,6 +420,37 @@ class OMD_IDS_HudManager
 		}
 
 		Print("[OMD_IDS] hud row uses InsertAtFront, Bleeding widget was missing");
+	}
+
+	private Widget FirstWoundRoot()
+	{
+		int index;
+		OMD_IDS_HudIcon icon;
+		Widget root;
+
+		if (!m_Icons)
+		{
+			return null;
+		}
+
+		for (index = 0; index < m_Icons.Count(); index = index + 1)
+		{
+			icon = m_Icons.Get(index);
+			if (!icon)
+			{
+				continue;
+			}
+
+			root = icon.GetRoot();
+			if (!root)
+			{
+				continue;
+			}
+
+			return root;
+		}
+
+		return null;
 	}
 
 	private Widget FindChildBefore(Widget panel, Widget target)

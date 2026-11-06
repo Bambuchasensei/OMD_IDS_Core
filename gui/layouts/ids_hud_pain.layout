@@ -1,0 +1,30 @@
+FrameWidgetClass IdsHudPain {
+ ignorepointer 1
+ visible 0
+ clipchildren 0
+ position 0 0
+ size 40 40
+ halign right_ref
+ valign bottom_ref
+ hexactpos 1
+ vexactpos 1
+ hexactsize 1
+ vexactsize 1
+ {
+  ImageWidgetClass IdsHudPainImage {
+   ignorepointer 1
+   position 0 0
+   size 40 40
+   hexactpos 1
+   vexactpos 1
+   hexactsize 1
+   vexactsize 1
+   visible 1
+   inheritalpha 1
+   color 1 1 1 1
+   mode blend
+   "src alpha" 1
+   image0 ""
+  }
+ }
+}

@@ -140,5 +140,29 @@ ImageSetClass {
    Size 64 64
    Flags 0
   }
+  ImageSetDefClass pain_doom_lv1 {
+   Name "pain_doom_lv1"
+   Pos 70 206
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pain_doom_lv2 {
+   Name "pain_doom_lv2"
+   Pos 138 206
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pain_doom_lv3 {
+   Name "pain_doom_lv3"
+   Pos 206 206
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass pain_doom_lv4 {
+   Name "pain_doom_lv4"
+   Pos 274 206
+   Size 64 64
+   Flags 0
+  }
  }
 }

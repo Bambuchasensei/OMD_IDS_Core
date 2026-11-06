@@ -6,6 +6,7 @@ class OMD_IDS_HudConfig
 	static const string PROFILE_FILE = "$profile:OMD_IDS/hud.json";
 	static const string LAYOUT_ROOT = "OMD_IDS_Core/gui/layouts/ids_hud.layout";
 	static const string LAYOUT_ICON = "OMD_IDS_Core/gui/layouts/ids_hud_icon.layout";
+	static const string LAYOUT_PAIN = "OMD_IDS_Core/gui/layouts/ids_hud_pain.layout";
 	static const int MIN_ICONS_PER_ROW = 1;
 	static const int DEFAULT_WOUND_A = 255;
 	static const int DEFAULT_WOUND_R = 220;
@@ -22,6 +23,24 @@ class OMD_IDS_HudConfig
 	static const float DEFAULT_POSITION_X = 0.95;
 	static const float DEFAULT_POSITION_Y = 0.82;
 	static const float POSITION_EPSILON = 0.001;
+	static const int DEFAULT_PAIN_BLINK_LEVELS = 3;
+	static const float DEFAULT_PAIN_BLINK_PERIOD = 0.25;
+	static const int DEFAULT_PAIN_1_A = 255;
+	static const int DEFAULT_PAIN_1_R = 255;
+	static const int DEFAULT_PAIN_1_G = 255;
+	static const int DEFAULT_PAIN_1_B = 255;
+	static const int DEFAULT_PAIN_2_A = 255;
+	static const int DEFAULT_PAIN_2_R = 255;
+	static const int DEFAULT_PAIN_2_G = 216;
+	static const int DEFAULT_PAIN_2_B = 74;
+	static const int DEFAULT_PAIN_3_A = 255;
+	static const int DEFAULT_PAIN_3_R = 255;
+	static const int DEFAULT_PAIN_3_G = 154;
+	static const int DEFAULT_PAIN_3_B = 46;
+	static const int DEFAULT_PAIN_4_A = 255;
+	static const int DEFAULT_PAIN_4_R = 255;
+	static const int DEFAULT_PAIN_4_G = 59;
+	static const int DEFAULT_PAIN_4_B = 48;
 
 	bool activeEnabled;
 	bool debugEnabled;
@@ -62,6 +81,26 @@ class OMD_IDS_HudConfig
 	float badgeOffsetX;
 	float badgeOffsetY;
 	float badgeShadowOffset;
+	bool painIconEnabled;
+	bool painIconBlink;
+	int painIconBlinkLevels;
+	float painIconBlinkPeriod;
+	int pain1A;
+	int pain1R;
+	int pain1G;
+	int pain1B;
+	int pain2A;
+	int pain2R;
+	int pain2G;
+	int pain2B;
+	int pain3A;
+	int pain3R;
+	int pain3G;
+	int pain3B;
+	int pain4A;
+	int pain4R;
+	int pain4G;
+	int pain4B;
 	ref array<ref OMD_IDS_HudZoneLink> zones;
 	ref array<ref OMD_IDS_HudGroupIcon> groups;
 
@@ -106,6 +145,7 @@ class OMD_IDS_HudConfig
 		loaded.ApplyMissingColorDefaults(rawJson);
 		loaded.ApplyMissingPositionDefaults(rawJson);
 		loaded.ApplyMissingLayoutDefaults(rawJson);
+		loaded.ApplyMissingPainDefaults(rawJson);
 		bool positionMigrated = loaded.MigrateLegacyPosition();
 		bool metricsMigrated = loaded.MigrateLegacyBadgeMetrics();
 		if (iconsChanged)
@@ -294,6 +334,7 @@ class OMD_IDS_HudConfig
 		outlineB = 0;
 		ApplyBadgeDefaults();
 		badgeShadowOffset = 2;
+		ApplyPainDefaults();
 		zones = new array<ref OMD_IDS_HudZoneLink>();
 		groups = new array<ref OMD_IDS_HudGroupIcon>();
 		OMD_IDS_HudGroupMap.FillDefaultZones(zones);
@@ -305,6 +346,133 @@ class OMD_IDS_HudConfig
 		badgeSize = 24;
 		badgeOffsetX = 19;
 		badgeOffsetY = 18;
+	}
+
+	private void ApplyPainDefaults()
+	{
+		painIconEnabled = true;
+		painIconBlink = true;
+		painIconBlinkLevels = DEFAULT_PAIN_BLINK_LEVELS;
+		painIconBlinkPeriod = DEFAULT_PAIN_BLINK_PERIOD;
+		pain1A = DEFAULT_PAIN_1_A;
+		pain1R = DEFAULT_PAIN_1_R;
+		pain1G = DEFAULT_PAIN_1_G;
+		pain1B = DEFAULT_PAIN_1_B;
+		pain2A = DEFAULT_PAIN_2_A;
+		pain2R = DEFAULT_PAIN_2_R;
+		pain2G = DEFAULT_PAIN_2_G;
+		pain2B = DEFAULT_PAIN_2_B;
+		pain3A = DEFAULT_PAIN_3_A;
+		pain3R = DEFAULT_PAIN_3_R;
+		pain3G = DEFAULT_PAIN_3_G;
+		pain3B = DEFAULT_PAIN_3_B;
+		pain4A = DEFAULT_PAIN_4_A;
+		pain4R = DEFAULT_PAIN_4_R;
+		pain4G = DEFAULT_PAIN_4_G;
+		pain4B = DEFAULT_PAIN_4_B;
+	}
+
+	private void ApplyMissingPainDefaults(string rawJson)
+	{
+		if (!JsonHasKey(rawJson, "painIconEnabled"))
+		{
+			painIconEnabled = true;
+		}
+
+		if (!JsonHasKey(rawJson, "painIconBlink"))
+		{
+			painIconBlink = true;
+		}
+
+		if (!JsonHasKey(rawJson, "painIconBlinkLevels"))
+		{
+			painIconBlinkLevels = DEFAULT_PAIN_BLINK_LEVELS;
+		}
+
+		if (!JsonHasKey(rawJson, "painIconBlinkPeriod"))
+		{
+			painIconBlinkPeriod = DEFAULT_PAIN_BLINK_PERIOD;
+		}
+
+		if (!JsonHasKey(rawJson, "pain1A"))
+		{
+			pain1A = DEFAULT_PAIN_1_A;
+		}
+
+		if (!JsonHasKey(rawJson, "pain1R"))
+		{
+			pain1R = DEFAULT_PAIN_1_R;
+		}
+
+		if (!JsonHasKey(rawJson, "pain1G"))
+		{
+			pain1G = DEFAULT_PAIN_1_G;
+		}
+
+		if (!JsonHasKey(rawJson, "pain1B"))
+		{
+			pain1B = DEFAULT_PAIN_1_B;
+		}
+
+		if (!JsonHasKey(rawJson, "pain2A"))
+		{
+			pain2A = DEFAULT_PAIN_2_A;
+		}
+
+		if (!JsonHasKey(rawJson, "pain2R"))
+		{
+			pain2R = DEFAULT_PAIN_2_R;
+		}
+
+		if (!JsonHasKey(rawJson, "pain2G"))
+		{
+			pain2G = DEFAULT_PAIN_2_G;
+		}
+
+		if (!JsonHasKey(rawJson, "pain2B"))
+		{
+			pain2B = DEFAULT_PAIN_2_B;
+		}
+
+		if (!JsonHasKey(rawJson, "pain3A"))
+		{
+			pain3A = DEFAULT_PAIN_3_A;
+		}
+
+		if (!JsonHasKey(rawJson, "pain3R"))
+		{
+			pain3R = DEFAULT_PAIN_3_R;
+		}
+
+		if (!JsonHasKey(rawJson, "pain3G"))
+		{
+			pain3G = DEFAULT_PAIN_3_G;
+		}
+
+		if (!JsonHasKey(rawJson, "pain3B"))
+		{
+			pain3B = DEFAULT_PAIN_3_B;
+		}
+
+		if (!JsonHasKey(rawJson, "pain4A"))
+		{
+			pain4A = DEFAULT_PAIN_4_A;
+		}
+
+		if (!JsonHasKey(rawJson, "pain4R"))
+		{
+			pain4R = DEFAULT_PAIN_4_R;
+		}
+
+		if (!JsonHasKey(rawJson, "pain4G"))
+		{
+			pain4G = DEFAULT_PAIN_4_G;
+		}
+
+		if (!JsonHasKey(rawJson, "pain4B"))
+		{
+			pain4B = DEFAULT_PAIN_4_B;
+		}
 	}
 
 	private void ApplyColorDefaults()
@@ -332,6 +500,31 @@ class OMD_IDS_HudConfig
 		}
 
 		return ARGB(colorA, colorR, colorG, colorB);
+	}
+
+	int PainColor(int level)
+	{
+		if (level == 1)
+		{
+			return ARGB(pain1A, pain1R, pain1G, pain1B);
+		}
+
+		if (level == 2)
+		{
+			return ARGB(pain2A, pain2R, pain2G, pain2B);
+		}
+
+		if (level == 3)
+		{
+			return ARGB(pain3A, pain3R, pain3G, pain3B);
+		}
+
+		if (level == 4)
+		{
+			return ARGB(pain4A, pain4R, pain4G, pain4B);
+		}
+
+		return ARGB(255, 255, 255, 255);
 	}
 
 	bool MigrateLegacyBadgeMetrics()

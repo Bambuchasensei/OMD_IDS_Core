@@ -20,6 +20,7 @@ modded class MissionGameplay
 		}
 
 		RequestSnapshotOnce();
+		manager.UpdatePain(timeslice);
 		OMD_IDS_InjuryMailbox mailbox = OMD_IDS_InjuryMailbox.Get();
 		if (!mailbox)
 		{
@@ -44,9 +45,16 @@ modded class MissionGameplay
 	override void OnMissionFinish()
 	{
 		OMD_IDS_InjuryMailbox mailbox = OMD_IDS_InjuryMailbox.Get();
+		OMD_IDS_PainStore painStore;
 		if (mailbox)
 		{
 			mailbox.Clear();
+		}
+
+		painStore = OMD_IDS_PainStore.Get();
+		if (painStore)
+		{
+			painStore.Replace(0, null, null);
 		}
 
 		m_OMD_IDS_SnapshotRequested = false;
