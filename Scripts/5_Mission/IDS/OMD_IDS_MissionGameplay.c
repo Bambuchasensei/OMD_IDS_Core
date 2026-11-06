@@ -4,6 +4,12 @@ modded class MissionGameplay
 {
 	private bool m_OMD_IDS_SnapshotRequested;
 	private bool m_OMD_IDS_WasRaised;
+	private bool m_OMD_IDS_PainTraceInit;
+	private bool m_OMD_IDS_PainTraceWant;
+	private bool m_OMD_IDS_PainTraceRunning;
+	private bool m_OMD_IDS_PainTraceFaded;
+	private float m_OMD_IDS_PainTraceChromMax;
+	private float m_OMD_IDS_PainTraceGaussMax;
 
 	override void OnInit()
 	{
@@ -75,7 +81,16 @@ modded class MissionGameplay
 		PlayerBase player;
 		OMD_IDS_PainEffectState fx;
 		PPERequester_OMD_IDS_Pain requester;
+		OMD_IDS_HudManager manager;
 		bool want;
+		bool started;
+		bool stopped;
+		bool debugOn;
+		float chromMin;
+		float chromMax;
+		float gaussMin;
+		float gaussMax;
+		float waveStep;
 
 		if (!GetGame())
 		{
@@ -88,18 +103,38 @@ modded class MissionGameplay
 			return;
 		}
 
+		debugOn = false;
+		manager = OMD_IDS_HudManager.Get();
+		if (manager)
+		{
+			debugOn = manager.IsDebugEnabled();
+		}
+
+		requester.OMD_IDS_SetDebugEnabled(debugOn);
 		want = false;
+		started = false;
+		stopped = false;
+		chromMin = 0;
+		chromMax = 0;
+		gaussMin = 0;
+		gaussMax = 0;
+		waveStep = 0;
 		if (Class.CastTo(player, GetGame().GetPlayer()))
 		{
 			fx = player.OMD_IDS_GetPainFx();
 			if (fx)
 			{
-				if (fx.GetChromMax() > 0)
+				chromMin = fx.GetChromMin();
+				chromMax = fx.GetChromMax();
+				gaussMin = fx.GetGaussMin();
+				gaussMax = fx.GetGaussMax();
+				waveStep = fx.GetWaveStep();
+				if (chromMax > 0)
 				{
 					want = true;
 				}
 
-				if (fx.GetGaussMax() > 0)
+				if (gaussMax > 0)
 				{
 					want = true;
 				}
@@ -111,27 +146,100 @@ modded class MissionGameplay
 			if (!requester.IsRequesterRunning())
 			{
 				requester.Start();
+				started = true;
 			}
 
-			requester.SetVisual(fx.GetChromMin(), fx.GetChromMax(), fx.GetGaussMin(), fx.GetGaussMax(), fx.GetWaveStep());
+			requester.SetVisual(chromMin, chromMax, gaussMin, gaussMax, waveStep);
+		}
+		else
+		{
+			if (requester.IsRequesterRunning())
+			{
+				requester.SetVisual(0, 0, 0, 0, 0);
+				if (requester.OMD_IDS_IsFaded())
+				{
+					requester.Stop();
+					stopped = true;
+				}
+			}
+		}
+
+		OMD_IDS_TracePainVisual(want, requester.IsRequesterRunning(), requester.OMD_IDS_IsFaded(), started, stopped, chromMax, gaussMax);
+	}
+
+	private void OMD_IDS_TracePainVisual(bool want, bool running, bool faded, bool started, bool stopped, float chromMax, float gaussMax)
+	{
+		OMD_IDS_HudManager manager;
+		bool enabled;
+		bool changed;
+
+		enabled = false;
+		manager = OMD_IDS_HudManager.Get();
+		if (manager)
+		{
+			enabled = manager.IsDebugEnabled();
+		}
+
+		if (!enabled)
+		{
+			m_OMD_IDS_PainTraceInit = false;
 			return;
 		}
 
-		if (!requester.IsRequesterRunning())
+		changed = !m_OMD_IDS_PainTraceInit;
+		if (want != m_OMD_IDS_PainTraceWant)
+		{
+			changed = true;
+		}
+
+		if (running != m_OMD_IDS_PainTraceRunning)
+		{
+			changed = true;
+		}
+
+		if (faded != m_OMD_IDS_PainTraceFaded)
+		{
+			changed = true;
+		}
+
+		if (chromMax != m_OMD_IDS_PainTraceChromMax)
+		{
+			changed = true;
+		}
+
+		if (gaussMax != m_OMD_IDS_PainTraceGaussMax)
+		{
+			changed = true;
+		}
+
+		if (started)
+		{
+			changed = true;
+		}
+
+		if (stopped)
+		{
+			changed = true;
+		}
+
+		if (!changed)
 		{
 			return;
 		}
 
-		requester.SetVisual(0, 0, 0, 0, 0);
-		if (requester.OMD_IDS_IsFaded())
-		{
-			requester.Stop();
-		}
+		m_OMD_IDS_PainTraceInit = true;
+		m_OMD_IDS_PainTraceWant = want;
+		m_OMD_IDS_PainTraceRunning = running;
+		m_OMD_IDS_PainTraceFaded = faded;
+		m_OMD_IDS_PainTraceChromMax = chromMax;
+		m_OMD_IDS_PainTraceGaussMax = gaussMax;
+		Print(string.Format("[OMD_IDS][Pain][PPE] mission want=%1 running=%2 faded=%3 chromMax=%4 gaussMax=%5 start=%6 stop=%7", want, running, faded, chromMax, gaussMax, started, stopped));
 	}
 
 	private void OMD_IDS_StopPainVisual()
 	{
 		PPERequester_OMD_IDS_Pain requester;
+		OMD_IDS_HudManager manager;
 
 		requester = PPERequester_OMD_IDS_Pain.Cast(PPERequesterBank.GetRequester(PPERequester_OMD_IDS_Pain));
 		if (!requester)
@@ -142,6 +250,15 @@ modded class MissionGameplay
 		if (!requester.IsRequesterRunning())
 		{
 			return;
+		}
+
+		manager = OMD_IDS_HudManager.Get();
+		if (manager)
+		{
+			if (manager.IsDebugEnabled())
+			{
+				Print("[OMD_IDS][Pain][PPE] mission finish stop");
+			}
 		}
 
 		requester.Stop();
