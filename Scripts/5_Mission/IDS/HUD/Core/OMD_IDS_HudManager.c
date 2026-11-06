@@ -126,12 +126,13 @@ class OMD_IDS_HudManager
 	}
 
 	// Иконка боли отдельно от списка ран. Уровень читается из клиентского стора каждый тик.
+	// Лицо создаётся один раз в HudPanel и стоит слева от видимого ряда. Детей панели не двигаем.
 	void UpdatePain(float timeslice)
 	{
 		int level;
 		OMD_IDS_PainStore store;
 		Widget panel;
-		Widget firstWound;
+		Widget parent;
 
 		level = 0;
 		store = OMD_IDS_PainStore.Get();
@@ -145,15 +146,14 @@ class OMD_IDS_HudManager
 			m_PainIcon = new OMD_IDS_PainHudIcon();
 		}
 
-		m_PainIcon.Update(level, timeslice, m_Config);
-		if (!m_PainIcon.IsShown())
+		panel = FindBadgesPanel();
+		parent = null;
+		if (panel)
 		{
-			return;
+			parent = panel.GetParent();
 		}
 
-		panel = FindBadgesPanel();
-		firstWound = FirstWoundRoot();
-		m_PainIcon.Place(panel, firstWound);
+		m_PainIcon.Update(level, timeslice, m_Config, parent, panel);
 	}
 
 	private void Init()
@@ -420,37 +420,6 @@ class OMD_IDS_HudManager
 		}
 
 		Print("[OMD_IDS] hud row uses InsertAtFront, Bleeding widget was missing");
-	}
-
-	private Widget FirstWoundRoot()
-	{
-		int index;
-		OMD_IDS_HudIcon icon;
-		Widget root;
-
-		if (!m_Icons)
-		{
-			return null;
-		}
-
-		for (index = 0; index < m_Icons.Count(); index = index + 1)
-		{
-			icon = m_Icons.Get(index);
-			if (!icon)
-			{
-				continue;
-			}
-
-			root = icon.GetRoot();
-			if (!root)
-			{
-				continue;
-			}
-
-			return root;
-		}
-
-		return null;
 	}
 
 	private Widget FindChildBefore(Widget panel, Widget target)

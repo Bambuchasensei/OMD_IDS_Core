@@ -1,6 +1,7 @@
 #ifndef SERVER
 
 // Отдельная иконка боли тела. Не входит в ряд ран и не имеет groupId.
+// Корень создаётся один раз в HudPanel. Детей BadgesPanel не двигаем.
 class OMD_IDS_PainHudIcon
 {
 	private static const string ICON_LV1 = "set:ids_icons image:pain_doom_lv1";
@@ -8,6 +9,7 @@ class OMD_IDS_PainHudIcon
 	private static const string ICON_LV3 = "set:ids_icons image:pain_doom_lv3";
 	private static const string ICON_LV4 = "set:ids_icons image:pain_doom_lv4";
 	private static const float DEFAULT_BLINK_PERIOD = 0.25;
+	private static const float FACE_GAP = 2;
 
 	private Widget m_Root;
 	private ImageWidget m_Image;
@@ -17,12 +19,11 @@ class OMD_IDS_PainHudIcon
 	private int m_ShownColor;
 	private float m_AppliedSize;
 	private float m_BlinkTime;
-	private bool m_Visible;
 	private bool m_BlinkWhite;
 	private bool m_ColorSet;
 	private bool m_CreateFailed;
 
-	void Update(int level, float timeslice, OMD_IDS_HudConfig config)
+	void Update(int level, float timeslice, OMD_IDS_HudConfig config, Widget parent, Widget badges)
 	{
 		int levelColor;
 
@@ -73,7 +74,7 @@ class OMD_IDS_PainHudIcon
 			return;
 		}
 
-		if (!EnsureRoot())
+		if (!EnsureRoot(parent))
 		{
 			return;
 		}
@@ -104,74 +105,13 @@ class OMD_IDS_PainHudIcon
 		ApplySize(config);
 		levelColor = config.PainColor(level);
 		ApplyBlink(config, levelColor, timeslice);
-		m_Root.Show(true);
-		m_Visible = true;
-	}
-
-	bool IsShown()
-	{
-		return m_Visible;
-	}
-
-	void Place(Widget panel, Widget firstWound)
-	{
-		WrapSpacerWidget spacer;
-		Widget bleeding;
-		Widget before;
-		Widget anchor;
-
-		if (!m_Visible)
-		{
-			return;
-		}
-
+		AlignLeft(badges, config.iconSize);
 		if (!m_Root)
 		{
 			return;
 		}
 
-		if (!panel)
-		{
-			return;
-		}
-
-		if (IsPlaced(panel, firstWound))
-		{
-			return;
-		}
-
-		Detach();
-		if (!Class.CastTo(spacer, panel))
-		{
-			panel.AddChild(m_Root);
-			panel.Update();
-			return;
-		}
-
-		bleeding = panel.FindAnyWidget("Bleeding");
-		anchor = firstWound;
-		if (!anchor)
-		{
-			anchor = bleeding;
-		}
-
-		if (!anchor)
-		{
-			panel.AddChild(m_Root);
-			panel.Update();
-			return;
-		}
-
-		before = FindChildBefore(panel, anchor);
-		if (before)
-		{
-			spacer.AddChildAfter(m_Root, before, true);
-			panel.Update();
-			return;
-		}
-
-		InsertAtFront(panel, m_Root);
-		panel.Update();
+		m_Root.Show(true);
 	}
 
 	void Destroy()
@@ -183,11 +123,10 @@ class OMD_IDS_PainHudIcon
 
 		m_Root = null;
 		m_Image = null;
-		m_Visible = false;
 		m_Level = 0;
 	}
 
-	private bool EnsureRoot()
+	private bool EnsureRoot(Widget parent)
 	{
 		ImageWidget image;
 
@@ -206,6 +145,11 @@ class OMD_IDS_PainHudIcon
 			return false;
 		}
 
+		if (!parent)
+		{
+			return false;
+		}
+
 		if (!GetGame())
 		{
 			return false;
@@ -216,7 +160,7 @@ class OMD_IDS_PainHudIcon
 			return false;
 		}
 
-		m_Root = GetGame().GetWorkspace().CreateWidgets(OMD_IDS_HudConfig.LAYOUT_PAIN);
+		m_Root = GetGame().GetWorkspace().CreateWidgets(OMD_IDS_HudConfig.LAYOUT_PAIN, parent);
 		if (!m_Root)
 		{
 			m_CreateFailed = true;
@@ -233,11 +177,100 @@ class OMD_IDS_PainHudIcon
 		{
 			m_CreateFailed = true;
 			Print("[OMD_IDS] pain layout is missing IdsHudPainImage");
+			m_Root.Unlink();
+			m_Root = null;
 			return false;
 		}
 
 		m_Root.Show(false);
 		return true;
+	}
+
+	private void AlignLeft(Widget badges, float size)
+	{
+		Widget child;
+		Widget leftmost;
+		float childX;
+		float childY;
+		float childW;
+		float childH;
+		float bestX;
+		float bestY;
+		float bestH;
+		float panelX;
+		float panelY;
+		float panelW;
+		float panelH;
+		float posX;
+		float posY;
+
+		if (!m_Root)
+		{
+			return;
+		}
+
+		if (!badges)
+		{
+			return;
+		}
+
+		if (size <= 0)
+		{
+			return;
+		}
+
+		leftmost = null;
+		bestX = 0;
+		bestY = 0;
+		bestH = 0;
+		child = badges.GetChildren();
+		while (child)
+		{
+			if (child != m_Root)
+			{
+				if (child.IsVisible())
+				{
+					child.GetScreenSize(childW, childH);
+					if (childW > 0)
+					{
+						child.GetScreenPos(childX, childY);
+						if (!leftmost)
+						{
+							leftmost = child;
+							bestX = childX;
+							bestY = childY;
+							bestH = childH;
+						}
+						else
+						{
+							if (childX < bestX)
+							{
+								leftmost = child;
+								bestX = childX;
+								bestY = childY;
+								bestH = childH;
+							}
+						}
+					}
+				}
+			}
+
+			child = child.GetSibling();
+		}
+
+		if (leftmost)
+		{
+			posX = bestX - size - FACE_GAP;
+			posY = bestY + ((bestH - size) * 0.5);
+			m_Root.SetScreenPos(posX, posY, true);
+			return;
+		}
+
+		badges.GetScreenPos(panelX, panelY);
+		badges.GetScreenSize(panelW, panelH);
+		posX = panelX + panelW - size;
+		posY = panelY + ((panelH - size) * 0.5);
+		m_Root.SetScreenPos(posX, posY, true);
 	}
 
 	private bool LoadFace(int level)
@@ -381,7 +414,6 @@ class OMD_IDS_PainHudIcon
 		m_Level = 0;
 		m_BlinkTime = 0;
 		m_BlinkWhite = false;
-		m_Visible = false;
 		m_ColorSet = false;
 		if (!m_Root)
 		{
@@ -389,7 +421,6 @@ class OMD_IDS_PainHudIcon
 		}
 
 		m_Root.Show(false);
-		Detach();
 	}
 
 	private string IconPath(int level)
@@ -415,134 +446,6 @@ class OMD_IDS_PainHudIcon
 		}
 
 		return "";
-	}
-
-	private bool IsPlaced(Widget panel, Widget firstWound)
-	{
-		Widget next;
-		Widget bleeding;
-
-		if (!m_Root)
-		{
-			return false;
-		}
-
-		if (m_Root.GetParent() != panel)
-		{
-			return false;
-		}
-
-		next = m_Root.GetSibling();
-		if (firstWound)
-		{
-			if (next == firstWound)
-			{
-				return true;
-			}
-
-			return false;
-		}
-
-		bleeding = panel.FindAnyWidget("Bleeding");
-		if (bleeding)
-		{
-			if (next == bleeding)
-			{
-				return true;
-			}
-
-			return false;
-		}
-
-		return true;
-	}
-
-	private Widget FindChildBefore(Widget panel, Widget target)
-	{
-		Widget child;
-		Widget previous;
-
-		if (!panel)
-		{
-			return null;
-		}
-
-		if (!target)
-		{
-			return null;
-		}
-
-		previous = null;
-		child = panel.GetChildren();
-		while (child)
-		{
-			if (child == target)
-			{
-				return previous;
-			}
-
-			previous = child;
-			child = child.GetSibling();
-		}
-
-		return null;
-	}
-
-	private void InsertAtFront(Widget panel, Widget iconRoot)
-	{
-		array<Widget> existing;
-		Widget child;
-		Widget next;
-		int index;
-
-		if (!panel)
-		{
-			return;
-		}
-
-		if (!iconRoot)
-		{
-			return;
-		}
-
-		Detach();
-		existing = new array<Widget>();
-		child = panel.GetChildren();
-		while (child)
-		{
-			next = child.GetSibling();
-			existing.Insert(child);
-			child = next;
-		}
-
-		for (index = 0; index < existing.Count(); index = index + 1)
-		{
-			panel.RemoveChild(existing.Get(index));
-		}
-
-		panel.AddChild(iconRoot);
-		for (index = 0; index < existing.Count(); index = index + 1)
-		{
-			panel.AddChild(existing.Get(index));
-		}
-	}
-
-	private void Detach()
-	{
-		Widget holder;
-
-		if (!m_Root)
-		{
-			return;
-		}
-
-		holder = m_Root.GetParent();
-		if (!holder)
-		{
-			return;
-		}
-
-		holder.RemoveChild(m_Root);
 	}
 };
 

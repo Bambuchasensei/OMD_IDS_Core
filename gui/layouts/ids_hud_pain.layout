@@ -4,8 +4,8 @@ FrameWidgetClass IdsHudPain {
  clipchildren 0
  position 0 0
  size 40 40
- halign right_ref
- valign bottom_ref
+ halign left_ref
+ valign top_ref
  hexactpos 1
  vexactpos 1
  hexactsize 1
