@@ -14,6 +14,7 @@ modded class MissionGameplay
 	override void OnUpdate(float timeslice)
 	{
 		super.OnUpdate(timeslice);
+		OMD_IDS_UpdatePainVisual();
 		OMD_IDS_WatchAim();
 		OMD_IDS_HudManager manager = OMD_IDS_HudManager.Get();
 		if (!manager)
@@ -60,11 +61,87 @@ modded class MissionGameplay
 		}
 
 		OMD_IDS_ClearPainFx();
+		OMD_IDS_StopPainVisual();
 
 		m_OMD_IDS_SnapshotRequested = false;
 		m_OMD_IDS_WasRaised = false;
 		OMD_IDS_HudManager.Destroy();
 		super.OnMissionFinish();
+	}
+
+	private void OMD_IDS_UpdatePainVisual()
+	{
+		PlayerBase player;
+		OMD_IDS_PainEffectState fx;
+		PPERequester_OMD_IDS_Pain requester;
+		bool want;
+
+		if (!GetGame())
+		{
+			return;
+		}
+
+		requester = PPERequester_OMD_IDS_Pain.Cast(PPERequesterBank.GetRequester(PPERequester_OMD_IDS_Pain));
+		if (!requester)
+		{
+			return;
+		}
+
+		want = false;
+		if (Class.CastTo(player, GetGame().GetPlayer()))
+		{
+			fx = player.OMD_IDS_GetPainFx();
+			if (fx)
+			{
+				if (fx.GetChromMax() > 0)
+				{
+					want = true;
+				}
+
+				if (fx.GetGaussMax() > 0)
+				{
+					want = true;
+				}
+			}
+		}
+
+		if (want)
+		{
+			if (!requester.IsRequesterRunning())
+			{
+				requester.Start();
+			}
+
+			return;
+		}
+
+		if (!requester.IsRequesterRunning())
+		{
+			return;
+		}
+
+		if (requester.OMD_IDS_IsFaded())
+		{
+			requester.Stop();
+		}
+	}
+
+	private void OMD_IDS_StopPainVisual()
+	{
+		PPERequester_OMD_IDS_Pain requester;
+
+		requester = PPERequester_OMD_IDS_Pain.Cast(PPERequesterBank.GetRequester(PPERequester_OMD_IDS_Pain));
+		if (!requester)
+		{
+			return;
+		}
+
+		if (!requester.IsRequesterRunning())
+		{
+			return;
+		}
+
+		requester.Stop();
 	}
 
 	private void OMD_IDS_WatchAim()
