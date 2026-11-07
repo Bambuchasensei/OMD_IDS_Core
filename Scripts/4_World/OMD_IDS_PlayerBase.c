@@ -44,6 +44,7 @@ modded class PlayerBase
 		if (IsControlledPlayer())
 		{
 			OMD_IDS_PainJerk.Reset();
+			OMD_IDS_PainStore.Get().Replace(0, null, null);
 			if (m_OMD_IDS_PainFx)
 			{
 				m_OMD_IDS_PainFx.Clear();
@@ -55,6 +56,16 @@ modded class PlayerBase
 
 	override void EEDelete(EntityAI parent)
 	{
+		if (IsControlledPlayer())
+		{
+			OMD_IDS_PainJerk.Reset();
+			OMD_IDS_PainStore.Get().Replace(0, null, null);
+			if (m_OMD_IDS_PainFx)
+			{
+				m_OMD_IDS_PainFx.Clear();
+			}
+		}
+
 		OMD_IDS_DropBleed();
 		super.EEDelete(parent);
 	}
