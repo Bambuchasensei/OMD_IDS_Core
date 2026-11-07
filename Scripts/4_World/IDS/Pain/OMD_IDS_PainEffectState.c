@@ -14,6 +14,8 @@ class OMD_IDS_PainEffectState
 	protected float m_GaussMin;
 	protected float m_GaussMax;
 	protected float m_WaveStep;
+	protected float m_HighJerkStrength;
+	protected float m_HighJerkInterval;
 
 	void OMD_IDS_PainEffectState()
 	{
@@ -34,6 +36,8 @@ class OMD_IDS_PainEffectState
 		m_GaussMin = 0;
 		m_GaussMax = 0;
 		m_WaveStep = 0.5;
+		m_HighJerkStrength = 0;
+		m_HighJerkInterval = 0;
 	}
 
 	void CopyFrom(OMD_IDS_PainEffectState other)
@@ -56,6 +60,8 @@ class OMD_IDS_PainEffectState
 		m_GaussMin = other.m_GaussMin;
 		m_GaussMax = other.m_GaussMax;
 		m_WaveStep = other.m_WaveStep;
+		m_HighJerkStrength = other.m_HighJerkStrength;
+		m_HighJerkInterval = other.m_HighJerkInterval;
 	}
 
 	bool Matches(OMD_IDS_PainEffectState other)
@@ -121,6 +127,16 @@ class OMD_IDS_PainEffectState
 		}
 
 		if (!Near(m_WaveStep, other.m_WaveStep))
+		{
+			return false;
+		}
+
+		if (!Near(m_HighJerkStrength, other.m_HighJerkStrength))
+		{
+			return false;
+		}
+
+		if (!Near(m_HighJerkInterval, other.m_HighJerkInterval))
 		{
 			return false;
 		}
@@ -250,6 +266,22 @@ class OMD_IDS_PainEffectState
 		return m_WaveStep;
 	}
 
+	void SetHighJerk(float strength, float intervalSec)
+	{
+		m_HighJerkStrength = strength;
+		m_HighJerkInterval = intervalSec;
+	}
+
+	float GetHighJerkStrength()
+	{
+		return m_HighJerkStrength;
+	}
+
+	float GetHighJerkInterval()
+	{
+		return m_HighJerkInterval;
+	}
+
 	void WriteRpc(ScriptRPC rpc)
 	{
 		rpc.Write(m_BreathAdd);
@@ -264,6 +296,8 @@ class OMD_IDS_PainEffectState
 		rpc.Write(m_GaussMin);
 		rpc.Write(m_GaussMax);
 		rpc.Write(m_WaveStep);
+		rpc.Write(m_HighJerkStrength);
+		rpc.Write(m_HighJerkInterval);
 	}
 
 	bool ReadRpc(ParamsReadContext ctx)
@@ -326,6 +360,20 @@ class OMD_IDS_PainEffectState
 		if (!ctx.Read(m_WaveStep))
 		{
 			return false;
+		}
+
+		if (!ctx.Read(m_HighJerkStrength))
+		{
+			m_HighJerkStrength = 0;
+			m_HighJerkInterval = 0;
+			return true;
+		}
+
+		if (!ctx.Read(m_HighJerkInterval))
+		{
+			m_HighJerkStrength = 0;
+			m_HighJerkInterval = 0;
+			return true;
 		}
 
 		return true;

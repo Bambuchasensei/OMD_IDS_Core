@@ -21,6 +21,7 @@ modded class MissionGameplay
 	{
 		super.OnUpdate(timeslice);
 		OMD_IDS_UpdatePainVisual();
+		OMD_IDS_UpdatePainJerk();
 		OMD_IDS_WatchAim();
 		OMD_IDS_HudManager manager = OMD_IDS_HudManager.Get();
 		if (!manager)
@@ -74,6 +75,23 @@ modded class MissionGameplay
 		m_OMD_IDS_WasRaised = false;
 		OMD_IDS_HudManager.Destroy();
 		super.OnMissionFinish();
+	}
+
+	private void OMD_IDS_UpdatePainJerk()
+	{
+		PlayerBase player;
+
+		if (!GetGame())
+		{
+			return;
+		}
+
+		if (!Class.CastTo(player, GetGame().GetPlayer()))
+		{
+			return;
+		}
+
+		OMD_IDS_PainJerk.TryHigh(player);
 	}
 
 	private void OMD_IDS_UpdatePainVisual()
