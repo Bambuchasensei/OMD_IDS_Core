@@ -2,6 +2,12 @@
 
 class OMD_IDS_HudManager
 {
+	// day_z_hud.layout: BadgesPanel position 252, halign right_ref, ширина 364.349.
+	// Лицо боли в NotifiersPanel: position 225, size 35, левый край 260.
+	// Панель заходит на лицо на 8. Счётчик иконки 44+12=56 при корне 52, ещё 4 вправо.
+	// Два ряда WrapSpacer прижаты к тому же правому краю. 252+16=268: у края панели 8, у счётчика 4.
+	private static const float BADGES_PANEL_RIGHT_X = 268;
+
 	private static ref OMD_IDS_HudManager s_Instance;
 
 	private ref OMD_IDS_HudConfig m_Config;
@@ -127,13 +133,14 @@ class OMD_IDS_HudManager
 	}
 
 	// Иконка боли отдельно от списка ран. Уровень читается из клиентского стора каждый тик.
-	// Лицо один раз создаётся в NotifiersPanel. Ряд ран и BadgesPanel не двигаем.
+	// Лицо остаётся в NotifiersPanel. Ряд ран сдвигается целиком вместе с BadgesPanel.
 	void UpdatePain(float timeslice)
 	{
 		int level;
 		OMD_IDS_PainStore store;
 		Widget notifiers;
 
+		ShiftBadgesPanel();
 		level = 0;
 		store = OMD_IDS_PainStore.Get();
 		if (store)
@@ -218,6 +225,8 @@ class OMD_IDS_HudManager
 			return;
 		}
 
+		ShiftBadgesPanel();
+
 		if (!m_Icons)
 		{
 			m_Icons = new array<ref OMD_IDS_HudIcon>();
@@ -284,6 +293,31 @@ class OMD_IDS_HudManager
 		}
 
 		Rebuild();
+	}
+
+	// Общий контейнер ряда. Внутренние иконки и ванильные значки этой панели не разбираем.
+	private void ShiftBadgesPanel()
+	{
+		float x;
+		float y;
+
+		if (!m_BadgesPanel)
+		{
+			m_BadgesPanel = FindBadgesPanel();
+		}
+
+		if (!m_BadgesPanel)
+		{
+			return;
+		}
+
+		m_BadgesPanel.GetPos(x, y);
+		if (x + 1 >= BADGES_PANEL_RIGHT_X)
+		{
+			return;
+		}
+
+		m_BadgesPanel.SetPos(BADGES_PANEL_RIGHT_X, y);
 	}
 
 	// Ванильный ряд значков. Корень — HudPanel, панель — WrapSpacer BadgesPanel.
