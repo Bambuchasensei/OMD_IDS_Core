@@ -16,6 +16,9 @@ class OMD_IDS_PainEffectState
 	protected float m_WaveStep;
 	protected float m_HighJerkStrength;
 	protected float m_HighJerkInterval;
+	// PAIN_LEVELS tail only. Not saved and not NetSync. 0 means no hit effect.
+	protected int m_HitFxCode;
+	protected int m_HitSerial;
 
 	void OMD_IDS_PainEffectState()
 	{
@@ -38,6 +41,8 @@ class OMD_IDS_PainEffectState
 		m_WaveStep = 0.5;
 		m_HighJerkStrength = 0;
 		m_HighJerkInterval = 0;
+		m_HitFxCode = 0;
+		m_HitSerial = 0;
 	}
 
 	void CopyFrom(OMD_IDS_PainEffectState other)
@@ -62,6 +67,8 @@ class OMD_IDS_PainEffectState
 		m_WaveStep = other.m_WaveStep;
 		m_HighJerkStrength = other.m_HighJerkStrength;
 		m_HighJerkInterval = other.m_HighJerkInterval;
+		m_HitFxCode = other.m_HitFxCode;
+		m_HitSerial = other.m_HitSerial;
 	}
 
 	bool Matches(OMD_IDS_PainEffectState other)
@@ -282,6 +289,22 @@ class OMD_IDS_PainEffectState
 		return m_HighJerkInterval;
 	}
 
+	int GetHitFxCode()
+	{
+		return m_HitFxCode;
+	}
+
+	int GetHitSerial()
+	{
+		return m_HitSerial;
+	}
+
+	void StoreHitFx(int fxCode, int hitSerial)
+	{
+		m_HitFxCode = fxCode;
+		m_HitSerial = hitSerial;
+	}
+
 	void WriteRpc(ScriptRPC rpc)
 	{
 		rpc.Write(m_BreathAdd);
@@ -298,6 +321,8 @@ class OMD_IDS_PainEffectState
 		rpc.Write(m_WaveStep);
 		rpc.Write(m_HighJerkStrength);
 		rpc.Write(m_HighJerkInterval);
+		rpc.Write(m_HitFxCode);
+		rpc.Write(m_HitSerial);
 	}
 
 	bool ReadRpc(ParamsReadContext ctx)
@@ -366,6 +391,8 @@ class OMD_IDS_PainEffectState
 		{
 			m_HighJerkStrength = 0;
 			m_HighJerkInterval = 0;
+			m_HitFxCode = 0;
+			m_HitSerial = 0;
 			return true;
 		}
 
@@ -373,6 +400,22 @@ class OMD_IDS_PainEffectState
 		{
 			m_HighJerkStrength = 0;
 			m_HighJerkInterval = 0;
+			m_HitFxCode = 0;
+			m_HitSerial = 0;
+			return true;
+		}
+
+		if (!ctx.Read(m_HitFxCode))
+		{
+			m_HitFxCode = 0;
+			m_HitSerial = 0;
+			return true;
+		}
+
+		if (!ctx.Read(m_HitSerial))
+		{
+			m_HitFxCode = 0;
+			m_HitSerial = 0;
 			return true;
 		}
 

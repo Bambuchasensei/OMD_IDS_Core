@@ -127,11 +127,10 @@ class OMD_IDS_ActionRemoveDressingSelf : ActionContinuousBase
 
 	override void OnActionInfoUpdate(PlayerBase player, ActionTarget target, ItemBase item)
 	{
-		m_Text = "Снять повязку";
-		if (GetVariantID() == 1)
-		{
-			m_Text = "Снять повязку с другой кисти";
-		}
+		int zoneId;
+
+		zoneId = OMD_IDS_HandSnapshot.OfferZone(GetVariantID(), 3);
+		m_Text = OMD_IDS_LimbCatalog.PairOrZone(GetVariantID(), zoneId, "Снять повязку", "Снять повязку с другой кисти", "Снять повязку с");
 	}
 
 	override bool ActionCondition(PlayerBase player, ActionTarget target, ItemBase item)
@@ -181,20 +180,17 @@ class OMD_IDS_ActionRemoveDressingSelf : ActionContinuousBase
 			return false;
 		}
 
-		if (variantId == 0)
+		if (variantId < 0)
 		{
-			return true;
+			return false;
 		}
 
-		if (variantId == 1)
+		if (variantId >= count)
 		{
-			if (count >= 2)
-			{
-				return true;
-			}
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	override bool ReadFromContext(ParamsReadContext ctx, out ActionReciveData action_recive_data)

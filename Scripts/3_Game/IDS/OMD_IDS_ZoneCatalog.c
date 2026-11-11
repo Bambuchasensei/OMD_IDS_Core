@@ -72,8 +72,8 @@ class OMD_IDS_ZoneCatalog
 		return s_Groups.Get(zoneId);
 	}
 
-	// Silhouette for the HUD snapshot. GetGroupId is unchanged, including GroupId.BONE and both hands as HAND.
-	// Left and right hands are separate snapshot groups. Other paired parts stay one group.
+	// Silhouette for the HUD snapshot. GetGroupId is unchanged, including GroupId.BONE, both hands as HAND and both feet as FOOT.
+	// Left and right hands, and left and right feet, are separate snapshot groups. Other paired parts stay one group.
 	static int GetHudGroupId(int zoneId)
 	{
 		if (zoneId == OMD_IDS_ZoneId.LEFT_UPPER_ARM_BONE)
@@ -128,12 +128,12 @@ class OMD_IDS_ZoneCatalog
 
 		if (zoneId == OMD_IDS_ZoneId.LEFT_FOOT)
 		{
-			return OMD_IDS_GroupId.FOOT;
+			return OMD_IDS_GroupId.LEFT_FOOT;
 		}
 
 		if (zoneId == OMD_IDS_ZoneId.RIGHT_FOOT)
 		{
-			return OMD_IDS_GroupId.FOOT;
+			return OMD_IDS_GroupId.RIGHT_FOOT;
 		}
 
 		return GetGroupId(zoneId);

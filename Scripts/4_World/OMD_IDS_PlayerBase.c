@@ -11,6 +11,8 @@ modded class PlayerBase
 	protected ref OMD_IDS_PainEffectState m_OMD_IDS_PainFx;
 	// Hand-action variant for the dedicated server check. Not NetSync and not saved.
 	protected int m_OMD_IDS_HandVariant;
+	// Last PAIN_LEVELS hit serial this client already handled. Not saved and not NetSync.
+	protected int m_OMD_IDS_HitFxSeen;
 
 	override void Init()
 	{
@@ -437,8 +439,11 @@ modded class PlayerBase
 		int index;
 		int zoneId;
 		int level;
+		int hitFxCode;
+		int hitSerial;
 		array<int> zoneIds;
 		array<int> levels;
+		OMD_IDS_HitHookClient hitHook;
 
 		if (!GetGame())
 		{
@@ -498,6 +503,18 @@ modded class PlayerBase
 		{
 			Print("[OMD_IDS][Pain] client effect numbers were not read");
 			return;
+		}
+
+		hitFxCode = OMD_IDS_GetPainFx().GetHitFxCode();
+		hitSerial = OMD_IDS_GetPainFx().GetHitSerial();
+		if (IsControlledPlayer())
+		{
+			if (hitSerial != m_OMD_IDS_HitFxSeen)
+			{
+				m_OMD_IDS_HitFxSeen = hitSerial;
+				hitHook = new OMD_IDS_HitHookClient();
+				hitHook.OnHitFx(this, hitFxCode, hitSerial);
+			}
 		}
 
 		OMD_IDS_PainStore.Get().Replace(bodyLevel, zoneIds, levels);

@@ -65,8 +65,8 @@ class OMD_IDS_HudGroupMap
 		AddZone(zones, "RightUpperLeg", GROUP_LEG);
 		AddZone(zones, "LeftLowerLeg", GROUP_LEG);
 		AddZone(zones, "RightLowerLeg", GROUP_LEG);
-		AddZone(zones, "LeftFoot", GROUP_FOOT);
-		AddZone(zones, "RightFoot", GROUP_FOOT);
+		AddZone(zones, "LeftFoot", OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.LEFT_FOOT));
+		AddZone(zones, "RightFoot", OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.RIGHT_FOOT));
 		AddZone(zones, "LeftUpperArmBone", GROUP_BONE);
 		AddZone(zones, "RightUpperArmBone", GROUP_BONE);
 		AddZone(zones, "LeftLowerArmBone", GROUP_BONE);
@@ -99,6 +99,8 @@ class OMD_IDS_HudGroupMap
 		AddGroup(groups, OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.RIGHT_HAND), ICON_HAND);
 		AddGroup(groups, GROUP_LEG, ICON_LEG);
 		AddGroup(groups, GROUP_FOOT, ICON_FOOT);
+		AddGroup(groups, OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.LEFT_FOOT), ICON_FOOT);
+		AddGroup(groups, OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.RIGHT_FOOT), ICON_FOOT);
 		AddGroup(groups, GROUP_BONE, ICON_BONE);
 		AddGroup(groups, GROUP_ORGAN, ICON_LUNGS);
 		AddGroup(groups, OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.ORGAN_WOUND), ICON_ORGAN_WOUND);

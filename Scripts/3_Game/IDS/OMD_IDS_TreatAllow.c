@@ -2,7 +2,7 @@
 // A free function is not used: Enforce Script rejects static free functions.
 // The client never loads injuries.json. Until Publish runs, every type allows only LeftHand and RightHand.
 // The server calls Publish after it reads treatmentZones. The client calls Publish from the cfg gameplay packet.
-// A missing key stays on those two hands. An empty list that was actually received allows nothing.
+// Feet arrive in that same packet once treatmentZones names them. An empty list that was actually received allows nothing.
 class OMD_IDS_TreatAllow
 {
 	static const int SPLINT = 1;

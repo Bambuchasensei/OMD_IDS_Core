@@ -1,6 +1,6 @@
 // Client read of the owner injury snapshot.
 // LeftHand and RightHand are separate groups. A row count is that hand only.
-// HP is not in the snapshot. Variant 0 and 1 follow OMD_IDS_HandTreatFlags.SideReady.
+// HP is not in the snapshot. Variants follow catalog order, the same list the server builds.
 // One ready hand: variant 0 is that hand. Both ready: variant 0 is left, variant 1 is right.
 class OMD_IDS_HandSnapshot
 {
@@ -200,20 +200,23 @@ class OMD_IDS_HandSnapshot
 	}
 
 	// mode 0 suture, 1 splint, 2 bandage, 3 remove dressing, 4 extract bullet. Same numbers as server PickHand.
-	// The result is how many hands qualify, not which side variant 0 hits.
+	// The result is how many catalog zones qualify, not which one variant 0 hits.
 	private static int HandsReady(int mode)
 	{
+		int index;
 		int total;
+		int zoneId;
+		int groupId;
 
 		total = 0;
-		if (HandReady(OMD_IDS_GroupId.LEFT_HAND, mode) != 0)
+		for (index = 0; index < OMD_IDS_LimbCatalog.Count(); index = index + 1)
 		{
-			total = total + 1;
-		}
-
-		if (HandReady(OMD_IDS_GroupId.RIGHT_HAND, mode) != 0)
-		{
-			total = total + 1;
+			zoneId = OMD_IDS_LimbCatalog.ZoneAt(index);
+			groupId = OMD_IDS_LimbCatalog.HudGroup(zoneId);
+			if (HandReady(groupId, mode) != 0)
+			{
+				total = total + 1;
+			}
 		}
 
 		return total;
@@ -223,15 +226,10 @@ class OMD_IDS_HandSnapshot
 	{
 		int zoneId;
 
-		zoneId = 0;
-		if (groupId == OMD_IDS_GroupId.LEFT_HAND)
+		zoneId = OMD_IDS_LimbCatalog.ZoneByHudGroup(groupId);
+		if (zoneId == 0)
 		{
-			zoneId = OMD_IDS_ZoneId.LEFT_HAND;
-		}
-
-		if (groupId == OMD_IDS_GroupId.RIGHT_HAND)
-		{
-			zoneId = OMD_IDS_ZoneId.RIGHT_HAND;
+			return 0;
 		}
 
 		if (OMD_IDS_TreatAllow.IsAllowed(zoneId, OMD_IDS_TreatAllow.TypeOfMode(mode)) == 0)
@@ -335,17 +333,12 @@ class OMD_IDS_HandSnapshot
 
 	private static int IsHandGroup(int groupId)
 	{
-		if (groupId == OMD_IDS_GroupId.LEFT_HAND)
+		if (OMD_IDS_LimbCatalog.ZoneByHudGroup(groupId) == 0)
 		{
-			return 1;
+			return 0;
 		}
 
-		if (groupId == OMD_IDS_GroupId.RIGHT_HAND)
-		{
-			return 1;
-		}
-
-		return 0;
+		return 1;
 	}
 
 	private static int HasWound(int groupId)
@@ -474,18 +467,45 @@ class OMD_IDS_HandSnapshot
 		}
 	}
 
-	// Group id for this variant, or 0 when the side is unknown.
+	// Zone id for this variant, or 0 when that slot is empty. Same order as OfferGroup.
+	static int OfferZone(int variantId, int mode)
+	{
+		return OMD_IDS_LimbCatalog.ZoneByHudGroup(OfferGroup(variantId, mode));
+	}
+
+	// Group id for this variant, or 0 when that slot is empty.
 	// One ready hand: variant 0 is that hand. Both ready: variant 0 is left.
 	static int OfferGroup(int variantId, int mode)
 	{
-		int leftReady;
-		int rightReady;
-		int side;
+		int index;
+		int seen;
+		int zoneId;
+		int groupId;
 
-		leftReady = HandReady(OMD_IDS_GroupId.LEFT_HAND, mode);
-		rightReady = HandReady(OMD_IDS_GroupId.RIGHT_HAND, mode);
-		side = OMD_IDS_HandTreatFlags.SideReady(leftReady, rightReady, variantId);
-		return OMD_IDS_HandTreatFlags.Group(side);
+		if (variantId < 0)
+		{
+			return 0;
+		}
+
+		seen = 0;
+		for (index = 0; index < OMD_IDS_LimbCatalog.Count(); index = index + 1)
+		{
+			zoneId = OMD_IDS_LimbCatalog.ZoneAt(index);
+			groupId = OMD_IDS_LimbCatalog.HudGroup(zoneId);
+			if (HandReady(groupId, mode) == 0)
+			{
+				continue;
+			}
+
+			if (seen == variantId)
+			{
+				return groupId;
+			}
+
+			seen = seen + 1;
+		}
+
+		return 0;
 	}
 
 	// Empty when the owner snapshot cannot name one hand. The action keeps the neutral text.
@@ -523,8 +543,7 @@ class OMD_IDS_HandSnapshot
 
 	static int OfferCountOf(PlayerBase patient, int mode)
 	{
-		int leftFlags;
-		int rightFlags;
+		array<int> flags;
 
 		if (!patient)
 		{
@@ -536,11 +555,9 @@ class OMD_IDS_HandSnapshot
 			return 0;
 		}
 
-		leftFlags = patient.OMD_IDS_GetTreatLeft();
-		rightFlags = patient.OMD_IDS_GetTreatRight();
-		leftFlags = FlagsIfAllowed(OMD_IDS_ZoneId.LEFT_HAND, mode, leftFlags);
-		rightFlags = FlagsIfAllowed(OMD_IDS_ZoneId.RIGHT_HAND, mode, rightFlags);
-		return OMD_IDS_HandTreatFlags.Count(leftFlags, rightFlags, mode);
+		flags = new array<int>();
+		OMD_IDS_LimbCatalog.CollectFlags(patient.OMD_IDS_GetTreatLeft(), patient.OMD_IDS_GetTreatRight(), mode, flags);
+		return OMD_IDS_LimbCatalog.ReadyCount(flags, mode);
 	}
 
 	static int VariantOkOf(PlayerBase patient, int variantId, int mode)
@@ -599,9 +616,8 @@ class OMD_IDS_HandSnapshot
 
 	private static int GroupOf(PlayerBase patient, int variantId, int mode)
 	{
-		int side;
-		int leftFlags;
-		int rightFlags;
+		int zoneId;
+		array<int> flags;
 
 		if (!patient)
 		{
@@ -613,38 +629,35 @@ class OMD_IDS_HandSnapshot
 			return 0;
 		}
 
-		leftFlags = patient.OMD_IDS_GetTreatLeft();
-		rightFlags = patient.OMD_IDS_GetTreatRight();
-		leftFlags = FlagsIfAllowed(OMD_IDS_ZoneId.LEFT_HAND, mode, leftFlags);
-		rightFlags = FlagsIfAllowed(OMD_IDS_ZoneId.RIGHT_HAND, mode, rightFlags);
-		side = OMD_IDS_HandTreatFlags.Side(leftFlags, rightFlags, variantId, mode);
-		return OMD_IDS_HandTreatFlags.Group(side);
-	}
-
-	// Drops a hand the allow list does not name. The list check itself is OMD_IDS_TreatAllow.IsAllowed.
-	private static int FlagsIfAllowed(int zoneId, int mode, int flags)
-	{
-		if (OMD_IDS_TreatAllow.IsAllowed(zoneId, OMD_IDS_TreatAllow.TypeOfMode(mode)) == 0)
-		{
-			return 0;
-		}
-
-		return flags;
+		flags = new array<int>();
+		OMD_IDS_LimbCatalog.CollectFlags(patient.OMD_IDS_GetTreatLeft(), patient.OMD_IDS_GetTreatRight(), mode, flags);
+		zoneId = OMD_IDS_LimbCatalog.Pick(flags, variantId, mode);
+		return OMD_IDS_LimbCatalog.HudGroup(zoneId);
 	}
 
 	private static int FlagsFor(PlayerBase patient, int groupId)
 	{
+		int zoneId;
+		int packed;
+
 		if (!patient)
 		{
 			return 0;
 		}
 
-		if (groupId == OMD_IDS_GroupId.RIGHT_HAND)
+		zoneId = OMD_IDS_LimbCatalog.ZoneByHudGroup(groupId);
+		if (zoneId == 0)
 		{
-			return patient.OMD_IDS_GetTreatRight();
+			return 0;
 		}
 
-		return patient.OMD_IDS_GetTreatLeft();
+		packed = patient.OMD_IDS_GetTreatLeft();
+		if (OMD_IDS_LimbCatalog.SideOf(zoneId) != 0)
+		{
+			packed = patient.OMD_IDS_GetTreatRight();
+		}
+
+		return OMD_IDS_LimbCatalog.FlagWord(packed, zoneId);
 	}
 
 	private static string BandageText(int groupId, int dirty, int sutured)
@@ -661,7 +674,7 @@ class OMD_IDS_HandSnapshot
 				return "Сменить бинт на правой кисти";
 			}
 
-			return "";
+			return OMD_IDS_LimbCatalog.Phrase("Сменить бинт на ", groupId, 1);
 		}
 
 		if (groupId == OMD_IDS_GroupId.LEFT_HAND)
@@ -684,7 +697,12 @@ class OMD_IDS_HandSnapshot
 			return "Забинтовать рану на правой кисти";
 		}
 
-		return "";
+		if (sutured != 0)
+		{
+			return OMD_IDS_LimbCatalog.Phrase("Забинтовать шов на ", groupId, 1);
+		}
+
+		return OMD_IDS_LimbCatalog.Phrase("Забинтовать ", groupId, 1);
 	}
 
 	private static string SutureText(int groupId)
@@ -699,7 +717,7 @@ class OMD_IDS_HandSnapshot
 			return "Зашить рану на правой кисти";
 		}
 
-		return "";
+		return OMD_IDS_LimbCatalog.Phrase("Зашить ", groupId, 1);
 	}
 
 	private static string SplintText(int groupId)
@@ -714,7 +732,7 @@ class OMD_IDS_HandSnapshot
 			return "Наложить шину на правую кисть";
 		}
 
-		return "";
+		return OMD_IDS_LimbCatalog.Phrase("Наложить шину на ", groupId, 1);
 	}
 
 	private static string ExtractText(int groupId)
@@ -729,7 +747,7 @@ class OMD_IDS_HandSnapshot
 			return "Вытащить пулю из правой кисти";
 		}
 
-		return "";
+		return OMD_IDS_LimbCatalog.Phrase("Вытащить пулю из ", groupId, 0);
 	}
 
 	private static string RemoveText(int groupId)
@@ -744,30 +762,23 @@ class OMD_IDS_HandSnapshot
 			return "Снять повязку с правой кисти";
 		}
 
-		return "";
+		return OMD_IDS_LimbCatalog.Phrase("Снять повязку с ", groupId, 0);
 	}
 
-	// Short hand name shared by treatment notices. 0 is "левой кисти". Any other value is "левую кисть".
+	// 0 is the genitive ("левой кисти"). Any other value is the accusative ("левую кисть").
 	static string LimbName(int zoneId, int onto)
 	{
-		if (zoneId == OMD_IDS_ZoneId.LEFT_HAND)
-		{
-			if (onto != 0)
-			{
-				return "левую кисть";
-			}
+		string text;
 
-			return "левой кисти";
+		text = OMD_IDS_LimbCatalog.Genitive(zoneId);
+		if (onto != 0)
+		{
+			text = OMD_IDS_LimbCatalog.Accusative(zoneId);
 		}
 
-		if (zoneId == OMD_IDS_ZoneId.RIGHT_HAND)
+		if (text != "")
 		{
-			if (onto != 0)
-			{
-				return "правую кисть";
-			}
-
-			return "правой кисти";
+			return text;
 		}
 
 		return OMD_IDS_ZoneCatalog.GetName(zoneId);

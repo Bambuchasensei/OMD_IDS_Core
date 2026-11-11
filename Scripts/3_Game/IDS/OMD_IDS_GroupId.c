@@ -3,6 +3,7 @@
 // 0 NONE, 1 HEAD, 2 TORSO, 3 ARM, 4 HAND, 5 LEG, 6 FOOT, 7 BONE,
 // 8 LUNGS is the shared organ group «Орган» (lungs icon). 9-12 stay unused. 13 ORGAN_WOUND
 // 14 LEFT_HAND and 15 RIGHT_HAND. HAND stays 4 so an old snapshot row still has a name.
+// 16 LEFT_FOOT and 17 RIGHT_FOOT. FOOT stays 6 so an old snapshot row still has a name.
 enum OMD_IDS_GroupId
 {
 	NONE = 0,
@@ -20,5 +21,7 @@ enum OMD_IDS_GroupId
 	GUTS = 12,
 	ORGAN_WOUND = 13,
 	LEFT_HAND = 14,
-	RIGHT_HAND = 15
+	RIGHT_HAND = 15,
+	LEFT_FOOT = 16,
+	RIGHT_FOOT = 17
 }

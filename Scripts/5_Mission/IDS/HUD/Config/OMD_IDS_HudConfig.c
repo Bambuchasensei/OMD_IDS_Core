@@ -151,7 +151,8 @@ class OMD_IDS_HudConfig
 		bool iconsChanged = loaded.MigrateLegacyIcons();
 		bool groupAdded = loaded.EnsureOrganWoundGroup();
 		bool organMerged = loaded.MergeSharedOrganGroup();
-		bool handsAdded = loaded.EnsureSplitHandGroups();
+		bool handsAdded = loaded.EnsureSplitPair("LeftHand", "RightHand", OMD_IDS_GroupId.LEFT_HAND, OMD_IDS_GroupId.RIGHT_HAND, OMD_IDS_HudGroupMap.ICON_HAND);
+		bool feetAdded = loaded.EnsureSplitPair("LeftFoot", "RightFoot", OMD_IDS_GroupId.LEFT_FOOT, OMD_IDS_GroupId.RIGHT_FOOT, OMD_IDS_HudGroupMap.ICON_FOOT);
 		loaded.ApplyMissingBadgeDefaults(rawJson);
 		loaded.ApplyMissingColorDefaults(rawJson);
 		loaded.ApplyMissingPositionDefaults(rawJson);
@@ -184,6 +185,12 @@ class OMD_IDS_HudConfig
 		{
 			rewrite = true;
 			Print("[OMD_IDS] hud.json: split hand icons");
+		}
+
+		if (feetAdded)
+		{
+			rewrite = true;
+			Print("[OMD_IDS] hud.json: split foot icons");
 		}
 
 		if (positionMigrated)
@@ -260,7 +267,8 @@ class OMD_IDS_HudConfig
 		return true;
 	}
 
-	bool EnsureSplitHandGroups()
+	// One split for a left/right pair. Hands and feet both use this. Other zone rows stay as they are.
+	bool EnsureSplitPair(string leftZone, string rightZone, int leftGroup, int rightGroup, string icon)
 	{
 		bool changed;
 		string leftId;
@@ -269,8 +277,8 @@ class OMD_IDS_HudConfig
 		OMD_IDS_HudZoneLink link;
 
 		changed = false;
-		leftId = OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.LEFT_HAND);
-		rightId = OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.RIGHT_HAND);
+		leftId = OMD_IDS_GroupCatalog.GetName(leftGroup);
+		rightId = OMD_IDS_GroupCatalog.GetName(rightGroup);
 		if (leftId == "")
 		{
 			return false;
@@ -286,12 +294,12 @@ class OMD_IDS_HudConfig
 			return false;
 		}
 
-		if (AddHandGroup(leftId))
+		if (AddSplitGroup(leftId, icon))
 		{
 			changed = true;
 		}
 
-		if (AddHandGroup(rightId))
+		if (AddSplitGroup(rightId, icon))
 		{
 			changed = true;
 		}
@@ -309,7 +317,7 @@ class OMD_IDS_HudConfig
 				continue;
 			}
 
-			if (link.zone == "LeftHand")
+			if (link.zone == leftZone)
 			{
 				if (link.group != leftId)
 				{
@@ -318,7 +326,7 @@ class OMD_IDS_HudConfig
 				}
 			}
 
-			if (link.zone == "RightHand")
+			if (link.zone == rightZone)
 			{
 				if (link.group != rightId)
 				{
@@ -331,7 +339,7 @@ class OMD_IDS_HudConfig
 		return changed;
 	}
 
-	private bool AddHandGroup(string groupId)
+	private bool AddSplitGroup(string groupId, string icon)
 	{
 		OMD_IDS_HudGroupIcon groupIcon;
 
@@ -342,7 +350,7 @@ class OMD_IDS_HudConfig
 
 		groupIcon = new OMD_IDS_HudGroupIcon();
 		groupIcon.id = groupId;
-		groupIcon.icon = OMD_IDS_HudGroupMap.ICON_HAND;
+		groupIcon.icon = icon;
 		groups.Insert(groupIcon);
 		return true;
 	}

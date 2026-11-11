@@ -505,16 +505,13 @@ class OMD_IDS_ActionSutureSelf : ActionContinuousBase
 	override void OnActionInfoUpdate(PlayerBase player, ActionTarget target, ItemBase item)
 	{
 		string named;
+		int zoneId;
 
 		named = OMD_IDS_HandSnapshot.NamedSuture(GetVariantID());
 		if (named == "")
 		{
-			m_Text = "Зашить кисть";
-			if (GetVariantID() == 1)
-			{
-				m_Text = "Зашить другую кисть";
-			}
-
+			zoneId = OMD_IDS_HandSnapshot.OfferZone(GetVariantID(), 0);
+			m_Text = OMD_IDS_LimbCatalog.PairOrZone(GetVariantID(), zoneId, "Зашить кисть", "Зашить другую кисть", "Зашить");
 			return;
 		}
 
@@ -563,20 +560,17 @@ class OMD_IDS_ActionSutureSelf : ActionContinuousBase
 			return false;
 		}
 
-		if (variantId == 0)
+		if (variantId < 0)
 		{
-			return true;
+			return false;
 		}
 
-		if (variantId == 1)
+		if (variantId >= count)
 		{
-			if (count >= 2)
-			{
-				return true;
-			}
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	override bool ReadFromContext(ParamsReadContext ctx, out ActionReciveData action_recive_data)

@@ -164,6 +164,7 @@ modded class ActionSplintSelf
 	override void OnActionInfoUpdate(PlayerBase player, ActionTarget target, ItemBase item)
 	{
 		string named;
+		int zoneId;
 
 		if (player)
 		{
@@ -177,12 +178,8 @@ modded class ActionSplintSelf
 		named = OMD_IDS_HandSnapshot.NamedSplint(GetVariantID());
 		if (named == "")
 		{
-			m_Text = "Наложить шину";
-			if (GetVariantID() == 1)
-			{
-				m_Text = "Шина на другую кисть";
-			}
-
+			zoneId = OMD_IDS_HandSnapshot.OfferZone(GetVariantID(), 1);
+			m_Text = OMD_IDS_LimbCatalog.PairOrZone(GetVariantID(), zoneId, "Наложить шину", "Шина на другую кисть", "Наложить шину на");
 			return;
 		}
 
@@ -191,6 +188,7 @@ modded class ActionSplintSelf
 
 	override bool ActionCondition(PlayerBase player, ActionTarget target, ItemBase item)
 	{
+		int count;
 		int variantId;
 		int zoneId;
 		OMD_IDS_TreatmentHooks hooks;
@@ -228,26 +226,24 @@ modded class ActionSplintSelf
 			return hooks.CanSplintServer(player, zoneId);
 		}
 
+		count = OMD_IDS_HandSnapshot.SplintOfferCount();
 		variantId = GetVariantID();
-		if (OMD_IDS_HandSnapshot.SplintOfferCount() < 1)
+		if (count < 1)
 		{
 			return false;
 		}
 
-		if (variantId == 0)
+		if (variantId < 0)
 		{
-			return true;
+			return false;
 		}
 
-		if (variantId == 1)
+		if (variantId >= count)
 		{
-			if (OMD_IDS_HandSnapshot.SplintOfferCount() >= 2)
-			{
-				return true;
-			}
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	override bool ReadFromContext(ParamsReadContext ctx, out ActionReciveData action_recive_data)

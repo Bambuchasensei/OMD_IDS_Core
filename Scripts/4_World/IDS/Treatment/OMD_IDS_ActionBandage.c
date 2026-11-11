@@ -151,11 +151,6 @@ modded class ActionBandageSelf
 			{
 				count = 1;
 			}
-
-			if (count > 2)
-			{
-				count = 2;
-			}
 		}
 
 		GetVariantManager().SetActionVariantCount(count);
@@ -164,6 +159,7 @@ modded class ActionBandageSelf
 	override void OnActionInfoUpdate(PlayerBase player, ActionTarget target, ItemBase item)
 	{
 		string named;
+		int zoneId;
 
 		if (OMD_IDS_HandSnapshot.BandageCount() < 1)
 		{
@@ -174,12 +170,8 @@ modded class ActionBandageSelf
 		named = OMD_IDS_HandSnapshot.NamedBandage(GetVariantID());
 		if (named == "")
 		{
-			m_Text = "Забинтовать кисть";
-			if (GetVariantID() == 1)
-			{
-				m_Text = "Забинтовать другую кисть";
-			}
-
+			zoneId = OMD_IDS_HandSnapshot.OfferZone(GetVariantID(), 2);
+			m_Text = OMD_IDS_LimbCatalog.PairOrZone(GetVariantID(), zoneId, "Забинтовать кисть", "Забинтовать другую кисть", "Забинтовать");
 			return;
 		}
 
@@ -239,20 +231,17 @@ modded class ActionBandageSelf
 		}
 
 		variantId = GetVariantID();
-		if (variantId == 0)
+		if (variantId < 0)
 		{
-			return true;
+			return false;
 		}
 
-		if (variantId == 1)
+		if (variantId >= count)
 		{
-			if (count >= 2)
-			{
-				return true;
-			}
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	override bool ActionConditionContinue(ActionData action_data)

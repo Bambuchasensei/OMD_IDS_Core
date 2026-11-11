@@ -196,18 +196,17 @@ class OMD_IDS_TreatmentHooks
 	// Client reads the owner snapshot and the factory numbers. The server mod replaces this.
 	void HandActionLoads(PlayerBase player, out float leftLoad, out float rightLoad, out float configuredMult)
 	{
-		int leftDeep;
-		int leftFracture;
-		int leftBullet;
-		int leftDressing;
-		int leftSuture;
-		int leftSplint;
-		int rightDeep;
-		int rightFracture;
-		int rightBullet;
-		int rightDressing;
-		int rightSuture;
-		int rightSplint;
+		int index;
+		int zoneId;
+		int side;
+		int groupId;
+		int deep;
+		int fracture;
+		int bullet;
+		int dressing;
+		int suture;
+		int splint;
+		int flags;
 		int leftFlags;
 		int rightFlags;
 
@@ -219,10 +218,25 @@ class OMD_IDS_TreatmentHooks
 			return;
 		}
 
-		OMD_IDS_HandSnapshot.ActionFlags(OMD_IDS_GroupId.LEFT_HAND, leftDeep, leftFracture, leftBullet, leftDressing, leftSuture, leftSplint);
-		OMD_IDS_HandSnapshot.ActionFlags(OMD_IDS_GroupId.RIGHT_HAND, rightDeep, rightFracture, rightBullet, rightDressing, rightSuture, rightSplint);
-		leftFlags = OMD_IDS_HandActionLoad.Pack(leftDeep, leftFracture, leftBullet, leftDressing, leftSuture, leftSplint);
-		rightFlags = OMD_IDS_HandActionLoad.Pack(rightDeep, rightFracture, rightBullet, rightDressing, rightSuture, rightSplint);
+		leftFlags = 0;
+		rightFlags = 0;
+		for (index = 0; index < OMD_IDS_LimbCatalog.Count(); index = index + 1)
+		{
+			zoneId = OMD_IDS_LimbCatalog.ZoneAt(index);
+			side = OMD_IDS_LimbCatalog.SideOf(zoneId);
+			groupId = OMD_IDS_LimbCatalog.HudGroup(zoneId);
+			OMD_IDS_HandSnapshot.ActionFlags(groupId, deep, fracture, bullet, dressing, suture, splint);
+			flags = OMD_IDS_HandActionLoad.Pack(deep, fracture, bullet, dressing, suture, splint);
+			if (side == 0)
+			{
+				leftFlags = flags;
+			}
+			else
+			{
+				rightFlags = flags;
+			}
+		}
+
 		OMD_IDS_HandActionLoad.Loads(leftFlags, rightFlags, OMD_IDS_HandActionLoad.FactoryDeep(), OMD_IDS_HandActionLoad.FactoryFracture(), OMD_IDS_HandActionLoad.FactoryBullet(), leftLoad, rightLoad);
 	}
 

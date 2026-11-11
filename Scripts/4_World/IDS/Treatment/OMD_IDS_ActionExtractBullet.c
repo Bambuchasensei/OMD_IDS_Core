@@ -441,20 +441,17 @@ class OMD_IDS_ActionExtractBulletSelf : ActionContinuousBase
 			return false;
 		}
 
-		if (variantId == 0)
+		if (variantId < 0)
 		{
-			return true;
+			return false;
 		}
 
-		if (variantId == 1)
+		if (variantId >= count)
 		{
-			if (count >= 2)
-			{
-				return true;
-			}
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	override bool ReadFromContext(ParamsReadContext ctx, out ActionReciveData action_recive_data)

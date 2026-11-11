@@ -1,7 +1,7 @@
 // Public hand bits for other players. Not saved. The server packs them.
 // Bits 0-3 wound type, 4-7 bone type, 8-11 bullet count, 12-13 dressing, 14 suture, 15 splint.
 // Dressing: 0 none, 1 clean, 2 dirty. Mode matches PickHand: 0 suture, 1 splint, 2 bandage, 3 remove, 4 extract.
-// Variant 0 is the left hand when both qualify. Lower HP is not used.
+// Ready() is one zone. The menu order is OMD_IDS_LimbCatalog.Pick. Lower HP is not used.
 class OMD_IDS_HandTreatFlags
 {
 	static int Pack(int woundType, int boneType, int bulletCount, int dressingKind, int suture, int splint)
