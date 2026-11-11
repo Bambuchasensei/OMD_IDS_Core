@@ -3,16 +3,27 @@ modded class PlayerBase
 	protected int m_OMD_IDS_BoneBreakSeq;
 	protected int m_OMD_IDS_BleedLight;
 	protected int m_OMD_IDS_BleedHeavy;
+	// Packed hand treatment. Not saved. Rebuilt from records and effects.
+	protected int m_OMD_IDS_TreatLeft;
+	protected int m_OMD_IDS_TreatRight;
 	protected ref OMD_IDS_BoneBreakSoundClient m_OMD_IDS_BoneBreakSound;
 	protected ref OMD_IDS_BleedFx m_OMD_IDS_BleedFx;
 	protected ref OMD_IDS_PainEffectState m_OMD_IDS_PainFx;
+	// Hand-action variant for the dedicated server check. Not NetSync and not saved.
+	protected int m_OMD_IDS_HandVariant;
 
 	override void Init()
 	{
 		super.Init();
 		RegisterNetSyncVariableInt("m_OMD_IDS_BoneBreakSeq", 0, 255);
-		RegisterNetSyncVariableInt("m_OMD_IDS_BleedLight", 0, 2147483647);
-		RegisterNetSyncVariableInt("m_OMD_IDS_BleedHeavy", 0, 2147483647);
+		// Bit masks. No min/max: when they are equal the engine does not quantize.
+		// P:\scripts\3_game\entities\entityai.c:2847
+		RegisterNetSyncVariableInt("m_OMD_IDS_BleedLight");
+		RegisterNetSyncVariableInt("m_OMD_IDS_BleedHeavy");
+		// Bitmask, bits 0-15. No min/max: when they are equal the engine does not quantize.
+		// P:\scripts\3_game\entities\entityai.c:2847
+		RegisterNetSyncVariableInt("m_OMD_IDS_TreatLeft");
+		RegisterNetSyncVariableInt("m_OMD_IDS_TreatRight");
 	}
 
 	override void EEInit()
@@ -163,6 +174,16 @@ modded class PlayerBase
 		SetSynchDirty();
 	}
 
+	int OMD_IDS_GetTreatLeft()
+	{
+		return m_OMD_IDS_TreatLeft;
+	}
+
+	int OMD_IDS_GetTreatRight()
+	{
+		return m_OMD_IDS_TreatRight;
+	}
+
 	protected void OMD_IDS_RefreshFx()
 	{
 		if (!GetGame())
@@ -197,6 +218,126 @@ modded class PlayerBase
 		}
 
 		m_OMD_IDS_BleedFx.Drop();
+	}
+
+	// Client OnSelectPlayer calls this after the cfg gameplay packet is already in CfgGameplayHandler.m_Data.
+	// P:\scripts\4_world\entities\manbase\playerbase.c:6413
+	// P:\scripts\3_game\entities\man.c:867
+	override void OnGameplayDataHandlerSync()
+	{
+		super.OnGameplayDataHandlerSync();
+		OMD_IDS_ApplyTreatSync();
+		OMD_IDS_LogArrayProbe();
+	}
+
+	protected void OMD_IDS_ApplyTreatSync()
+	{
+		OMD_IDS_TreatSync packet;
+
+		if (!GetGame())
+		{
+			return;
+		}
+
+		if (!GetGame().IsClient())
+		{
+			return;
+		}
+
+		packet = CfgGameplayHandler.GetOMD_IDS_Treat();
+		if (!packet)
+		{
+			Print("[OMD_IDS][CfgSync] client ready=0 extract=0 suture=0 remove=0 zones splint=0 suture=0 dressing=0 extract=0 remove=0 probe=0 arraysNull=5.");
+			return;
+		}
+
+		packet.ApplyOnClient();
+	}
+
+	// Diagnostic only. Reads the vanilla string array and the treat packet. Does not apply them.
+	protected void OMD_IDS_LogArrayProbe()
+	{
+		int count;
+		int index;
+		int ready;
+		int probe;
+		int sum;
+		string items;
+		string line;
+		TStringArray files;
+		OMD_IDS_TreatSync packet;
+
+		if (!GetGame())
+		{
+			return;
+		}
+
+		if (!GetGame().IsClient())
+		{
+			return;
+		}
+
+		count = -1;
+		items = "";
+		if (CfgGameplayHandler.m_Data)
+		{
+			if (CfgGameplayHandler.m_Data.PlayerData)
+			{
+				files = CfgGameplayHandler.m_Data.PlayerData.spawnGearPresetFiles;
+				if (files)
+				{
+					count = files.Count();
+					for (index = 0; index < count; index = index + 1)
+					{
+						if (items != "")
+						{
+							items = items + " ";
+						}
+
+						items = items + files.Get(index);
+					}
+				}
+			}
+		}
+
+		line = "[OMD_IDS][ArrayProbe] client vanilla spawnGear count=" + count.ToString() + " items=" + items;
+		Print(line);
+		packet = CfgGameplayHandler.GetOMD_IDS_Treat();
+		if (!packet)
+		{
+			return;
+		}
+
+		ready = packet.m_Ready;
+		probe = packet.zonesProbe;
+		sum = 0;
+		if (packet.splint)
+		{
+			sum = sum + packet.splint.Count();
+		}
+
+		if (packet.suture)
+		{
+			sum = sum + packet.suture.Count();
+		}
+
+		if (packet.dressing)
+		{
+			sum = sum + packet.dressing.Count();
+		}
+
+		if (packet.extractBullet)
+		{
+			sum = sum + packet.extractBullet.Count();
+		}
+
+		if (packet.removeDressing)
+		{
+			sum = sum + packet.removeDressing.Count();
+		}
+
+		line = string.Format("[OMD_IDS][ArrayProbe] client treat ready=%1 probe=%2 sum=%3", ready, probe, sum);
+		Print(line);
 	}
 
 	override void OnRPC(PlayerIdentity sender, int rpc_type, ParamsReadContext ctx)
@@ -361,5 +502,19 @@ modded class PlayerBase
 
 		OMD_IDS_PainStore.Get().Replace(bodyLevel, zoneIds, levels);
 		Print(string.Format("[OMD_IDS][Pain] client body=%1 zones=%2", bodyLevel, count));
+	}
+
+	void OMD_IDS_SetHandVariant(int variantId)
+	{
+		m_OMD_IDS_HandVariant = variantId;
+		if (m_OMD_IDS_HandVariant < 0)
+		{
+			m_OMD_IDS_HandVariant = 0;
+		}
+	}
+
+	int OMD_IDS_GetHandVariant()
+	{
+		return m_OMD_IDS_HandVariant;
 	}
 };

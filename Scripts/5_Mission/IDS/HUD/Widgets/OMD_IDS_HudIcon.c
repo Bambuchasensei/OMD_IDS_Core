@@ -229,7 +229,11 @@ class OMD_IDS_HudIcon
 		m_Badge.SetPos(config.badgeOffsetX, config.badgeOffsetY);
 		m_Badge.SetSize(size, size);
 		m_Badge.SetColor(color);
-		badgePath = OMD_IDS_InjuryTypeCatalog.BadgePath(entry.label);
+		badgePath = OMD_IDS_HudGroupMap.TreatmentBadge(entry.label);
+		if (badgePath == "")
+		{
+			badgePath = OMD_IDS_InjuryTypeCatalog.BadgePath(entry.label);
+		}
 		loaded = m_Badge.LoadImageFile(0, badgePath, false);
 		if (!loaded)
 		{

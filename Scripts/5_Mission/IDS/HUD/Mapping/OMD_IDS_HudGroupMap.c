@@ -23,6 +23,10 @@ class OMD_IDS_HudGroupMap
 	static const string ICON_BONE = "set:ids_icons image:bone";
 	static const string ICON_LUNGS = "set:ids_icons image:lungs";
 	static const string ICON_ORGAN_WOUND = "set:ids_icons image:wound_organ";
+	static const string ICON_SUTURE = "set:ids_icons image:wound_suture";
+	static const string ICON_DRESSING_CLEAN = "set:ids_icons image:wound_bandage_clean";
+	static const string ICON_DRESSING_DIRTY = "set:ids_icons image:wound_bandage_dirty";
+	static const string ICON_SPLINT = "set:ids_icons image:bone_splint";
 	// Old hud.json files keep direct file paths with this prefix; they are replaced by atlas defaults on load
 	static const string LEGACY_ICON_PREFIX = "OMD_IDS_Core/gui/icons/";
 
@@ -55,8 +59,8 @@ class OMD_IDS_HudGroupMap
 		AddZone(zones, "RightUpperArm", GROUP_ARM);
 		AddZone(zones, "LeftLowerArm", GROUP_ARM);
 		AddZone(zones, "RightLowerArm", GROUP_ARM);
-		AddZone(zones, "LeftHand", GROUP_HAND);
-		AddZone(zones, "RightHand", GROUP_HAND);
+		AddZone(zones, "LeftHand", OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.LEFT_HAND));
+		AddZone(zones, "RightHand", OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.RIGHT_HAND));
 		AddZone(zones, "LeftUpperLeg", GROUP_LEG);
 		AddZone(zones, "RightUpperLeg", GROUP_LEG);
 		AddZone(zones, "LeftLowerLeg", GROUP_LEG);
@@ -91,6 +95,8 @@ class OMD_IDS_HudGroupMap
 		AddGroup(groups, GROUP_TORSO, ICON_TORSO);
 		AddGroup(groups, GROUP_ARM, ICON_ARM);
 		AddGroup(groups, GROUP_HAND, ICON_HAND);
+		AddGroup(groups, OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.LEFT_HAND), ICON_HAND);
+		AddGroup(groups, OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.RIGHT_HAND), ICON_HAND);
 		AddGroup(groups, GROUP_LEG, ICON_LEG);
 		AddGroup(groups, GROUP_FOOT, ICON_FOOT);
 		AddGroup(groups, GROUP_BONE, ICON_BONE);
@@ -176,6 +182,31 @@ class OMD_IDS_HudGroupMap
 			{
 				return groupIcon.icon;
 			}
+		}
+
+		return "";
+	}
+
+	static string TreatmentBadge(string label)
+	{
+		if (label == OMD_IDS_InjuryTypeCatalog.LABEL_SUTURED)
+		{
+			return ICON_SUTURE;
+		}
+
+		if (label == OMD_IDS_InjuryTypeCatalog.LABEL_DRESSING_CLEAN)
+		{
+			return ICON_DRESSING_CLEAN;
+		}
+
+		if (label == OMD_IDS_InjuryTypeCatalog.LABEL_DRESSING_DIRTY)
+		{
+			return ICON_DRESSING_DIRTY;
+		}
+
+		if (label == OMD_IDS_InjuryTypeCatalog.LABEL_SPLINTED)
+		{
+			return ICON_SPLINT;
 		}
 
 		return "";

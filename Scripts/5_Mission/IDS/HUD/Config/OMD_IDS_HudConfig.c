@@ -151,6 +151,7 @@ class OMD_IDS_HudConfig
 		bool iconsChanged = loaded.MigrateLegacyIcons();
 		bool groupAdded = loaded.EnsureOrganWoundGroup();
 		bool organMerged = loaded.MergeSharedOrganGroup();
+		bool handsAdded = loaded.EnsureSplitHandGroups();
 		loaded.ApplyMissingBadgeDefaults(rawJson);
 		loaded.ApplyMissingColorDefaults(rawJson);
 		loaded.ApplyMissingPositionDefaults(rawJson);
@@ -177,6 +178,12 @@ class OMD_IDS_HudConfig
 		if (organMerged)
 		{
 			rewrite = true;
+		}
+
+		if (handsAdded)
+		{
+			rewrite = true;
+			Print("[OMD_IDS] hud.json: split hand icons");
 		}
 
 		if (positionMigrated)
@@ -249,6 +256,93 @@ class OMD_IDS_HudConfig
 		OMD_IDS_HudGroupIcon groupIcon = new OMD_IDS_HudGroupIcon();
 		groupIcon.id = groupId;
 		groupIcon.icon = OMD_IDS_HudGroupMap.ICON_ORGAN_WOUND;
+		groups.Insert(groupIcon);
+		return true;
+	}
+
+	bool EnsureSplitHandGroups()
+	{
+		bool changed;
+		string leftId;
+		string rightId;
+		int index;
+		OMD_IDS_HudZoneLink link;
+
+		changed = false;
+		leftId = OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.LEFT_HAND);
+		rightId = OMD_IDS_GroupCatalog.GetName(OMD_IDS_GroupId.RIGHT_HAND);
+		if (leftId == "")
+		{
+			return false;
+		}
+
+		if (rightId == "")
+		{
+			return false;
+		}
+
+		if (!groups)
+		{
+			return false;
+		}
+
+		if (AddHandGroup(leftId))
+		{
+			changed = true;
+		}
+
+		if (AddHandGroup(rightId))
+		{
+			changed = true;
+		}
+
+		if (!zones)
+		{
+			return changed;
+		}
+
+		for (index = 0; index < zones.Count(); index = index + 1)
+		{
+			link = zones.Get(index);
+			if (!link)
+			{
+				continue;
+			}
+
+			if (link.zone == "LeftHand")
+			{
+				if (link.group != leftId)
+				{
+					link.group = leftId;
+					changed = true;
+				}
+			}
+
+			if (link.zone == "RightHand")
+			{
+				if (link.group != rightId)
+				{
+					link.group = rightId;
+					changed = true;
+				}
+			}
+		}
+
+		return changed;
+	}
+
+	private bool AddHandGroup(string groupId)
+	{
+		OMD_IDS_HudGroupIcon groupIcon;
+
+		if (HasGroup(groupId))
+		{
+			return false;
+		}
+
+		groupIcon = new OMD_IDS_HudGroupIcon();
+		groupIcon.id = groupId;
+		groupIcon.icon = OMD_IDS_HudGroupMap.ICON_HAND;
 		groups.Insert(groupIcon);
 		return true;
 	}
@@ -529,6 +623,29 @@ class OMD_IDS_HudConfig
 
 	int MarkColor(string label)
 	{
+		int treatmentWhite;
+
+		treatmentWhite = ARGB(255, 255, 255, 255);
+		if (label == OMD_IDS_InjuryTypeCatalog.LABEL_SUTURED)
+		{
+			return treatmentWhite;
+		}
+
+		if (label == OMD_IDS_InjuryTypeCatalog.LABEL_DRESSING_CLEAN)
+		{
+			return treatmentWhite;
+		}
+
+		if (label == OMD_IDS_InjuryTypeCatalog.LABEL_SPLINTED)
+		{
+			return treatmentWhite;
+		}
+
+		if (label == OMD_IDS_InjuryTypeCatalog.LABEL_DRESSING_DIRTY)
+		{
+			return PainColor(2);
+		}
+
 		if (OMD_IDS_InjuryTypeCatalog.IsWoundMark(label))
 		{
 			return ARGB(woundA, woundR, woundG, woundB);

@@ -5,6 +5,7 @@ class OMD_IDS_InjuryMailbox
 	private static ref OMD_IDS_InjuryMailbox s_Instance;
 
 	private ref array<ref OMD_IDS_InjurySnapshotEntry> m_Pending;
+	private ref array<ref OMD_IDS_InjurySnapshotEntry> m_Current;
 	private bool m_HasPending;
 
 	static OMD_IDS_InjuryMailbox Get()
@@ -20,7 +21,14 @@ class OMD_IDS_InjuryMailbox
 	void Put(array<ref OMD_IDS_InjurySnapshotEntry> entries)
 	{
 		m_Pending = entries;
+		m_Current = entries;
 		m_HasPending = true;
+	}
+
+	// Last snapshot kept after Take(), so a hand action can read stages the HUD already consumed.
+	array<ref OMD_IDS_InjurySnapshotEntry> Current()
+	{
+		return m_Current;
 	}
 
 	bool HasPending()
@@ -44,6 +52,7 @@ class OMD_IDS_InjuryMailbox
 	void Clear()
 	{
 		m_Pending = null;
+		m_Current = null;
 		m_HasPending = false;
 	}
 };

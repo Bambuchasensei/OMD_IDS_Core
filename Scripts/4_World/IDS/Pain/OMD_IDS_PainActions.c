@@ -85,6 +85,26 @@ class OMD_IDS_PainActions
 			return true;
 		}
 
+		if (action.IsInherited(OMD_IDS_ActionSutureSelf))
+		{
+			return true;
+		}
+
+		if (action.IsInherited(OMD_IDS_ActionSutureTarget))
+		{
+			return true;
+		}
+
+		if (action.IsInherited(OMD_IDS_ActionExtractBulletSelf))
+		{
+			return true;
+		}
+
+		if (action.IsInherited(OMD_IDS_ActionExtractBulletTarget))
+		{
+			return true;
+		}
+
 		if (action.IsInherited(ActionCollectBloodSelf))
 		{
 			return true;
@@ -165,20 +185,40 @@ modded class CAContinuousTime
 	override void Setup(ActionData action_data)
 	{
 		float extra;
+		float hand;
 
 		super.Setup(action_data);
-		extra = OMD_IDS_PainActions.Extra(action_data);
-		if (extra <= 0)
+		if (!action_data)
 		{
 			return;
 		}
 
 		if (m_AdjustedTimeToComplete <= 0)
 		{
+			action_data.m_OMD_IDS_HandAppliedMult = 1;
 			return;
 		}
 
-		m_AdjustedTimeToComplete = m_AdjustedTimeToComplete * (1 + extra);
+		extra = OMD_IDS_PainActions.Extra(action_data);
+		if (extra > 0)
+		{
+			m_AdjustedTimeToComplete = m_AdjustedTimeToComplete * (1 + extra);
+		}
+
+		if (OMD_IDS_HandAction.IsHandTimed(action_data) == 0)
+		{
+			action_data.m_OMD_IDS_HandAppliedMult = 1;
+			return;
+		}
+
+		hand = OMD_IDS_HandAction.AppliedMult(action_data);
+		action_data.m_OMD_IDS_HandAppliedMult = hand;
+		if (hand == 1)
+		{
+			return;
+		}
+
+		m_AdjustedTimeToComplete = m_AdjustedTimeToComplete * hand;
 	}
 };
 
@@ -187,20 +227,40 @@ modded class CAContinuousRepeat
 	override void Setup(ActionData action_data)
 	{
 		float extra;
+		float hand;
 
 		super.Setup(action_data);
-		extra = OMD_IDS_PainActions.Extra(action_data);
-		if (extra <= 0)
+		if (!action_data)
 		{
 			return;
 		}
 
 		if (m_TimeToComplete <= 0)
 		{
+			action_data.m_OMD_IDS_HandAppliedMult = 1;
 			return;
 		}
 
-		m_TimeToComplete = m_TimeToComplete * (1 + extra);
+		extra = OMD_IDS_PainActions.Extra(action_data);
+		if (extra > 0)
+		{
+			m_TimeToComplete = m_TimeToComplete * (1 + extra);
+		}
+
+		if (OMD_IDS_HandAction.IsHandTimed(action_data) == 0)
+		{
+			action_data.m_OMD_IDS_HandAppliedMult = 1;
+			return;
+		}
+
+		hand = OMD_IDS_HandAction.AppliedMult(action_data);
+		action_data.m_OMD_IDS_HandAppliedMult = hand;
+		if (hand == 1)
+		{
+			return;
+		}
+
+		m_TimeToComplete = m_TimeToComplete * hand;
 	}
 };
 
@@ -233,5 +293,79 @@ modded class CAContinuousQuantityBloodTransfer
 
 		m_QuantityUsedPerSecond = m_QuantityUsedPerSecond / (1 + extra);
 		m_OMD_IDS_RateScaled = true;
+	}
+};
+
+// Craft writes the recipe length itself and does not call CAContinuousTime.Setup.
+// Multiply after that write. Do not add the body-pain actionAdd here.
+modded class CAContinuousCraft
+{
+	override void Setup(ActionData action_data)
+	{
+		float hand;
+
+		super.Setup(action_data);
+		if (!action_data)
+		{
+			return;
+		}
+
+		if (m_AdjustedTimeToComplete <= 0)
+		{
+			action_data.m_OMD_IDS_HandAppliedMult = 1;
+			return;
+		}
+
+		if (OMD_IDS_HandAction.IsHandTimed(action_data) == 0)
+		{
+			action_data.m_OMD_IDS_HandAppliedMult = 1;
+			return;
+		}
+
+		hand = OMD_IDS_HandAction.AppliedMult(action_data);
+		action_data.m_OMD_IDS_HandAppliedMult = hand;
+		if (hand == 1)
+		{
+			return;
+		}
+
+		m_AdjustedTimeToComplete = m_AdjustedTimeToComplete * hand;
+	}
+};
+
+// Eating spends quantity per second. The progress bar follows that quantity, not a duration field.
+// Setup runs again after every bite and the vanilla code restores the start rate first, so this divide does not stack.
+modded class CAContinuousQuantityEdible
+{
+	override void Setup(ActionData action_data)
+	{
+		float hand;
+
+		super.Setup(action_data);
+		if (!action_data)
+		{
+			return;
+		}
+
+		if (OMD_IDS_HandAction.IsHandTimed(action_data) == 0)
+		{
+			action_data.m_OMD_IDS_HandAppliedMult = 1;
+			return;
+		}
+
+		if (m_QuantityUsedPerSecond <= 0)
+		{
+			action_data.m_OMD_IDS_HandAppliedMult = 1;
+			return;
+		}
+
+		hand = OMD_IDS_HandAction.AppliedMult(action_data);
+		action_data.m_OMD_IDS_HandAppliedMult = hand;
+		if (hand == 1)
+		{
+			return;
+		}
+
+		m_QuantityUsedPerSecond = m_QuantityUsedPerSecond / hand;
 	}
 };

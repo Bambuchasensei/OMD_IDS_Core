@@ -3,9 +3,8 @@
 class OMD_IDS_HudManager
 {
 	// day_z_hud.layout: BadgesPanel position 252, halign right_ref, ширина 364.349.
-	// Лицо боли в NotifiersPanel: position 225, size 35, левый край 260.
-	// Панель заходит на лицо на 8. Счётчик иконки 44+12=56 при корне 52, ещё 4 вправо.
-	// Два ряда WrapSpacer прижаты к тому же правому краю. 252+16=268: у края панели 8, у счётчика 4.
+	// Сдвиг +16 оставлен с шага, когда лицо стояло слева (position 225). Второй ряд правее не вылезает.
+	// Лицо теперь в слоте Health: ids_hud_pain.layout position 0, size 35. Панель Health скрыта.
 	private static const float BADGES_PANEL_RIGHT_X = 268;
 
 	private static ref OMD_IDS_HudManager s_Instance;
@@ -133,7 +132,7 @@ class OMD_IDS_HudManager
 	}
 
 	// Иконка боли отдельно от списка ран. Уровень читается из клиентского стора каждый тик.
-	// Лицо остаётся в NotifiersPanel. Ряд ран сдвигается целиком вместе с BadgesPanel.
+	// Лицо стоит в NotifiersPanel на месте HP. Ряд ран сдвигается целиком вместе с BadgesPanel.
 	void UpdatePain(float timeslice)
 	{
 		int level;
@@ -154,6 +153,7 @@ class OMD_IDS_HudManager
 		}
 
 		notifiers = FindNotifiersPanel();
+		HideHealthPanel(notifiers);
 		m_PainIcon.Update(level, timeslice, m_Config, notifiers);
 	}
 
@@ -356,6 +356,31 @@ class OMD_IDS_HudManager
 		}
 
 		return hudPanel.FindAnyWidget("BadgesPanel");
+	}
+
+	// Прячем весь слот HP: крест и стрелки тенденции. Ваниль каждый кадр панель не показывает снова,
+	// но DisplayNotifier включает стрелки, а критический статус красит IconHealth. Скрытый родитель их гасит.
+	private void HideHealthPanel(Widget notifiers)
+	{
+		Widget health;
+
+		if (!notifiers)
+		{
+			return;
+		}
+
+		health = notifiers.FindAnyWidget("Health");
+		if (!health)
+		{
+			return;
+		}
+
+		if (!health.IsVisible())
+		{
+			return;
+		}
+
+		health.Show(false);
 	}
 
 	// Ванильный ряд статусов: крест, кровь, температура, голод, жажда.

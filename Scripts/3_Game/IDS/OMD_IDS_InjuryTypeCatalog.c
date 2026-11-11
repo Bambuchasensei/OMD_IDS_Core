@@ -11,6 +11,10 @@ class OMD_IDS_InjuryTypeCatalog
 	static const string LABEL_BONE_STRESS = "bone_stress";
 	static const string LABEL_BONE_CLOSED = "bone_closed";
 	static const string LABEL_BONE_OPEN = "bone_open";
+	static const string LABEL_SUTURED = "Зашито";
+	static const string LABEL_DRESSING_CLEAN = "Забинтовано";
+	static const string LABEL_DRESSING_DIRTY = "Повязка грязная";
+	static const string LABEL_SPLINTED = "Шина";
 
 	private static ref array<string> s_Names;
 
@@ -118,6 +122,26 @@ class OMD_IDS_InjuryTypeCatalog
 			return LABEL_BONE_OPEN;
 		}
 
+		if (typeId == OMD_IDS_InjuryTypeId.SUTURED)
+		{
+			return LABEL_SUTURED;
+		}
+
+		if (typeId == OMD_IDS_InjuryTypeId.DRESSING_CLEAN)
+		{
+			return LABEL_DRESSING_CLEAN;
+		}
+
+		if (typeId == OMD_IDS_InjuryTypeId.DRESSING_DIRTY)
+		{
+			return LABEL_DRESSING_DIRTY;
+		}
+
+		if (typeId == OMD_IDS_InjuryTypeId.SPLINTED)
+		{
+			return LABEL_SPLINTED;
+		}
+
 		return "";
 	}
 
@@ -169,6 +193,26 @@ class OMD_IDS_InjuryTypeCatalog
 		}
 
 		if (label == LABEL_BONE_OPEN)
+		{
+			return true;
+		}
+
+		if (label == LABEL_SUTURED)
+		{
+			return true;
+		}
+
+		if (label == LABEL_DRESSING_CLEAN)
+		{
+			return true;
+		}
+
+		if (label == LABEL_DRESSING_DIRTY)
+		{
+			return true;
+		}
+
+		if (label == LABEL_SPLINTED)
 		{
 			return true;
 		}
@@ -243,6 +287,26 @@ class OMD_IDS_InjuryTypeCatalog
 			return "set:ids_icons image:wound_arterial";
 		}
 
+		if (label == LABEL_SUTURED)
+		{
+			return "";
+		}
+
+		if (label == LABEL_DRESSING_CLEAN)
+		{
+			return "";
+		}
+
+		if (label == LABEL_DRESSING_DIRTY)
+		{
+			return "";
+		}
+
+		if (label == LABEL_SPLINTED)
+		{
+			return "";
+		}
+
 		return "set:ids_icons image:" + label;
 	}
 
@@ -266,7 +330,11 @@ class OMD_IDS_InjuryTypeCatalog
 		Add(OMD_IDS_InjuryTypeId.STRESS_FRACTURE, "StressFracture");
 		Add(OMD_IDS_InjuryTypeId.CLOSED_FRACTURE, "ClosedFracture");
 		Add(OMD_IDS_InjuryTypeId.OPEN_FRACTURE, "OpenFracture");
-		if (s_Names.Count() != OMD_IDS_InjuryTypeId.OPEN_FRACTURE + 1)
+		Add(OMD_IDS_InjuryTypeId.SUTURED, "Sutured");
+		Add(OMD_IDS_InjuryTypeId.DRESSING_CLEAN, "DressingClean");
+		Add(OMD_IDS_InjuryTypeId.DRESSING_DIRTY, "DressingDirty");
+		Add(OMD_IDS_InjuryTypeId.SPLINTED, "Splinted");
+		if (s_Names.Count() != OMD_IDS_InjuryTypeId.SPLINTED + 1)
 		{
 			Print("[OMD_IDS] injury type catalog does not match OMD_IDS_InjuryTypeId");
 		}

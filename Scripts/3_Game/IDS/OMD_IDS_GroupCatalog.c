@@ -41,7 +41,9 @@ class OMD_IDS_GroupCatalog
 		Add(OMD_IDS_GroupId.KIDNEYS, "Kidneys");
 		Add(OMD_IDS_GroupId.GUTS, "Guts");
 		Add(OMD_IDS_GroupId.ORGAN_WOUND, "OrganWound");
-		if (s_Names.Count() != OMD_IDS_GroupId.ORGAN_WOUND + 1)
+		Add(OMD_IDS_GroupId.LEFT_HAND, "LeftHand");
+		Add(OMD_IDS_GroupId.RIGHT_HAND, "RightHand");
+		if (s_Names.Count() != OMD_IDS_GroupId.RIGHT_HAND + 1)
 		{
 			Print("[OMD_IDS] group catalog does not match OMD_IDS_GroupId");
 		}

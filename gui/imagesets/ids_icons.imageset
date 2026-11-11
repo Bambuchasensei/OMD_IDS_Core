@@ -170,5 +170,11 @@ ImageSetClass {
    Size 64 64
    Flags 0
   }
+  ImageSetDefClass bone_splint {
+   Name "bone_splint"
+   Pos 410 206
+   Size 64 64
+   Flags 0
+  }
  }
 }

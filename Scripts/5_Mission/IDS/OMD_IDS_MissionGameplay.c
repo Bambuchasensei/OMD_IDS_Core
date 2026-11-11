@@ -48,8 +48,63 @@ modded class MissionGameplay
 		}
 
 		array<ref OMD_IDS_InjurySnapshotEntry> snapshot = mailbox.Take();
+		OMD_IDS_LogSnapshot(snapshot);
 		array<ref OMD_IDS_HudDamageEntry> entries = OMD_IDS_InjuryHudBridge.ToEntries(snapshot);
 		manager.SetActiveDamages(entries);
+	}
+
+	// One line, only while hud.json debugEnabled is on. Lists the raw snapshot before the HUD hides rows.
+	private void OMD_IDS_LogSnapshot(array<ref OMD_IDS_InjurySnapshotEntry> snapshot)
+	{
+		int index;
+		int rows;
+		string line;
+		OMD_IDS_HudManager manager;
+		OMD_IDS_InjurySnapshotEntry row;
+
+		manager = OMD_IDS_HudManager.Get();
+		if (!manager)
+		{
+			return;
+		}
+
+		if (!manager.IsDebugEnabled())
+		{
+			return;
+		}
+
+		rows = 0;
+		if (snapshot)
+		{
+			rows = snapshot.Count();
+		}
+
+		line = "[OMD_IDS] client snapshot rows=";
+		line = line + rows.ToString();
+		if (!snapshot)
+		{
+			Print(line);
+			return;
+		}
+
+		for (index = 0; index < snapshot.Count(); index = index + 1)
+		{
+			row = snapshot.Get(index);
+			if (!row)
+			{
+				continue;
+			}
+
+			line = line + " typeId=";
+			line = line + row.typeId.ToString();
+			line = line + " groupId=";
+			line = line + row.groupId.ToString();
+			line = line + " count=";
+			line = line + row.count.ToString();
+			line = line + ";";
+		}
+
+		Print(line);
 	}
 
 	override void OnMissionFinish()

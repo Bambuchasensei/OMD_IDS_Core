@@ -2,7 +2,7 @@ FrameWidgetClass IdsHudPain {
  ignorepointer 1
  visible 0
  clipchildren 0
- position 225 0
+ position 0 0
  size 35 35
  halign right_ref
  valign center_ref

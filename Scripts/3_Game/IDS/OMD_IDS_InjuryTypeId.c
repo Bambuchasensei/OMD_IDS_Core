@@ -1,6 +1,8 @@
 // Save and RPC ids. Append new values at the end. Do not insert or reorder.
 // 0 NONE, 1 SCRATCH, 2 LIGHT_WOUND, 3 DEEP_WOUND, 4 BIG_WOUND, 5 BULLET, 6 ORGAN_WOUND, 7 ARTERIAL
 // 8 BONE_BRUISE, 9 STRESS_FRACTURE, 10 CLOSED_FRACTURE, 11 OPEN_FRACTURE
+// 12 SUTURED, 13 DRESSING_CLEAN, 14 DRESSING_DIRTY, 15 SPLINTED
+// 12-15 are owner-snapshot rows for hand effects. They are not injury records and are not saved.
 enum OMD_IDS_InjuryTypeId
 {
 	NONE = 0,
@@ -14,5 +16,9 @@ enum OMD_IDS_InjuryTypeId
 	BONE_BRUISE = 8,
 	STRESS_FRACTURE = 9,
 	CLOSED_FRACTURE = 10,
-	OPEN_FRACTURE = 11
+	OPEN_FRACTURE = 11,
+	SUTURED = 12,
+	DRESSING_CLEAN = 13,
+	DRESSING_DIRTY = 14,
+	SPLINTED = 15
 }
