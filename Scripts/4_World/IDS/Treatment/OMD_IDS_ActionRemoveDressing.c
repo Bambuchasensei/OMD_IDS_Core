@@ -1,7 +1,9 @@
 // Remove a hand dressing with empty hands. The bandage item is not returned.
-// Time is heal.removeDressingDurationSec, factory 3. Self animation 71, other animation 60. Same commands as the suture action.
-// P:\scripts\3_game\dayzplayer.c:839 CMD_ACTIONFB_STITCHUPSELF = 71
-// P:\scripts\3_game\dayzplayer.c:829 CMD_ACTIONFB_INTERACT = 60
+// Time is heal.removeDressingDurationSec, factory 3. Self and other use the vanilla bandage commands.
+// Self: P:\scripts\4_world\classes\useractionscomponent\actions\continuous\medical\actionbandageself.c:20-22
+// P:\scripts\3_game\dayzplayer.c:827 CMD_ACTIONFB_BANDAGE = 58, full body, crouch only.
+// Other: P:\scripts\4_world\classes\useractionscomponent\actions\continuous\medical\actionbandagetarget.c:20-22
+// P:\scripts\3_game\dayzplayer.c:831 CMD_ACTIONFB_BANDAGETARGET = 63, full body, erect or crouch.
 // Empty hands: CCINotPresent, P:\scripts\4_world\classes\useractionscomponent\itemconditioncomponents\ccinotpresent.c:5
 // Time: void CAContinuousTime(float time_to_complete_action), P:\scripts\4_world\classes\useractionscomponent\actioncomponents\cacontinuoustime.c:9
 // Hand choice is PickHand mode 3. Variant 0 / 1 uses the same action channel as the suture.
@@ -94,9 +96,9 @@ class OMD_IDS_ActionRemoveDressingSelf : ActionContinuousBase
 	void OMD_IDS_ActionRemoveDressingSelf()
 	{
 		m_CallbackClass = OMD_IDS_ActionRemoveDressingSelfCB;
-		m_CommandUID = DayZPlayerConstants.CMD_ACTIONFB_STITCHUPSELF;
+		m_CommandUID = DayZPlayerConstants.CMD_ACTIONFB_BANDAGE;
 		m_FullBody = true;
-		m_StanceMask = DayZPlayerConstants.STANCEMASK_ERECT | DayZPlayerConstants.STANCEMASK_CROUCH;
+		m_StanceMask = DayZPlayerConstants.STANCEMASK_CROUCH;
 		m_Text = "Снять повязку";
 		GetVariantManager().GetOnUpdateInvoker().Insert(OnOfferVariants);
 	}
@@ -271,7 +273,7 @@ class OMD_IDS_ActionRemoveDressingTarget : ActionContinuousBase
 	void OMD_IDS_ActionRemoveDressingTarget()
 	{
 		m_CallbackClass = OMD_IDS_ActionRemoveDressingTargetCB;
-		m_CommandUID = DayZPlayerConstants.CMD_ACTIONFB_INTERACT;
+		m_CommandUID = DayZPlayerConstants.CMD_ACTIONFB_BANDAGETARGET;
 		m_FullBody = true;
 		m_StanceMask = DayZPlayerConstants.STANCEMASK_ERECT | DayZPlayerConstants.STANCEMASK_CROUCH;
 		m_Text = "Снять повязку";
