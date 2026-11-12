@@ -6,6 +6,17 @@ modded class PlayerBase
 	// Packed hand treatment. Not saved. Rebuilt from records and effects.
 	protected int m_OMD_IDS_TreatLeft;
 	protected int m_OMD_IDS_TreatRight;
+	// Torso treatment, same 16-bit slot as a hand. Not saved. Rebuilt with the hand ints.
+	// A bits 0-15 UpperChest, bits 16-31 MiddleChest.
+	// B bits 0-15 Pelvis, bits 16-31 LeftShoulder.
+	// C bits 0-15 RightShoulder, bits 16-31 stay 0.
+	protected int m_OMD_IDS_TreatTorsoA;
+	protected int m_OMD_IDS_TreatTorsoB;
+	protected int m_OMD_IDS_TreatTorsoC;
+	// Closed pelvis fracture: 1 limits erect and crouch to walk. Not saved.
+	protected int m_OMD_IDS_PelvisSlow;
+	// True after this machine applied that walk cap. Not NetSync.
+	protected bool m_OMD_IDS_PelvisSlowHeld;
 	protected ref OMD_IDS_BoneBreakSoundClient m_OMD_IDS_BoneBreakSound;
 	protected ref OMD_IDS_BleedFx m_OMD_IDS_BleedFx;
 	protected ref OMD_IDS_PainEffectState m_OMD_IDS_PainFx;
@@ -22,10 +33,14 @@ modded class PlayerBase
 		// P:\scripts\3_game\entities\entityai.c:2847
 		RegisterNetSyncVariableInt("m_OMD_IDS_BleedLight");
 		RegisterNetSyncVariableInt("m_OMD_IDS_BleedHeavy");
-		// Bitmask, bits 0-15. No min/max: when they are equal the engine does not quantize.
+		// Full words, including bit 31. No min/max: when they are equal the engine does not quantize.
 		// P:\scripts\3_game\entities\entityai.c:2847
 		RegisterNetSyncVariableInt("m_OMD_IDS_TreatLeft");
 		RegisterNetSyncVariableInt("m_OMD_IDS_TreatRight");
+		RegisterNetSyncVariableInt("m_OMD_IDS_TreatTorsoA");
+		RegisterNetSyncVariableInt("m_OMD_IDS_TreatTorsoB");
+		RegisterNetSyncVariableInt("m_OMD_IDS_TreatTorsoC");
+		RegisterNetSyncVariableInt("m_OMD_IDS_PelvisSlow", 0, 1);
 	}
 
 	override void EEInit()
@@ -184,6 +199,132 @@ modded class PlayerBase
 	int OMD_IDS_GetTreatRight()
 	{
 		return m_OMD_IDS_TreatRight;
+	}
+
+	int OMD_IDS_GetTreatTorsoA()
+	{
+		return m_OMD_IDS_TreatTorsoA;
+	}
+
+	int OMD_IDS_GetTreatTorsoB()
+	{
+		return m_OMD_IDS_TreatTorsoB;
+	}
+
+	int OMD_IDS_GetTreatTorsoC()
+	{
+		return m_OMD_IDS_TreatTorsoC;
+	}
+
+	int OMD_IDS_GetPelvisSlow()
+	{
+		return m_OMD_IDS_PelvisSlow;
+	}
+
+	// super runs first. A true result from another mod is returned as-is.
+	// P:\scripts\4_world\entities\dayzplayerimplement.c:2276
+	override bool ModCommandHandlerAfter(float pDt, int pCurrentCommandID, bool pCurrentCommandFinished)
+	{
+		bool handled;
+
+		handled = super.ModCommandHandlerAfter(pDt, pCurrentCommandID, pCurrentCommandFinished);
+		OMD_IDS_UpdatePelvisSlow();
+		return handled;
+	}
+
+	// Walk cap while the pelvis flag is 1. The latch drops when the flag is 0 or the player is down or surrendering.
+	// Set*SpeedLimit(false) runs only when surrender does not own the limits.
+	// Broken legs do not call SetErectSpeedLimit. P:\scripts\4_world\entities\manbase\playerbase.c:2057
+	protected void OMD_IDS_UpdatePelvisSlow()
+	{
+		HumanInputController hic;
+		int wantSlow;
+		int surrenderHolds;
+
+		wantSlow = 0;
+		surrenderHolds = 0;
+		if (m_OMD_IDS_PelvisSlow == 1)
+		{
+			if (!OMD_IDS_PelvisSlowBlocked())
+			{
+				wantSlow = 1;
+			}
+		}
+
+		if (IsSurrendered())
+		{
+			surrenderHolds = 1;
+		}
+
+		if (m_StartedSurrenderTransition)
+		{
+			surrenderHolds = 1;
+		}
+
+		hic = GetInputController();
+		if (!hic)
+		{
+			return;
+		}
+
+		if (wantSlow == 1)
+		{
+			if (m_OMD_IDS_PelvisSlowHeld)
+			{
+				return;
+			}
+
+			hic.SetErectSpeedLimit(true, DayZPlayerConstants.MOVEMENTIDX_WALK);
+			hic.SetCrouchSpeedLimit(true, DayZPlayerConstants.MOVEMENTIDX_WALK);
+			m_OMD_IDS_PelvisSlowHeld = true;
+			return;
+		}
+
+		if (!m_OMD_IDS_PelvisSlowHeld)
+		{
+			return;
+		}
+
+		m_OMD_IDS_PelvisSlowHeld = false;
+		if (surrenderHolds == 1)
+		{
+			return;
+		}
+
+		hic.SetErectSpeedLimit(false);
+		hic.SetCrouchSpeedLimit(false);
+	}
+
+	// Faint uses RequestUnconsciousness, so the vanilla uncon request covers it.
+	// IsUnconscious stays false until the command starts. P:\scripts\4_world\entities\manbase\playerbase.c:3925
+	protected bool OMD_IDS_PelvisSlowBlocked()
+	{
+		if (m_ShouldBeUnconscious)
+		{
+			return true;
+		}
+
+		if (IsUnconscious())
+		{
+			return true;
+		}
+
+		if (GetCommand_Unconscious())
+		{
+			return true;
+		}
+
+		if (IsSurrendered())
+		{
+			return true;
+		}
+
+		if (m_StartedSurrenderTransition)
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	protected void OMD_IDS_RefreshFx()

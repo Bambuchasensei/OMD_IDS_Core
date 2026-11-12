@@ -47,6 +47,12 @@ class OMD_IDS_InjuryHudBridge
 				continue;
 			}
 
+			// Groups 18-22 stay on the snapshot row for treatment. The icon is Torso.
+			if (DrawsOnTorso(source.groupId) != 0)
+			{
+				groupName = OMD_IDS_HudGroupMap.GROUP_TORSO;
+			}
+
 			if (SkipReplaced(snapshot, source) != 0)
 			{
 				continue;
@@ -103,7 +109,105 @@ class OMD_IDS_InjuryHudBridge
 			}
 		}
 
+		MergeTorsoByLabel(result);
 		return result;
+	}
+
+	// Upper chest, middle chest, pelvis and both shoulders share the Torso picture.
+	private static int DrawsOnTorso(int groupId)
+	{
+		if (groupId == OMD_IDS_GroupId.UPPER_CHEST)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.MIDDLE_CHEST)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.PELVIS)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.LEFT_SHOULDER)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.RIGHT_SHOULDER)
+		{
+			return 1;
+		}
+
+		return 0;
+	}
+
+	// One Torso icon per label. A later row with the same label adds its count.
+	private static void MergeTorsoByLabel(array<ref OMD_IDS_HudDamageEntry> rows)
+	{
+		int index;
+		int earlier;
+		int found;
+		OMD_IDS_HudDamageEntry row;
+		OMD_IDS_HudDamageEntry keeper;
+
+		if (!rows)
+		{
+			return;
+		}
+
+		for (index = rows.Count() - 1; index >= 0; index = index - 1)
+		{
+			row = rows.Get(index);
+			if (!row)
+			{
+				continue;
+			}
+
+			if (row.groupId != OMD_IDS_HudGroupMap.GROUP_TORSO)
+			{
+				continue;
+			}
+
+			found = 0;
+			keeper = null;
+			for (earlier = 0; earlier < index; earlier = earlier + 1)
+			{
+				keeper = rows.Get(earlier);
+				if (!keeper)
+				{
+					continue;
+				}
+
+				if (keeper.groupId != OMD_IDS_HudGroupMap.GROUP_TORSO)
+				{
+					continue;
+				}
+
+				if (keeper.label != row.label)
+				{
+					continue;
+				}
+
+				found = 1;
+				break;
+			}
+
+			if (found == 0)
+			{
+				continue;
+			}
+
+			if (!keeper)
+			{
+				continue;
+			}
+
+			keeper.count = keeper.count + row.count;
+			rows.RemoveOrdered(index);
+		}
 	}
 
 	private static int IsTreatmentType(int typeId)

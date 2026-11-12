@@ -224,6 +224,14 @@ class OMD_IDS_TreatmentHooks
 		{
 			zoneId = OMD_IDS_LimbCatalog.ZoneAt(index);
 			side = OMD_IDS_LimbCatalog.SideOf(zoneId);
+			if (side != 0)
+			{
+				if (side != 1)
+				{
+					continue;
+				}
+			}
+
 			groupId = OMD_IDS_LimbCatalog.HudGroup(zoneId);
 			OMD_IDS_HandSnapshot.ActionFlags(groupId, deep, fracture, bullet, dressing, suture, splint);
 			flags = OMD_IDS_HandActionLoad.Pack(deep, fracture, bullet, dressing, suture, splint);

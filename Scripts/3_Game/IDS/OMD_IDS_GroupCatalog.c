@@ -45,7 +45,12 @@ class OMD_IDS_GroupCatalog
 		Add(OMD_IDS_GroupId.RIGHT_HAND, "RightHand");
 		Add(OMD_IDS_GroupId.LEFT_FOOT, "LeftFoot");
 		Add(OMD_IDS_GroupId.RIGHT_FOOT, "RightFoot");
-		if (s_Names.Count() != OMD_IDS_GroupId.RIGHT_FOOT + 1)
+		Add(OMD_IDS_GroupId.UPPER_CHEST, "UpperChest");
+		Add(OMD_IDS_GroupId.MIDDLE_CHEST, "MiddleChest");
+		Add(OMD_IDS_GroupId.PELVIS, "Pelvis");
+		Add(OMD_IDS_GroupId.LEFT_SHOULDER, "LeftShoulder");
+		Add(OMD_IDS_GroupId.RIGHT_SHOULDER, "RightShoulder");
+		if (s_Names.Count() != OMD_IDS_GroupId.RIGHT_SHOULDER + 1)
 		{
 			Print("[OMD_IDS] group catalog does not match OMD_IDS_GroupId");
 		}

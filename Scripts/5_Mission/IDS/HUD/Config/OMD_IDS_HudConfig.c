@@ -111,6 +111,8 @@ class OMD_IDS_HudConfig
 	int pain4R;
 	int pain4G;
 	int pain4B;
+	// 1 = the five chest zones draw on Torso. Missing key is not 0: JsonFileLoader fills 0.
+	int torsoDrawVersion;
 	ref array<ref OMD_IDS_HudZoneLink> zones;
 	ref array<ref OMD_IDS_HudGroupIcon> groups;
 
@@ -153,6 +155,7 @@ class OMD_IDS_HudConfig
 		bool organMerged = loaded.MergeSharedOrganGroup();
 		bool handsAdded = loaded.EnsureSplitPair("LeftHand", "RightHand", OMD_IDS_GroupId.LEFT_HAND, OMD_IDS_GroupId.RIGHT_HAND, OMD_IDS_HudGroupMap.ICON_HAND);
 		bool feetAdded = loaded.EnsureSplitPair("LeftFoot", "RightFoot", OMD_IDS_GroupId.LEFT_FOOT, OMD_IDS_GroupId.RIGHT_FOOT, OMD_IDS_HudGroupMap.ICON_FOOT);
+		bool torsoFolded = loaded.FoldTorsoDraw(rawJson);
 		loaded.ApplyMissingBadgeDefaults(rawJson);
 		loaded.ApplyMissingColorDefaults(rawJson);
 		loaded.ApplyMissingPositionDefaults(rawJson);
@@ -191,6 +194,12 @@ class OMD_IDS_HudConfig
 		{
 			rewrite = true;
 			Print("[OMD_IDS] hud.json: split foot icons");
+		}
+
+		if (torsoFolded)
+		{
+			rewrite = true;
+			Print("[OMD_IDS] hud.json: torso zones drawn on Torso");
 		}
 
 		if (positionMigrated)
@@ -339,6 +348,162 @@ class OMD_IDS_HudConfig
 		return changed;
 	}
 
+	// Stage 1 wrote five visible groups. Put those zones back on Torso once.
+	// A file that never had those ids is not saved. The gate is the key or the id, not version 0.
+	bool FoldTorsoDraw(string rawJson)
+	{
+		bool changed;
+		int index;
+		OMD_IDS_HudZoneLink link;
+		OMD_IDS_HudGroupIcon groupIcon;
+
+		if (JsonHasKey(rawJson, "torsoDrawVersion"))
+		{
+			return false;
+		}
+
+		if (!TorsoFileWasSplit())
+		{
+			return false;
+		}
+
+		changed = false;
+		if (zones)
+		{
+			for (index = 0; index < zones.Count(); index = index + 1)
+			{
+				link = zones.Get(index);
+				if (!link)
+				{
+					continue;
+				}
+
+				if (!IsSplitTorsoName(link.zone))
+				{
+					continue;
+				}
+
+				if (link.group == OMD_IDS_HudGroupMap.GROUP_TORSO)
+				{
+					continue;
+				}
+
+				link.group = OMD_IDS_HudGroupMap.GROUP_TORSO;
+				changed = true;
+			}
+		}
+
+		if (groups)
+		{
+			for (index = groups.Count() - 1; index >= 0; index = index - 1)
+			{
+				groupIcon = groups.Get(index);
+				if (!groupIcon)
+				{
+					continue;
+				}
+
+				if (!IsSplitTorsoName(groupIcon.id))
+				{
+					continue;
+				}
+
+				groups.RemoveOrdered(index);
+				changed = true;
+			}
+		}
+
+		if (!changed)
+		{
+			return false;
+		}
+
+		torsoDrawVersion = 1;
+		return true;
+	}
+
+	private bool TorsoFileWasSplit()
+	{
+		int index;
+		OMD_IDS_HudZoneLink link;
+		OMD_IDS_HudGroupIcon groupIcon;
+
+		if (groups)
+		{
+			for (index = 0; index < groups.Count(); index = index + 1)
+			{
+				groupIcon = groups.Get(index);
+				if (!groupIcon)
+				{
+					continue;
+				}
+
+				if (IsSplitTorsoName(groupIcon.id))
+				{
+					return true;
+				}
+			}
+		}
+
+		if (!zones)
+		{
+			return false;
+		}
+
+		for (index = 0; index < zones.Count(); index = index + 1)
+		{
+			link = zones.Get(index);
+			if (!link)
+			{
+				continue;
+			}
+
+			if (!IsSplitTorsoName(link.zone))
+			{
+				continue;
+			}
+
+			if (link.group == OMD_IDS_HudGroupMap.GROUP_TORSO)
+			{
+				continue;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private bool IsSplitTorsoName(string name)
+	{
+		if (name == "UpperChest")
+		{
+			return true;
+		}
+
+		if (name == "MiddleChest")
+		{
+			return true;
+		}
+
+		if (name == "Pelvis")
+		{
+			return true;
+		}
+
+		if (name == "LeftShoulder")
+		{
+			return true;
+		}
+
+		if (name == "RightShoulder")
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 	private bool AddSplitGroup(string groupId, string icon)
 	{
 		OMD_IDS_HudGroupIcon groupIcon;
@@ -447,6 +612,7 @@ class OMD_IDS_HudConfig
 		ApplyBadgeDefaults();
 		badgeShadowOffset = 2;
 		ApplyPainDefaults();
+		torsoDrawVersion = 1;
 		zones = new array<ref OMD_IDS_HudZoneLink>();
 		groups = new array<ref OMD_IDS_HudGroupIcon>();
 		OMD_IDS_HudGroupMap.FillDefaultZones(zones);

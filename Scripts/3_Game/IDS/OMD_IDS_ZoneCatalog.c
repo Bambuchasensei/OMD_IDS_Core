@@ -74,6 +74,7 @@ class OMD_IDS_ZoneCatalog
 
 	// Silhouette for the HUD snapshot. GetGroupId is unchanged, including GroupId.BONE, both hands as HAND and both feet as FOOT.
 	// Left and right hands, and left and right feet, are separate snapshot groups. Other paired parts stay one group.
+	// UpperChest, MiddleChest, Pelvis and both shoulders are separate. LowerChest, the abdomen and the groin stay in Torso.
 	static int GetHudGroupId(int zoneId)
 	{
 		if (zoneId == OMD_IDS_ZoneId.LEFT_UPPER_ARM_BONE)
@@ -134,6 +135,31 @@ class OMD_IDS_ZoneCatalog
 		if (zoneId == OMD_IDS_ZoneId.RIGHT_FOOT)
 		{
 			return OMD_IDS_GroupId.RIGHT_FOOT;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.UPPER_CHEST)
+		{
+			return OMD_IDS_GroupId.UPPER_CHEST;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.MIDDLE_CHEST)
+		{
+			return OMD_IDS_GroupId.MIDDLE_CHEST;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.PELVIS)
+		{
+			return OMD_IDS_GroupId.PELVIS;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_SHOULDER)
+		{
+			return OMD_IDS_GroupId.LEFT_SHOULDER;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_SHOULDER)
+		{
+			return OMD_IDS_GroupId.RIGHT_SHOULDER;
 		}
 
 		return GetGroupId(zoneId);

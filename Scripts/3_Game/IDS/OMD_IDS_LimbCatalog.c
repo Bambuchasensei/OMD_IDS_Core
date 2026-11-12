@@ -30,6 +30,13 @@ class OMD_IDS_LimbCatalog
 		Add("hand", OMD_IDS_ZoneId.RIGHT_HAND, 1, OMD_IDS_GroupId.RIGHT_HAND, "hand", "правой кисти", "правую кисть", "hand");
 		Add("foot", OMD_IDS_ZoneId.LEFT_FOOT, 0, OMD_IDS_GroupId.LEFT_FOOT, "foot", "левой ступни", "левую ступню", "foot");
 		Add("foot", OMD_IDS_ZoneId.RIGHT_FOOT, 1, OMD_IDS_GroupId.RIGHT_FOOT, "foot", "правой ступни", "правую ступню", "foot");
+		// Sides 2-6 are not the packed left/right words. Add() stores bitShift -1 for them.
+		// TorsoSlot is the only map from these zones onto a torso int and a shift.
+		Add("torso", OMD_IDS_ZoneId.UPPER_CHEST, 2, OMD_IDS_GroupId.UPPER_CHEST, "torso", "верхней части груди", "верхнюю часть груди", "chest");
+		Add("torso", OMD_IDS_ZoneId.MIDDLE_CHEST, 3, OMD_IDS_GroupId.MIDDLE_CHEST, "torso", "средней части груди", "среднюю часть груди", "chest");
+		Add("torso", OMD_IDS_ZoneId.PELVIS, 4, OMD_IDS_GroupId.PELVIS, "torso", "таза", "таз", "pelvis");
+		Add("torso", OMD_IDS_ZoneId.LEFT_SHOULDER, 5, OMD_IDS_GroupId.LEFT_SHOULDER, "torso", "левого плеча", "левое плечо", "shoulder");
+		Add("torso", OMD_IDS_ZoneId.RIGHT_SHOULDER, 6, OMD_IDS_GroupId.RIGHT_SHOULDER, "torso", "правого плеча", "правое плечо", "shoulder");
 	}
 
 	private static void Add(string profileId, int zoneId, int side, int hudGroup, string icon, string genitive, string accusative, string boneSlot)
@@ -60,6 +67,14 @@ class OMD_IDS_LimbCatalog
 		row.side = side;
 		row.hudGroup = hudGroup;
 		row.bitShift = seen * 16;
+		// Sides 0 and 1 fill two 16-bit slots. Any other side stays out of those ints.
+		if (side != 0)
+		{
+			if (side != 1)
+			{
+				row.bitShift = -1;
+			}
+		}
 		row.icon = icon;
 		row.genitive = genitive;
 		row.accusative = accusative;
@@ -224,7 +239,6 @@ class OMD_IDS_LimbCatalog
 	static int FlagWord(int packedSide, int zoneId)
 	{
 		int shift;
-		int word;
 		OMD_IDS_LimbZone row;
 
 		row = FindRow(zoneId);
@@ -234,9 +248,109 @@ class OMD_IDS_LimbCatalog
 		}
 
 		shift = row.bitShift;
-		word = packedSide >> shift;
+		if (shift < 0)
+		{
+			return 0;
+		}
+
+		return ShiftedWord(packedSide, shift);
+	}
+
+	// Same mask as the hand ints. Bit 31 is the splint bit of the high zone, kept by the mask after the shift.
+	static int ShiftedWord(int packed, int shift)
+	{
+		int word;
+
+		word = packed >> shift;
 		word = word & 65535;
 		return word;
+	}
+
+	// which: 0 int A, 1 int B, 2 int C. -1 means this zone is not in the torso ints.
+	// A shift 0 UpperChest, A shift 16 MiddleChest.
+	// B shift 0 Pelvis, B shift 16 LeftShoulder.
+	// C shift 0 RightShoulder. The high half of C stays 0.
+	static void TorsoSlot(int zoneId, out int which, out int shift)
+	{
+		which = -1;
+		shift = 0;
+		if (zoneId == OMD_IDS_ZoneId.UPPER_CHEST)
+		{
+			which = 0;
+			shift = 0;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.MIDDLE_CHEST)
+		{
+			which = 0;
+			shift = 16;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.PELVIS)
+		{
+			which = 1;
+			shift = 0;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_SHOULDER)
+		{
+			which = 1;
+			shift = 16;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_SHOULDER)
+		{
+			which = 2;
+			shift = 0;
+		}
+	}
+
+	static int ZoneWord(int packedLeft, int packedRight, int torsoA, int torsoB, int torsoC, int zoneId)
+	{
+		int which;
+		int shift;
+		int packed;
+		OMD_IDS_LimbZone row;
+
+		row = FindRow(zoneId);
+		if (!row)
+		{
+			return 0;
+		}
+
+		if (row.bitShift >= 0)
+		{
+			packed = packedLeft;
+			if (row.side != 0)
+			{
+				packed = packedRight;
+			}
+
+			return FlagWord(packed, zoneId);
+		}
+
+		TorsoSlot(zoneId, which, shift);
+		if (which < 0)
+		{
+			return 0;
+		}
+
+		packed = torsoA;
+		if (which == 1)
+		{
+			packed = torsoB;
+		}
+
+		if (which == 2)
+		{
+			packed = torsoC;
+		}
+
+		return ShiftedWord(packed, shift);
 	}
 
 	static string ProfileId(int zoneId)
@@ -397,12 +511,11 @@ class OMD_IDS_LimbCatalog
 	}
 
 	// flags[i] matches ZoneAt(i). A zero word is not ready. Variant n is the n-th ready zone.
-	static void CollectFlags(int packedLeft, int packedRight, int mode, array<int> flags)
+	// Sides 0 and 1 stay in packedLeft and packedRight. Sides 2-6 use TorsoSlot inside ZoneWord.
+	static void CollectFlags(int packedLeft, int packedRight, int torsoA, int torsoB, int torsoC, int mode, array<int> flags)
 	{
 		int index;
 		int zoneId;
-		int side;
-		int packed;
 		int word;
 		OMD_IDS_LimbZone row;
 
@@ -423,14 +536,7 @@ class OMD_IDS_LimbCatalog
 			}
 
 			zoneId = row.zoneId;
-			side = row.side;
-			packed = packedLeft;
-			if (side != 0)
-			{
-				packed = packedRight;
-			}
-
-			word = FlagWord(packed, zoneId);
+			word = ZoneWord(packedLeft, packedRight, torsoA, torsoB, torsoC, zoneId);
 			if (OMD_IDS_TreatAllow.IsAllowed(zoneId, OMD_IDS_TreatAllow.TypeOfMode(mode)) == 0)
 			{
 				word = 0;
