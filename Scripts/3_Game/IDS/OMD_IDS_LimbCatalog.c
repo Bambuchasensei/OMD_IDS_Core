@@ -30,13 +30,27 @@ class OMD_IDS_LimbCatalog
 		Add("hand", OMD_IDS_ZoneId.RIGHT_HAND, 1, OMD_IDS_GroupId.RIGHT_HAND, "hand", "правой кисти", "правую кисть", "hand");
 		Add("foot", OMD_IDS_ZoneId.LEFT_FOOT, 0, OMD_IDS_GroupId.LEFT_FOOT, "foot", "левой ступни", "левую ступню", "foot");
 		Add("foot", OMD_IDS_ZoneId.RIGHT_FOOT, 1, OMD_IDS_GroupId.RIGHT_FOOT, "foot", "правой ступни", "правую ступню", "foot");
-		// Sides 2-6 are not the packed left/right words. Add() stores bitShift -1 for them.
+		// Sides 2-10 are not the packed left/right words. Add() stores bitShift -1 for them.
 		// TorsoSlot is the only map from these zones onto a torso int and a shift.
 		Add("torso", OMD_IDS_ZoneId.UPPER_CHEST, 2, OMD_IDS_GroupId.UPPER_CHEST, "torso", "верхней части груди", "верхнюю часть груди", "chest");
 		Add("torso", OMD_IDS_ZoneId.MIDDLE_CHEST, 3, OMD_IDS_GroupId.MIDDLE_CHEST, "torso", "средней части груди", "среднюю часть груди", "chest");
 		Add("torso", OMD_IDS_ZoneId.PELVIS, 4, OMD_IDS_GroupId.PELVIS, "torso", "таза", "таз", "pelvis");
 		Add("torso", OMD_IDS_ZoneId.LEFT_SHOULDER, 5, OMD_IDS_GroupId.LEFT_SHOULDER, "torso", "левого плеча", "левое плечо", "shoulder");
 		Add("torso", OMD_IDS_ZoneId.RIGHT_SHOULDER, 6, OMD_IDS_GroupId.RIGHT_SHOULDER, "torso", "правого плеча", "правое плечо", "shoulder");
+		// Sides 7-10 are meat only. No bone slot. CollectFlags clears bone and splint bits.
+		Add("torso", OMD_IDS_ZoneId.LOWER_CHEST, 7, OMD_IDS_GroupId.LOWER_CHEST, "torso", "нижней части груди", "нижнюю часть груди", "");
+		Add("torso", OMD_IDS_ZoneId.UPPER_ABDOMEN, 8, OMD_IDS_GroupId.UPPER_ABDOMEN, "torso", "верхней части живота", "верхнюю часть живота", "");
+		Add("torso", OMD_IDS_ZoneId.LOWER_ABDOMEN, 9, OMD_IDS_GroupId.LOWER_ABDOMEN, "torso", "нижней части живота", "нижнюю часть живота", "");
+		Add("torso", OMD_IDS_ZoneId.GROIN, 10, OMD_IDS_GroupId.GROIN, "torso", "паха", "пах", "");
+		// Sides 11-18 are arm and leg meat. No bone slot. LimbSlot maps them. CollectFlags clears bone and splint bits.
+		Add("arm", OMD_IDS_ZoneId.LEFT_UPPER_ARM, 11, OMD_IDS_GroupId.LEFT_UPPER_ARM, "arm", "верхней части левой руки", "верхнюю часть левой руки", "");
+		Add("arm", OMD_IDS_ZoneId.LEFT_LOWER_ARM, 12, OMD_IDS_GroupId.LEFT_LOWER_ARM, "arm", "нижней части левой руки", "нижнюю часть левой руки", "");
+		Add("arm", OMD_IDS_ZoneId.RIGHT_UPPER_ARM, 13, OMD_IDS_GroupId.RIGHT_UPPER_ARM, "arm", "верхней части правой руки", "верхнюю часть правой руки", "");
+		Add("arm", OMD_IDS_ZoneId.RIGHT_LOWER_ARM, 14, OMD_IDS_GroupId.RIGHT_LOWER_ARM, "arm", "нижней части правой руки", "нижнюю часть правой руки", "");
+		Add("leg", OMD_IDS_ZoneId.LEFT_UPPER_LEG, 15, OMD_IDS_GroupId.LEFT_UPPER_LEG, "leg", "верхней части левой ноги", "верхнюю часть левой ноги", "");
+		Add("leg", OMD_IDS_ZoneId.LEFT_LOWER_LEG, 16, OMD_IDS_GroupId.LEFT_LOWER_LEG, "leg", "нижней части левой ноги", "нижнюю часть левой ноги", "");
+		Add("leg", OMD_IDS_ZoneId.RIGHT_UPPER_LEG, 17, OMD_IDS_GroupId.RIGHT_UPPER_LEG, "leg", "верхней части правой ноги", "верхнюю часть правой ноги", "");
+		Add("leg", OMD_IDS_ZoneId.RIGHT_LOWER_LEG, 18, OMD_IDS_GroupId.RIGHT_LOWER_LEG, "leg", "нижней части правой ноги", "нижнюю часть правой ноги", "");
 	}
 
 	private static void Add(string profileId, int zoneId, int side, int hudGroup, string icon, string genitive, string accusative, string boneSlot)
@@ -266,10 +280,13 @@ class OMD_IDS_LimbCatalog
 		return word;
 	}
 
-	// which: 0 int A, 1 int B, 2 int C. -1 means this zone is not in the torso ints.
+	// which: 0 int A, 1 int B, 2 int C, 3 int D, 4 int E. -1 means this zone is not in the torso ints.
 	// A shift 0 UpperChest, A shift 16 MiddleChest.
 	// B shift 0 Pelvis, B shift 16 LeftShoulder.
-	// C shift 0 RightShoulder. The high half of C stays 0.
+	// C shift 0 RightShoulder, C shift 16 LowerChest.
+	// D shift 0 UpperAbdomen, D shift 16 LowerAbdomen.
+	// E shift 0 Groin. The high half of E stays 0.
+	// Arm and leg meat is LimbSlot, not this table.
 	static void TorsoSlot(int zoneId, out int which, out int shift)
 	{
 		which = -1;
@@ -306,10 +323,103 @@ class OMD_IDS_LimbCatalog
 		{
 			which = 2;
 			shift = 0;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LOWER_CHEST)
+		{
+			which = 2;
+			shift = 16;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.UPPER_ABDOMEN)
+		{
+			which = 3;
+			shift = 0;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LOWER_ABDOMEN)
+		{
+			which = 3;
+			shift = 16;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.GROIN)
+		{
+			which = 4;
+			shift = 0;
 		}
 	}
 
-	static int ZoneWord(int packedLeft, int packedRight, int torsoA, int torsoB, int torsoC, int zoneId)
+	// which: 0 int A, 1 int B, 2 int C, 3 int D. -1 means this zone is not in the limb ints.
+	// A shift 0 LeftUpperArm, A shift 16 LeftLowerArm.
+	// B shift 0 RightUpperArm, B shift 16 RightLowerArm.
+	// C shift 0 LeftUpperLeg, C shift 16 LeftLowerLeg.
+	// D shift 0 RightUpperLeg, D shift 16 RightLowerLeg.
+	static void LimbSlot(int zoneId, out int which, out int shift)
+	{
+		which = -1;
+		shift = 0;
+		if (zoneId == OMD_IDS_ZoneId.LEFT_UPPER_ARM)
+		{
+			which = 0;
+			shift = 0;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_LOWER_ARM)
+		{
+			which = 0;
+			shift = 16;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_UPPER_ARM)
+		{
+			which = 1;
+			shift = 0;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_LOWER_ARM)
+		{
+			which = 1;
+			shift = 16;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_UPPER_LEG)
+		{
+			which = 2;
+			shift = 0;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_LOWER_LEG)
+		{
+			which = 2;
+			shift = 16;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_UPPER_LEG)
+		{
+			which = 3;
+			shift = 0;
+			return;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_LOWER_LEG)
+		{
+			which = 3;
+			shift = 16;
+		}
+	}
+
+	static int ZoneWord(int packedLeft, int packedRight, int torsoA, int torsoB, int torsoC, int torsoD, int torsoE, int limbA, int limbB, int limbC, int limbD, int zoneId)
 	{
 		int which;
 		int shift;
@@ -334,20 +444,52 @@ class OMD_IDS_LimbCatalog
 		}
 
 		TorsoSlot(zoneId, which, shift);
+		if (which >= 0)
+		{
+			packed = torsoA;
+			if (which == 1)
+			{
+				packed = torsoB;
+			}
+
+			if (which == 2)
+			{
+				packed = torsoC;
+			}
+
+			if (which == 3)
+			{
+				packed = torsoD;
+			}
+
+			if (which == 4)
+			{
+				packed = torsoE;
+			}
+
+			return ShiftedWord(packed, shift);
+		}
+
+		LimbSlot(zoneId, which, shift);
 		if (which < 0)
 		{
 			return 0;
 		}
 
-		packed = torsoA;
+		packed = limbA;
 		if (which == 1)
 		{
-			packed = torsoB;
+			packed = limbB;
 		}
 
 		if (which == 2)
 		{
-			packed = torsoC;
+			packed = limbC;
+		}
+
+		if (which == 3)
+		{
+			packed = limbD;
 		}
 
 		return ShiftedWord(packed, shift);
@@ -510,9 +652,32 @@ class OMD_IDS_LimbCatalog
 		return prefix + limb;
 	}
 
+	// Bone is bits 4-7. Splint is bit 15. Same layout as OMD_IDS_HandTreatFlags.Pack.
+	private static int WithoutBoneOrSplint(int word)
+	{
+		int bone;
+		int splint;
+
+		bone = OMD_IDS_HandTreatFlags.Bone(word);
+		if (bone != 0)
+		{
+			word = word - (bone * 16);
+		}
+
+		splint = OMD_IDS_HandTreatFlags.HasSplint(word);
+		if (splint != 0)
+		{
+			word = word - 32768;
+		}
+
+		return word;
+	}
+
 	// flags[i] matches ZoneAt(i). A zero word is not ready. Variant n is the n-th ready zone.
-	// Sides 0 and 1 stay in packedLeft and packedRight. Sides 2-6 use TorsoSlot inside ZoneWord.
-	static void CollectFlags(int packedLeft, int packedRight, int torsoA, int torsoB, int torsoC, int mode, array<int> flags)
+	// Sides 0 and 1 stay in packedLeft and packedRight. Sides 2-10 use TorsoSlot inside ZoneWord.
+	// Sides 11-18 use LimbSlot inside ZoneWord.
+	// Sides 7-18 are meat. Bone bits 4-7 and splint bit 15 are cleared after the read.
+	static void CollectFlags(int packedLeft, int packedRight, int torsoA, int torsoB, int torsoC, int torsoD, int torsoE, int limbA, int limbB, int limbC, int limbD, int mode, array<int> flags)
 	{
 		int index;
 		int zoneId;
@@ -536,7 +701,15 @@ class OMD_IDS_LimbCatalog
 			}
 
 			zoneId = row.zoneId;
-			word = ZoneWord(packedLeft, packedRight, torsoA, torsoB, torsoC, zoneId);
+			word = ZoneWord(packedLeft, packedRight, torsoA, torsoB, torsoC, torsoD, torsoE, limbA, limbB, limbC, limbD, zoneId);
+			if (row.side >= 7)
+			{
+				if (row.side <= 18)
+				{
+					word = WithoutBoneOrSplint(word);
+				}
+			}
+
 			if (OMD_IDS_TreatAllow.IsAllowed(zoneId, OMD_IDS_TreatAllow.TypeOfMode(mode)) == 0)
 			{
 				word = 0;

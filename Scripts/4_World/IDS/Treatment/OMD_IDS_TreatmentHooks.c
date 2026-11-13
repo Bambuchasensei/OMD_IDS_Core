@@ -224,6 +224,7 @@ class OMD_IDS_TreatmentHooks
 		{
 			zoneId = OMD_IDS_LimbCatalog.ZoneAt(index);
 			side = OMD_IDS_LimbCatalog.SideOf(zoneId);
+			// Sides 2-10 are torso. Sides 11-18 are arm and leg meat. Only sides 0 and 1 fill the hand load words.
 			if (side != 0)
 			{
 				if (side != 1)

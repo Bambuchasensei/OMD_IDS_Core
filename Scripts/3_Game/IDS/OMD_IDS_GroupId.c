@@ -5,7 +5,11 @@
 // 14 LEFT_HAND and 15 RIGHT_HAND. HAND stays 4 so an old snapshot row still has a name.
 // 16 LEFT_FOOT and 17 RIGHT_FOOT. FOOT stays 6 so an old snapshot row still has a name.
 // 18 UPPER_CHEST, 19 MIDDLE_CHEST, 20 PELVIS, 21 LEFT_SHOULDER, 22 RIGHT_SHOULDER.
-// TORSO stays 2 so LowerChest, the abdomen and the groin keep the old icon.
+// 23 LOWER_CHEST, 24 UPPER_ABDOMEN, 25 LOWER_ABDOMEN, 26 GROIN.
+// Groups 18-26 draw on the Torso picture. TORSO stays 2.
+// 27 LEFT_UPPER_ARM, 28 LEFT_LOWER_ARM, 29 RIGHT_UPPER_ARM, 30 RIGHT_LOWER_ARM.
+// 31 LEFT_UPPER_LEG, 32 LEFT_LOWER_LEG, 33 RIGHT_UPPER_LEG, 34 RIGHT_LOWER_LEG.
+// Groups 27-30 draw on the Arm picture. Groups 31-34 draw on the Leg picture. ARM stays 3. LEG stays 5.
 enum OMD_IDS_GroupId
 {
 	NONE = 0,
@@ -30,5 +34,17 @@ enum OMD_IDS_GroupId
 	MIDDLE_CHEST = 19,
 	PELVIS = 20,
 	LEFT_SHOULDER = 21,
-	RIGHT_SHOULDER = 22
+	RIGHT_SHOULDER = 22,
+	LOWER_CHEST = 23,
+	UPPER_ABDOMEN = 24,
+	LOWER_ABDOMEN = 25,
+	GROIN = 26,
+	LEFT_UPPER_ARM = 27,
+	LEFT_LOWER_ARM = 28,
+	RIGHT_UPPER_ARM = 29,
+	RIGHT_LOWER_ARM = 30,
+	LEFT_UPPER_LEG = 31,
+	LEFT_LOWER_LEG = 32,
+	RIGHT_UPPER_LEG = 33,
+	RIGHT_LOWER_LEG = 34
 }

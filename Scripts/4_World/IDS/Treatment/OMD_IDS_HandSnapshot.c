@@ -548,6 +548,12 @@ class OMD_IDS_HandSnapshot
 		int torsoA;
 		int torsoB;
 		int torsoC;
+		int torsoD;
+		int torsoE;
+		int limbA;
+		int limbB;
+		int limbC;
+		int limbD;
 		array<int> flags;
 
 		if (!patient)
@@ -561,8 +567,8 @@ class OMD_IDS_HandSnapshot
 		}
 
 		flags = new array<int>();
-		ReadTreatInts(patient, packedLeft, packedRight, torsoA, torsoB, torsoC);
-		OMD_IDS_LimbCatalog.CollectFlags(packedLeft, packedRight, torsoA, torsoB, torsoC, mode, flags);
+		ReadTreatInts(patient, packedLeft, packedRight, torsoA, torsoB, torsoC, torsoD, torsoE, limbA, limbB, limbC, limbD);
+		OMD_IDS_LimbCatalog.CollectFlags(packedLeft, packedRight, torsoA, torsoB, torsoC, torsoD, torsoE, limbA, limbB, limbC, limbD, mode, flags);
 		return OMD_IDS_LimbCatalog.ReadyCount(flags, mode);
 	}
 
@@ -628,6 +634,12 @@ class OMD_IDS_HandSnapshot
 		int torsoA;
 		int torsoB;
 		int torsoC;
+		int torsoD;
+		int torsoE;
+		int limbA;
+		int limbB;
+		int limbC;
+		int limbD;
 		array<int> flags;
 
 		if (!patient)
@@ -641,19 +653,25 @@ class OMD_IDS_HandSnapshot
 		}
 
 		flags = new array<int>();
-		ReadTreatInts(patient, packedLeft, packedRight, torsoA, torsoB, torsoC);
-		OMD_IDS_LimbCatalog.CollectFlags(packedLeft, packedRight, torsoA, torsoB, torsoC, mode, flags);
+		ReadTreatInts(patient, packedLeft, packedRight, torsoA, torsoB, torsoC, torsoD, torsoE, limbA, limbB, limbC, limbD);
+		OMD_IDS_LimbCatalog.CollectFlags(packedLeft, packedRight, torsoA, torsoB, torsoC, torsoD, torsoE, limbA, limbB, limbC, limbD, mode, flags);
 		zoneId = OMD_IDS_LimbCatalog.Pick(flags, variantId, mode);
 		return OMD_IDS_LimbCatalog.HudGroup(zoneId);
 	}
 
-	private static void ReadTreatInts(PlayerBase patient, out int packedLeft, out int packedRight, out int torsoA, out int torsoB, out int torsoC)
+	private static void ReadTreatInts(PlayerBase patient, out int packedLeft, out int packedRight, out int torsoA, out int torsoB, out int torsoC, out int torsoD, out int torsoE, out int limbA, out int limbB, out int limbC, out int limbD)
 	{
 		packedLeft = 0;
 		packedRight = 0;
 		torsoA = 0;
 		torsoB = 0;
 		torsoC = 0;
+		torsoD = 0;
+		torsoE = 0;
+		limbA = 0;
+		limbB = 0;
+		limbC = 0;
+		limbD = 0;
 		if (!patient)
 		{
 			return;
@@ -664,6 +682,12 @@ class OMD_IDS_HandSnapshot
 		torsoA = patient.OMD_IDS_GetTreatTorsoA();
 		torsoB = patient.OMD_IDS_GetTreatTorsoB();
 		torsoC = patient.OMD_IDS_GetTreatTorsoC();
+		torsoD = patient.OMD_IDS_GetTreatTorsoD();
+		torsoE = patient.OMD_IDS_GetTreatTorsoE();
+		limbA = patient.OMD_IDS_GetTreatLimbA();
+		limbB = patient.OMD_IDS_GetTreatLimbB();
+		limbC = patient.OMD_IDS_GetTreatLimbC();
+		limbD = patient.OMD_IDS_GetTreatLimbD();
 	}
 
 	private static int FlagsFor(PlayerBase patient, int groupId)
@@ -674,6 +698,12 @@ class OMD_IDS_HandSnapshot
 		int torsoA;
 		int torsoB;
 		int torsoC;
+		int torsoD;
+		int torsoE;
+		int limbA;
+		int limbB;
+		int limbC;
+		int limbD;
 
 		if (!patient)
 		{
@@ -686,8 +716,8 @@ class OMD_IDS_HandSnapshot
 			return 0;
 		}
 
-		ReadTreatInts(patient, packedLeft, packedRight, torsoA, torsoB, torsoC);
-		return OMD_IDS_LimbCatalog.ZoneWord(packedLeft, packedRight, torsoA, torsoB, torsoC, zoneId);
+		ReadTreatInts(patient, packedLeft, packedRight, torsoA, torsoB, torsoC, torsoD, torsoE, limbA, limbB, limbC, limbD);
+		return OMD_IDS_LimbCatalog.ZoneWord(packedLeft, packedRight, torsoA, torsoB, torsoC, torsoD, torsoE, limbA, limbB, limbC, limbD, zoneId);
 	}
 
 	private static string BandageText(int groupId, int dirty, int sutured)

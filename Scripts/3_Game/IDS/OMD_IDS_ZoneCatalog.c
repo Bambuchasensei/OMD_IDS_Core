@@ -74,7 +74,10 @@ class OMD_IDS_ZoneCatalog
 
 	// Silhouette for the HUD snapshot. GetGroupId is unchanged, including GroupId.BONE, both hands as HAND and both feet as FOOT.
 	// Left and right hands, and left and right feet, are separate snapshot groups. Other paired parts stay one group.
-	// UpperChest, MiddleChest, Pelvis and both shoulders are separate. LowerChest, the abdomen and the groin stay in Torso.
+	// UpperChest, MiddleChest, Pelvis, both shoulders, LowerChest, both abdomen zones and Groin are separate snapshot groups.
+	// DrawsOnTorso folds groups 18-26 onto the Torso picture. GetGroupId for these zones stays TORSO.
+	// The eight arm and leg meat zones are separate snapshot groups 27-34. GetGroupId for them stays ARM or LEG.
+	// DrawsOnArm folds 27-30 onto the Arm picture. DrawsOnLeg folds 31-34 onto the Leg picture. Bones stay on ARM and LEG.
 	static int GetHudGroupId(int zoneId)
 	{
 		if (zoneId == OMD_IDS_ZoneId.LEFT_UPPER_ARM_BONE)
@@ -160,6 +163,66 @@ class OMD_IDS_ZoneCatalog
 		if (zoneId == OMD_IDS_ZoneId.RIGHT_SHOULDER)
 		{
 			return OMD_IDS_GroupId.RIGHT_SHOULDER;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LOWER_CHEST)
+		{
+			return OMD_IDS_GroupId.LOWER_CHEST;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.UPPER_ABDOMEN)
+		{
+			return OMD_IDS_GroupId.UPPER_ABDOMEN;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LOWER_ABDOMEN)
+		{
+			return OMD_IDS_GroupId.LOWER_ABDOMEN;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.GROIN)
+		{
+			return OMD_IDS_GroupId.GROIN;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_UPPER_ARM)
+		{
+			return OMD_IDS_GroupId.LEFT_UPPER_ARM;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_LOWER_ARM)
+		{
+			return OMD_IDS_GroupId.LEFT_LOWER_ARM;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_UPPER_ARM)
+		{
+			return OMD_IDS_GroupId.RIGHT_UPPER_ARM;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_LOWER_ARM)
+		{
+			return OMD_IDS_GroupId.RIGHT_LOWER_ARM;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_UPPER_LEG)
+		{
+			return OMD_IDS_GroupId.LEFT_UPPER_LEG;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.LEFT_LOWER_LEG)
+		{
+			return OMD_IDS_GroupId.LEFT_LOWER_LEG;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_UPPER_LEG)
+		{
+			return OMD_IDS_GroupId.RIGHT_UPPER_LEG;
+		}
+
+		if (zoneId == OMD_IDS_ZoneId.RIGHT_LOWER_LEG)
+		{
+			return OMD_IDS_GroupId.RIGHT_LOWER_LEG;
 		}
 
 		return GetGroupId(zoneId);

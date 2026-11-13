@@ -9,10 +9,23 @@ modded class PlayerBase
 	// Torso treatment, same 16-bit slot as a hand. Not saved. Rebuilt with the hand ints.
 	// A bits 0-15 UpperChest, bits 16-31 MiddleChest.
 	// B bits 0-15 Pelvis, bits 16-31 LeftShoulder.
-	// C bits 0-15 RightShoulder, bits 16-31 stay 0.
+	// C bits 0-15 RightShoulder, bits 16-31 LowerChest.
+	// D bits 0-15 UpperAbdomen, bits 16-31 LowerAbdomen.
+	// E bits 0-15 Groin, bits 16-31 stay 0.
 	protected int m_OMD_IDS_TreatTorsoA;
 	protected int m_OMD_IDS_TreatTorsoB;
 	protected int m_OMD_IDS_TreatTorsoC;
+	protected int m_OMD_IDS_TreatTorsoD;
+	protected int m_OMD_IDS_TreatTorsoE;
+	// Arm and leg meat, same 16-bit slot. Not saved. Rebuilt with the hand ints.
+	// A bits 0-15 LeftUpperArm, bits 16-31 LeftLowerArm.
+	// B bits 0-15 RightUpperArm, bits 16-31 RightLowerArm.
+	// C bits 0-15 LeftUpperLeg, bits 16-31 LeftLowerLeg.
+	// D bits 0-15 RightUpperLeg, bits 16-31 RightLowerLeg.
+	protected int m_OMD_IDS_TreatLimbA;
+	protected int m_OMD_IDS_TreatLimbB;
+	protected int m_OMD_IDS_TreatLimbC;
+	protected int m_OMD_IDS_TreatLimbD;
 	// Closed pelvis fracture: 1 limits erect and crouch to walk. Not saved.
 	protected int m_OMD_IDS_PelvisSlow;
 	// True after this machine applied that walk cap. Not NetSync.
@@ -40,6 +53,12 @@ modded class PlayerBase
 		RegisterNetSyncVariableInt("m_OMD_IDS_TreatTorsoA");
 		RegisterNetSyncVariableInt("m_OMD_IDS_TreatTorsoB");
 		RegisterNetSyncVariableInt("m_OMD_IDS_TreatTorsoC");
+		RegisterNetSyncVariableInt("m_OMD_IDS_TreatTorsoD");
+		RegisterNetSyncVariableInt("m_OMD_IDS_TreatTorsoE");
+		RegisterNetSyncVariableInt("m_OMD_IDS_TreatLimbA");
+		RegisterNetSyncVariableInt("m_OMD_IDS_TreatLimbB");
+		RegisterNetSyncVariableInt("m_OMD_IDS_TreatLimbC");
+		RegisterNetSyncVariableInt("m_OMD_IDS_TreatLimbD");
 		RegisterNetSyncVariableInt("m_OMD_IDS_PelvisSlow", 0, 1);
 	}
 
@@ -214,6 +233,36 @@ modded class PlayerBase
 	int OMD_IDS_GetTreatTorsoC()
 	{
 		return m_OMD_IDS_TreatTorsoC;
+	}
+
+	int OMD_IDS_GetTreatTorsoD()
+	{
+		return m_OMD_IDS_TreatTorsoD;
+	}
+
+	int OMD_IDS_GetTreatTorsoE()
+	{
+		return m_OMD_IDS_TreatTorsoE;
+	}
+
+	int OMD_IDS_GetTreatLimbA()
+	{
+		return m_OMD_IDS_TreatLimbA;
+	}
+
+	int OMD_IDS_GetTreatLimbB()
+	{
+		return m_OMD_IDS_TreatLimbB;
+	}
+
+	int OMD_IDS_GetTreatLimbC()
+	{
+		return m_OMD_IDS_TreatLimbC;
+	}
+
+	int OMD_IDS_GetTreatLimbD()
+	{
+		return m_OMD_IDS_TreatLimbD;
 	}
 
 	int OMD_IDS_GetPelvisSlow()

@@ -50,7 +50,19 @@ class OMD_IDS_GroupCatalog
 		Add(OMD_IDS_GroupId.PELVIS, "Pelvis");
 		Add(OMD_IDS_GroupId.LEFT_SHOULDER, "LeftShoulder");
 		Add(OMD_IDS_GroupId.RIGHT_SHOULDER, "RightShoulder");
-		if (s_Names.Count() != OMD_IDS_GroupId.RIGHT_SHOULDER + 1)
+		Add(OMD_IDS_GroupId.LOWER_CHEST, "LowerChest");
+		Add(OMD_IDS_GroupId.UPPER_ABDOMEN, "UpperAbdomen");
+		Add(OMD_IDS_GroupId.LOWER_ABDOMEN, "LowerAbdomen");
+		Add(OMD_IDS_GroupId.GROIN, "Groin");
+		Add(OMD_IDS_GroupId.LEFT_UPPER_ARM, "LeftUpperArm");
+		Add(OMD_IDS_GroupId.LEFT_LOWER_ARM, "LeftLowerArm");
+		Add(OMD_IDS_GroupId.RIGHT_UPPER_ARM, "RightUpperArm");
+		Add(OMD_IDS_GroupId.RIGHT_LOWER_ARM, "RightLowerArm");
+		Add(OMD_IDS_GroupId.LEFT_UPPER_LEG, "LeftUpperLeg");
+		Add(OMD_IDS_GroupId.LEFT_LOWER_LEG, "LeftLowerLeg");
+		Add(OMD_IDS_GroupId.RIGHT_UPPER_LEG, "RightUpperLeg");
+		Add(OMD_IDS_GroupId.RIGHT_LOWER_LEG, "RightLowerLeg");
+		if (s_Names.Count() != OMD_IDS_GroupId.RIGHT_LOWER_LEG + 1)
 		{
 			Print("[OMD_IDS] group catalog does not match OMD_IDS_GroupId");
 		}

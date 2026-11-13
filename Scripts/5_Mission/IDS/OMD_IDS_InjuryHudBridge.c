@@ -47,10 +47,21 @@ class OMD_IDS_InjuryHudBridge
 				continue;
 			}
 
-			// Groups 18-22 stay on the snapshot row for treatment. The icon is Torso.
+			// Groups 18-26 stay on the snapshot row for treatment. The icon is Torso.
+			// Groups 27-30 draw on Arm. Groups 31-34 draw on Leg. SkipReplaced still uses the snapshot group.
 			if (DrawsOnTorso(source.groupId) != 0)
 			{
 				groupName = OMD_IDS_HudGroupMap.GROUP_TORSO;
+			}
+
+			if (DrawsOnArm(source.groupId) != 0)
+			{
+				groupName = OMD_IDS_HudGroupMap.GROUP_ARM;
+			}
+
+			if (DrawsOnLeg(source.groupId) != 0)
+			{
+				groupName = OMD_IDS_HudGroupMap.GROUP_LEG;
 			}
 
 			if (SkipReplaced(snapshot, source) != 0)
@@ -109,11 +120,13 @@ class OMD_IDS_InjuryHudBridge
 			}
 		}
 
-		MergeTorsoByLabel(result);
+		MergeByPicture(result, OMD_IDS_HudGroupMap.GROUP_TORSO);
+		MergeByPicture(result, OMD_IDS_HudGroupMap.GROUP_ARM);
+		MergeByPicture(result, OMD_IDS_HudGroupMap.GROUP_LEG);
 		return result;
 	}
 
-	// Upper chest, middle chest, pelvis and both shoulders share the Torso picture.
+	// The nine torso groups share the Torso picture. Lower chest, abdomen and groin have no separate icon.
 	private static int DrawsOnTorso(int groupId)
 	{
 		if (groupId == OMD_IDS_GroupId.UPPER_CHEST)
@@ -141,11 +154,83 @@ class OMD_IDS_InjuryHudBridge
 			return 1;
 		}
 
+		if (groupId == OMD_IDS_GroupId.LOWER_CHEST)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.UPPER_ABDOMEN)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.LOWER_ABDOMEN)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.GROIN)
+		{
+			return 1;
+		}
+
 		return 0;
 	}
 
-	// One Torso icon per label. A later row with the same label adds its count.
-	private static void MergeTorsoByLabel(array<ref OMD_IDS_HudDamageEntry> rows)
+	// Upper and lower arm meat share the existing Arm picture. Left and right already use that one picture.
+	private static int DrawsOnArm(int groupId)
+	{
+		if (groupId == OMD_IDS_GroupId.LEFT_UPPER_ARM)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.LEFT_LOWER_ARM)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.RIGHT_UPPER_ARM)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.RIGHT_LOWER_ARM)
+		{
+			return 1;
+		}
+
+		return 0;
+	}
+
+	// Upper and lower leg meat share the existing Leg picture. Left and right already use that one picture.
+	private static int DrawsOnLeg(int groupId)
+	{
+		if (groupId == OMD_IDS_GroupId.LEFT_UPPER_LEG)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.LEFT_LOWER_LEG)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.RIGHT_UPPER_LEG)
+		{
+			return 1;
+		}
+
+		if (groupId == OMD_IDS_GroupId.RIGHT_LOWER_LEG)
+		{
+			return 1;
+		}
+
+		return 0;
+	}
+
+	// One picture per label. A later row with the same label on that picture adds its count.
+	private static void MergeByPicture(array<ref OMD_IDS_HudDamageEntry> rows, string picture)
 	{
 		int index;
 		int earlier;
@@ -158,6 +243,11 @@ class OMD_IDS_InjuryHudBridge
 			return;
 		}
 
+		if (picture == "")
+		{
+			return;
+		}
+
 		for (index = rows.Count() - 1; index >= 0; index = index - 1)
 		{
 			row = rows.Get(index);
@@ -166,7 +256,7 @@ class OMD_IDS_InjuryHudBridge
 				continue;
 			}
 
-			if (row.groupId != OMD_IDS_HudGroupMap.GROUP_TORSO)
+			if (row.groupId != picture)
 			{
 				continue;
 			}
@@ -181,7 +271,7 @@ class OMD_IDS_InjuryHudBridge
 					continue;
 				}
 
-				if (keeper.groupId != OMD_IDS_HudGroupMap.GROUP_TORSO)
+				if (keeper.groupId != picture)
 				{
 					continue;
 				}
